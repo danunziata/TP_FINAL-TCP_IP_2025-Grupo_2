@@ -1,17 +1,26 @@
-name: Deploy on main push
+name: Notify on push or PR to any branch
 
 on:
   push:
     branches:
       - '**'
+  pull_request:
+    types: [opened, synchronize, closed]
+    branches:
+      - '**'
+  issues:
+    types: [opened, closed, edited]
 
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - name: Notify on Discord
+      - name: Enviar notificación a Discord
         uses: Ilshidur/action-discord@master
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          args: "🚀 Nuevo commit en la rama `${{ github.ref_name }}` por ${{ github.actor }}: ${{ github.event.head_commit.message }}"
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+          message: |
+            📢 Evento en el repositorio **${{ github.repository }}**
+            👤 Autor: **${{ github.actor }}**
+            🔧 Tipo de evento: **${{ github.event_name }}**
+            🔗 Detalles: [ver en GitHub](${{ github.event.pull_request.html_url || github.event.head_commit.url || github.event.issue.html_url }})
