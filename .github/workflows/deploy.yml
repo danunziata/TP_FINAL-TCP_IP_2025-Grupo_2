@@ -1,0 +1,17 @@
+name: Deploy on main push
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify on Discord
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: "🚀 Nuevo commit en la rama `${{ github.ref_name }}` por ${{ github.actor }}: ${{ github.event.head_commit.message }}"
