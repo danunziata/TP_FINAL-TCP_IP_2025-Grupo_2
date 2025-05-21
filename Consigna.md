@@ -1,6 +1,6 @@
 # Aplicaciones TCP/IP 2025 - Parcial Práctico Integrador
 
-## Tema 912
+## Tema 2
 
 ### Objetivo:
 
