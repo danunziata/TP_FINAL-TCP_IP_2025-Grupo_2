@@ -15,10 +15,10 @@ jobs:
     steps:
       - name: Notify on Discord (Push or PR)
         uses: rjstone/discord-webhook-notify@v1
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          args: |
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          severity: info
+          description: |
             ${{ github.event_name == 'push' && 
               format('🚀 Nuevo push en `{0}` por {1}: {2}', github.ref_name, github.actor, github.event.head_commit.message) ||
               (
