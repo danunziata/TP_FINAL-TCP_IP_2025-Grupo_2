@@ -23,7 +23,7 @@ Para las comunicaciones se propone utilizar el protocolo **Modbus-TCP**, y desar
 
 ---
 
-### ![Figura: Proyecto de Sistema de monitoreo para reconectador automático](#)  
+### ![Figura: Proyecto de Sistema de monitoreo para reconectador automático](imagen.png)  
 _(Imagen referencial del proyecto)_
 
 ---
@@ -36,15 +36,15 @@ Se debe entregar la documentación completa y presentar un **demostrador tecnol�
 
 ### Grupo e Integrantes
 
-| Integrante             | Actividad         |
-|------------------------|-------------------|
-| Milanesio, Valentín    |                   |
-| Coassolo, Santiago     |                   |
-| Novisardi, Maximiliano |                   |
-| Magallanes, Manuel     |                   |
-| Laborda, Sebastián     |                   |
-| Lambrese, Martín       |                   |
-| Tisiani, Ramiro        |                   |
+| Integrante             |         
+|------------------------|
+| Milanesio, Valentín    |                   
+| Coassolo, Santiago     |                   
+| Novisardi, Maximiliano |                   
+| Magallanes, Manuel     |                   
+| Laborda, Sebastián     |                   
+| Lambrese, Martín       |                   
+| Tisiani, Ramiro        |                   
 
 ---
 
