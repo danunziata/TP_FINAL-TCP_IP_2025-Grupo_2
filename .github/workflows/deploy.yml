@@ -1,0 +1,43 @@
+name: Notify on push or PR to any branch
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    types: [opened, synchronize, closed]
+    branches:
+      - '**'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify on Discord (Push or PR)
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          severity: info
+          description: |
+            ${{ github.event_name == 'push' && 
+              format('🚀 Nuevo push en `{0}` por {1}: {2}', github.ref_name, github.actor, github.event.head_commit.message) ||
+              (
+                github.event.action == 'closed' && github.event.pull_request.merged == true &&
+                format('✅ Pull request MERGEADO a `{0}` por {1}: "{2}"', github.base_ref, github.actor, github.event.pull_request.title)
+              ) ||
+              format('📣 Pull request {0} en `{1}` por {2}: "{3}"', github.event.action, github.base_ref, github.actor, github.event.pull_request.title)
+            }}
+
+# jobs:
+#   notify-discord:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Enviar notificación a Discord
+#         uses: Ilshidur/action-discord@master
+#         with:
+#           webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+#           message: |
+#             📢 Evento en el repositorio **${{ github.repository }}**
+#             👤 Autor: **${{ github.actor }}**
+#             🔧 Tipo de evento: **${{ github.event_name }}**
+#             🔗 Detalles: [ver en GitHub](${{ github.event.pull_request.html_url || github.event.head_commit.url || github.event.issue.html_url }})
