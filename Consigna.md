@@ -1,5 +1,3 @@
-# TP_FINAL_TCP_IP_2025_Grupo_2
-
 # Aplicaciones TCP/IP 2025 - Parcial Práctico Integrador
 
 ## Tema 2
