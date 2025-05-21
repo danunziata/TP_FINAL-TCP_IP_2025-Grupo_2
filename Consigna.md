@@ -6,8 +6,6 @@
 
 Desarrollar una solución tecnológica al problema planteado aplicando lo aprendido durante el cursado de la materia y siguiendo el proceso estudiado de la ingeniería del software.
 
-**Deadline: 17/06/2023**
-
 ### Enunciado:
 
 El Instituto de Protecciones de Sistemas Eléctricos de Potencia (IPSEP), dependiente de la Facultad de Ingeniería de la Universidad Nacional de Río Cuarto, ha contratado al equipo para desarrollar una aplicación de monitoreo para un reconectador automático OSM27 de la marca NOJA Power.
