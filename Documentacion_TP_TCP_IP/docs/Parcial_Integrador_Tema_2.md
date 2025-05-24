@@ -1,4 +1,3 @@
-
 # Aplicaciones TCP/IP 2025  
 ## Parcial Práctico Integrador  
 
@@ -23,7 +22,7 @@ Para las comunicaciones se propone utilizar el protocolo **Modbus-TCP**, y desar
 
 ---
 
-### ![Figura: Proyecto de Sistema de monitoreo para reconectador automático](imagen.png)  
+### ![Figura: Proyecto de Sistema de monitoreo para reconectador automático](consigna.png)  
 _(Imagen referencial del proyecto)_
 
 ---
