@@ -8,7 +8,7 @@
 - Milanesio, Valentin 🐐  
 - Novisardi, Maximiliano 🐐  
 - Magallanes, Manuel 🐐  
-- Tisiani, Ramiro 🐐  
+- Tizzian, Ramiro 🐐  
 
 ## Logo del Proyecto
 
