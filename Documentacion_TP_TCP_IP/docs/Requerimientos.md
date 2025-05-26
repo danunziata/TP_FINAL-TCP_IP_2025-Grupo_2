@@ -3,7 +3,7 @@
 **Proyecto:** Sistema de Monitoreo para Reconectador Automático NOJA Power  
 **Cliente:** IPSEP (Juan Carlos Amati)  
 **Fecha:** 26/05  
-**Equipo:** Grupo 2  
+**Equipo:** F3
 
 ---
 
