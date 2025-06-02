@@ -27,19 +27,16 @@ A continuación, se enumeran los requerimientos funcionales expresados por el cl
 
 1. Obtener y registrar las siguientes variables eléctricas del reconectador:
 
-   - Las tres tensiones.
-   - Las tres corrientes.
-   - Potencia activa.
-   - Potencia reactiva.
-   - Factor de potencia.
-   - Eventos (reconexiones).
+    - Las tres tensiones.
+    - Las tres corrientes.
+    - Potencia activa.
+    - Potencia reactiva.
+    - Factor de potencia.
+    - Eventos (reconexiones).
 
 2. Guardar la información registrada en archivos CSV.
-
 3. Registrar los datos con una periodicidad de **15 minutos**.
-
 4. Permitir el acceso remoto al sistema desde una PC ubicada en el IPSEP.
-
 5. Establecer la conexión con el reconectador NOJA Power mediante **cable Ethernet**.
 
 ---
