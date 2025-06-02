@@ -26,12 +26,13 @@ El sistema tomará mediciones cada **15 minutos** y guardará los datos preferen
 A continuación, se enumeran los requerimientos funcionales expresados por el cliente:
 
 1. Obtener y registrar las siguientes variables eléctricas del reconectador:
-- Las tres tensiones.
-- Las tres corrientes.
-- Potencia activa.
-- Potencia reactiva.
-- Factor de potencia.
-- Eventos (reconexiones).
+
+   - Las tres tensiones.
+   - Las tres corrientes.
+   - Potencia activa.
+   - Potencia reactiva.
+   - Factor de potencia.
+   - Eventos (reconexiones).
 
 2. Guardar la información registrada en archivos CSV.
 
