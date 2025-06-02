@@ -72,7 +72,7 @@ while True:
     time.sleep(5)  # Espera 5 segundos
 ```
 
-EJEMPLO CON INFLUXDB (PARA MI EL QUE TENEMOS QUE UTILIZAR)
+**EJEMPLO CON INFLUXDB (PARA MI EL QUE TENEMOS QUE UTILIZAR)**
 
 **1. Instalar dependencias necesarias**
 
