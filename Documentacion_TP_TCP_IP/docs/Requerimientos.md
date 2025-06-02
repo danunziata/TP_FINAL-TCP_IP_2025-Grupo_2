@@ -26,12 +26,12 @@ El sistema tomará mediciones cada **15 minutos** y guardará los datos preferen
 A continuación, se enumeran los requerimientos funcionales expresados por el cliente:
 
 1. Obtener y registrar las siguientes variables eléctricas del reconectador:
-   - Las tres tensiones.
-   - Las tres corrientes.
-   - Potencia activa.
-   - Potencia reactiva.
-   - Factor de potencia.
-   - Eventos (reconexiones).
+- Las tres tensiones.
+- Las tres corrientes.
+- Potencia activa.
+- Potencia reactiva.
+- Factor de potencia.
+- Eventos (reconexiones).
 
 2. Guardar la información registrada en archivos CSV.
 
@@ -55,10 +55,9 @@ A continuación, se enumeran los requerimientos funcionales expresados por el cl
 
 Además de los requerimientos fundamentales, el cliente manifestó interés en que el sistema cuente con las siguientes características deseables:
 
-- Acceso a una **versión gratuita** de la aplicación, compatible con dispositivos Android.
 - Envío de **alertas por correo electrónico** ante eventos importantes.
 - Visualización de **gráficas en función del tiempo**.
-- Acceso a la plataforma desde **cualquier lugar**, facilitando el monitoreo remoto.
+- Acceso a la plataforma desde **cualquier lugar de la universidad**, facilitando el monitoreo remoto.
 - Realizar una interfaz estilo **página web**.
 
 ---
