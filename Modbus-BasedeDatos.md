@@ -22,9 +22,8 @@ client.close()
 
 Depende de la aplicación:
 
-    SQL (estructurado): PostgreSQL, MySQL, SQLite
-
-    NoSQL (flexible): MongoDB, InfluxDB (ideal para datos de sensores)
+- SQL (estructurado): PostgreSQL, MySQL, SQLite
+- NoSQL (flexible): MongoDB, InfluxDB (ideal para datos de sensores)
 
 
 3. Insertar los datos leídos
