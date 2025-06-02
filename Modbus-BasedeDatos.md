@@ -1,4 +1,4 @@
-1. Conectar con el dispositivo ModbusTCP
+**1. Conectar con el dispositivo ModbusTCP**
 
 ModbusTCP es un protocolo que se comunica sobre TCP/IP. Puedes usar una biblioteca cliente de Modbus en tu lenguaje de programación preferido.
 🔧 Bibliotecas comunes:
@@ -18,7 +18,8 @@ data = result.registers
 
 client.close()
 ```
-2. Elegir una base de datos
+
+**2. Elegir una base de datos**
 
 Depende de la aplicación:
 
@@ -26,7 +27,7 @@ Depende de la aplicación:
 - NoSQL (flexible): MongoDB, InfluxDB (ideal para datos de sensores)
 
 
-3. Insertar los datos leídos
+**3. Insertar los datos leídos**
 
 Una vez que lees los datos, simplemente los insertas en la base de datos.
 
@@ -51,7 +52,8 @@ conn.commit()
 cursor.close()
 conn.close()
 ```
- 4. Automatizar con temporizador o ciclo
+ 
+**4. Automatizar con temporizador o ciclo**
 
 Puedes usar un bucle o schedule para leer e insertar datos periódicamente.
 
@@ -72,12 +74,12 @@ while True:
 
 EJEMPLO CON INFLUXDB (PARA MI EL QUE TENEMOS QUE UTILIZAR)
 
-1. Instalar dependencias necesarias
+**1. Instalar dependencias necesarias**
 
 ```bash
 pip install pymodbus influxdb-client
 ```
-Paso 1: Leer datos desde ModbusTCP
+**Paso 1: Leer datos desde ModbusTCP**
 ```bash
 from pymodbus.client.sync import ModbusTcpClient
 
@@ -92,7 +94,7 @@ data = result.registers  # Por ejemplo: [25, 42]
 client.close()
 ```
 
-Paso 2: Insertar los datos en InfluxDB
+**Paso 2: Insertar los datos en InfluxDB**
 ```bash
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
@@ -121,7 +123,7 @@ write_api.write(bucket=bucket, org=org, record=point)
 client.close()
 ```
 
-Paso 3: Ejecutarlo en bucle
+**Paso 3: Ejecutarlo en bucle**
 
 Si quieres hacer lecturas periódicas (ej. cada 10 segundos):
 
@@ -150,7 +152,7 @@ while True:
     time.sleep(10)
 ```
 
-Ver los datos en InfluxDB
+**Ver los datos en InfluxDB**
 
 Puedes consultar los datos desde:
 
@@ -164,7 +166,7 @@ from(bucket: "modbus")
   |> filter(fn: (r) => r._measurement == "lectura_modbus")
 ```
 
-Notas importantes
+**Notas importantes**
 
     Si usas InfluxDB v1.x, cambia a la librería influxdb en lugar de influxdb-client.
 
