@@ -1,0 +1,17 @@
+apiVersion: 1
+
+datasources:
+  - name: TimescaleDB
+    type: postgres
+    access: proxy
+    isDefault: true
+    editable: true
+    url: db:5432
+    database: medicionesdb
+    user: postgres
+    secureJsonData:
+      password: postgres
+    jsonData:
+      sslmode: "disable"
+      postgresVersion: 1400
+      timescaledb: true

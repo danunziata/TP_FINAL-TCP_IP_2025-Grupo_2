@@ -58,6 +58,23 @@ Tabla: `mediciones`
 
 `pymodbus` es una librería de Python para comunicarse con dispositivos Modbus, incluyendo ModbusTCP. Permite actuar como cliente o servidor y realizar lecturas y escrituras sobre registros de dispositivos industriales.
 
+### Libreria psycopg2
+
+psycopg2 es la librería de Python más utilizada para conectarse y trabajar con bases de datos PostgreSQL. Es un driver de base de datos que permite a Python ejecutar consultas SQL, obtener resultados y manejar conexiones con servidores PostgreSQL.
+
+### Permite:
+* **Conectarse a una base de datos PostgreSQL.**
+Se envian parametros como host, puerto, base de datos, usuario y contraseña, y abre una conexión.
+* **Ejecuta consultas SQL**
+Ejecucion de comandos como SELECT, INSERT, UPDATE, DELETE, creacion de tablas, etc.
+* **Lee resultados de consultas**
+Devuelve los resultados de las consultas en estructuras de datos de Python, como listas de tuplas.
+
+* **Manejo de transacciones**
+psycopg2 usa transacciones por defecto. Tenés que hacer commit() para guardar los cambios o rollback() si hay errores.
+
+* **Manejo de errores y excepciones de base de datos**
+Permite capturar errores específicos de PostgreSQL y manejar problemas de conexión o consultas fallidas.
 
 
 ###  Servicios

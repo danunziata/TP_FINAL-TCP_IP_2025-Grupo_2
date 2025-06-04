@@ -1,0 +1,78 @@
+{
+  "id": null,
+  "title": "Monitor OSM27 Simulado",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "5s",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Corrientes (A)",
+      "datasource": {"type": "postgres", "uid": "P40AE60E18F02DE32"},
+      "fieldConfig": {
+        "defaults": {"unit": "amp"},
+        "overrides": []
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT fecha_hora as time, ia, ib, ic FROM mediciones ORDER BY fecha_hora DESC LIMIT 100",
+          "format": "time_series",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0}
+    },
+    {
+      "type": "timeseries",
+      "title": "Tensiones (V)",
+      "datasource": {"type": "postgres", "uid": "P40AE60E18F02DE32"},
+      "fieldConfig": {
+        "defaults": {"unit": "volt"},
+        "overrides": []
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT fecha_hora as time, va, vb, vc FROM mediciones ORDER BY fecha_hora DESC LIMIT 100",
+          "format": "time_series",
+          "refId": "B"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+    },
+    {
+      "type": "timeseries",
+      "title": "Potencias (W / VAR)",
+      "datasource": {"type": "postgres", "uid": "P40AE60E18F02DE32"},
+      "fieldConfig": {
+        "defaults": {"unit": "watt"},
+        "overrides": []
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT fecha_hora as time, p_act, p_react FROM mediciones ORDER BY fecha_hora DESC LIMIT 100",
+          "format": "time_series",
+          "refId": "C"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16}
+    },
+    {
+      "type": "timeseries",
+      "title": "Factor de Potencia",
+      "datasource": {"type": "postgres", "uid": "P40AE60E18F02DE32"},
+      "fieldConfig": {
+        "defaults": {"unit": "none"},
+        "overrides": []
+      },
+      "targets": [
+        {
+          "rawSql": "SELECT fecha_hora as time, fp FROM mediciones ORDER BY fecha_hora DESC LIMIT 100",
+          "format": "time_series",
+          "refId": "D"
+        }
+      ],
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 24}
+    }
+  ]
+}
