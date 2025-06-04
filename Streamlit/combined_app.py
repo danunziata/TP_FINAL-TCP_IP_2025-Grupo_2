@@ -195,7 +195,7 @@ if check_password():
     # Botón para cerrar sesión
     if st.sidebar.button("Cerrar Sesión"):
         st.session_state["password_correct"] = False
-        st.experimental_rerun()
+        st.rerun()
 
     ## Data
     with st.spinner('Actualizando Reporte...'):
