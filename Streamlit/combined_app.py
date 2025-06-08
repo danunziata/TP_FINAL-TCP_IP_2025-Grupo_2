@@ -67,20 +67,64 @@ def check_password():
     # Primera ejecución o sesión cerrada
     if "password_correct" not in st.session_state:
         # Crear dos columnas para login y registro
-        col1, col2 = st.columns(2)
+        # Add CSS for login page
+        st.markdown("""
+            <style>
+                .login-container {
+                    max-width: 800px;
+                    margin: 2rem auto;
+                    padding: 2rem;
+                }
+                .stButton>button {
+                    width: 100%;
+                    background-color: #0066CC;
+                    color: white;
+                    border: none;
+                    padding: 0.5rem;
+                    margin-top: 1rem;
+                    border-radius: 4px;
+                }
+                .stButton>button:hover {
+                    background-color: #0052a3;
+                }
+                .stTextInput>div>div {
+                    padding: 0.5rem;
+                    border-radius: 4px;
+                }
+            </style>
+        """, unsafe_allow_html=True)
         
-        with col1:
-            st.subheader("Iniciar Sesión")
-            st.text_input("Usuario", key="username")
-            st.text_input("Contraseña", type="password", key="password")
-            st.button("Ingresar", on_click=password_entered)
+        # Add UNRC logo at the top
+        st.markdown(f"""
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <img src="data:image/png;base64,{base64.b64encode(open('Logo_unrc_horizontal2.png', 'rb').read()).decode()}" 
+                     style="max-width: 300px; margin: auto;" alt="UNRC Logo">
+            </div>
+        """, unsafe_allow_html=True)
+
+        with st.container():
+            col1, col2 = st.columns(2)
             
-        with col2:
-            st.subheader("Registrarse")
-            st.text_input("Correo Institucional", key="reg_email", 
-                         help="Usa tu correo @ing.unrc.edu.ar")
-            st.text_input("Contraseña", type="password", key="reg_password")
-            st.button("Registrar", on_click=register_user)
+            with col1:
+                st.markdown("""
+                    <h3 style='margin-bottom: 1.5rem; color: #1e1e1e;'>Iniciar Sesión</h3>
+                """, unsafe_allow_html=True)
+                st.text_input("Usuario", key="username", 
+                            placeholder="Ingresa tu usuario")
+                st.text_input("Contraseña", type="password", key="password", 
+                            placeholder="Ingresa tu contraseña")
+                st.button("Ingresar", on_click=password_entered)
+                
+            with col2:
+                st.markdown("""
+                    <h3 style='margin-bottom: 1.5rem; color: #1e1e1e;'>Registrarse</h3>
+                """, unsafe_allow_html=True)
+                st.text_input("Correo Institucional", key="reg_email", 
+                            help="Usa tu correo @ing.unrc.edu.ar",
+                            placeholder="usuario@ing.unrc.edu.ar")
+                st.text_input("Contraseña", type="password", key="reg_password",
+                            placeholder="Crea una contraseña")
+                st.button("Registrar", on_click=register_user)
         
         return False
     
@@ -183,7 +227,7 @@ if check_password():
     # Header con mejor diseño
     header_html = f"""
         <div class="header-container">
-            <img class="header-logo" src="data:image/jpeg;base64,{base64.b64encode(open('unrc_logo.jpg', 'rb').read()).decode()}" alt="UNRC Logo">
+            <img class="header-logo" src="data:image/jpeg;base64,{base64.b64encode(open('Logo_unrc_horizontal2.png', 'rb').read()).decode()}" alt="UNRC Logo">
             <div class="header-text">
                 <h1>Sistema de Monitoreo OSM27 - IPSEP UNRC</h1>
                 <p><strong>UNRC - Facultad de Ingeniería</strong></p>
