@@ -64,45 +64,40 @@ def check_password():
         save_users(users)
         st.success("¡Registro exitoso! Ahora puedes iniciar sesión")
 
-    # Primera ejecución o sesión cerrada
-    if "password_correct" not in st.session_state:
-        # Crear dos columnas para login y registro
-        # Add CSS for login page
-        st.markdown("""
-            <style>
-                .login-container {
-                    max-width: 800px;
-                    margin: 2rem auto;
-                    padding: 2rem;
-                }
-                .stButton>button {
-                    width: 100%;
-                    background-color: #0066CC;
-                    color: white;
-                    border: none;
-                    padding: 0.5rem;
-                    margin-top: 1rem;
-                    border-radius: 4px;
-                }
-                .stButton>button:hover {
-                    background-color: #0052a3;
-                }
-                .stTextInput>div>div {
-                    padding: 0.5rem;
-                    border-radius: 4px;
-                }
-            </style>
-        """, unsafe_allow_html=True)
-        
-        # Add UNRC logo at the top
-        st.markdown(f"""
-            <div style="text-align: center; margin-bottom: 2rem;">
-                <img src="data:image/png;base64,{base64.b64encode(open('Logo_unrc_horizontal2.png', 'rb').read()).decode()}" 
-                     style="max-width: 300px; margin: auto;" alt="UNRC Logo">
-            </div>
-        """, unsafe_allow_html=True)
+    def show_login_page(show_error=False, is_first_time=True):
+        """Muestra la página de login con diseño consistente"""
+        if is_first_time:
+            # CSS original para la primera vez
+            st.markdown("""
+                <style>
+                    .stButton>button {
+                        width: 100%;
+                        background-color: #0066CC;
+                        color: white;
+                        border: none;
+                        padding: 0.5rem;
+                        margin-top: 1rem;
+                        border-radius: 4px;
+                    }
+                    .stButton>button:hover {
+                        background-color: #0052a3;
+                    }
+                    .stTextInput>div>div {
+                        padding: 0.5rem;
+                        border-radius: 4px;
+                    }
+                </style>
+            """, unsafe_allow_html=True)
+            
+            # Logo UNRC
+            st.markdown(f"""
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <img src="data:image/png;base64,{base64.b64encode(open('Logo_unrc_horizontal2.png', 'rb').read()).decode()}" 
+                         style="max-width: 300px; margin: auto;" alt="UNRC Logo">
+                </div>
+            """, unsafe_allow_html=True)
 
-        with st.container():
+            # Columnas originales sin centrado adicional
             col1, col2 = st.columns(2)
             
             with col1:
@@ -125,28 +120,103 @@ def check_password():
                 st.text_input("Contraseña", type="password", key="reg_password",
                             placeholder="Crea una contraseña")
                 st.button("Registrar", on_click=register_user)
-        
+        else:
+            # CSS para la pantalla de cierre de sesión
+            st.markdown("""
+                <style>
+                    .main {
+                        max-width: 100%;
+                        padding: 0;
+                    }
+                    .login-container {
+                        max-width: 1000px;
+                        margin: 2rem auto;
+                        padding: 2rem;
+                        background-color: white;
+                        border-radius: 10px;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    }
+                    .stButton>button {
+                        width: 100%;
+                        background-color: #0066CC;
+                        color: white;
+                        border: none;
+                        padding: 0.5rem;
+                        margin-top: 1rem;
+                        border-radius: 4px;
+                    }
+                    .stButton>button:hover {
+                        background-color: #0052a3;
+                    }
+                    .stTextInput>div>div {
+                        padding: 0.5rem;
+                        border-radius: 4px;
+                    }
+                    .error-text {
+                        color: #B00020;
+                        background-color: #FFE9E9;
+                        padding: 0.75rem;
+                        border-radius: 4px;
+                        margin-top: 1rem;
+                        font-size: 0.9rem;
+                        border: 1px solid #FFB4B4;
+                    }
+                    [data-testid="stAppViewContainer"] {
+                        background-color: #f0f2f6;
+                    }
+                </style>
+            """, unsafe_allow_html=True)
+
+            # Contenedor centrado para cierre de sesión
+            col1, col2, col3 = st.columns([1,3,1])
+            
+            with col2:
+                # Logo UNRC
+                st.markdown(f"""
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <img src="data:image/png;base64,{base64.b64encode(open('Logo_unrc_horizontal2.png', 'rb').read()).decode()}" 
+                             style="max-width: 300px; margin: auto;" alt="UNRC Logo">
+                    </div>
+                """, unsafe_allow_html=True)
+
+                with st.container():
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        st.markdown("""
+                            <h3 style='margin-bottom: 1.5rem; color: #1e1e1e;'>Iniciar Sesión</h3>
+                        """, unsafe_allow_html=True)
+                        st.text_input("Usuario", key="username", 
+                                    placeholder="Ingresa tu usuario")
+                        st.text_input("Contraseña", type="password", key="password", 
+                                    placeholder="Ingresa tu contraseña")
+                        st.button("Ingresar", on_click=password_entered)
+                        if show_error:
+                            st.markdown("""
+                                <div class="error-text">
+                                    <span>😕 Usuario o contraseña incorrectos</span>
+                                </div>
+                            """, unsafe_allow_html=True)
+                        
+                    with col2:
+                        st.markdown("""
+                            <h3 style='margin-bottom: 1.5rem; color: #1e1e1e;'>Registrarse</h3>
+                        """, unsafe_allow_html=True)
+                        st.text_input("Correo Institucional", key="reg_email", 
+                                    help="Usa tu correo @ing.unrc.edu.ar",
+                                    placeholder="usuario@ing.unrc.edu.ar")
+                        st.text_input("Contraseña", type="password", key="reg_password",
+                                    placeholder="Crea una contraseña")
+                        st.button("Registrar", on_click=register_user)
+
+    # Primera ejecución o sesión cerrada
+    if "password_correct" not in st.session_state:
+        show_login_page(is_first_time=True)
         return False
     
     # Contraseña incorrecta
     elif not st.session_state["password_correct"]:
-        # Crear dos columnas para login y registro
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.subheader("Iniciar Sesión")
-            st.text_input("Usuario", key="username")
-            st.text_input("Contraseña", type="password", key="password")
-            st.button("Ingresar", on_click=password_entered)
-            st.error("😕 Usuario o contraseña incorrectos")
-            
-        with col2:
-            st.subheader("Registrarse")
-            st.text_input("Correo Institucional", key="reg_email", 
-                         help="Usa tu correo @ing.unrc.edu.ar")
-            st.text_input("Contraseña", type="password", key="reg_password")
-            st.button("Registrar", on_click=register_user)
-        
+        show_login_page(show_error=True, is_first_time=False)
         return False
     else:
         # Contraseña correcta, continuar
@@ -691,7 +761,6 @@ if check_password():
                 columnas = ['fecha_hora', variable_especifica]
         
         df_filtered = df_filtered[columnas]
-    
     # Información del filtrado
     st.markdown(f"""
         <div style='padding: 1rem; background-color: rgba(28, 131, 225, 0.1); border-radius: 5px; margin: 1rem 0;'>
