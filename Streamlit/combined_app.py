@@ -472,24 +472,196 @@ if check_password():
             )
             st.plotly_chart(fig, use_container_width=True)
         
-    # Sección de Mito con responsive design
+    # Sección de manejo de datos estilo Excel
     st.markdown("""
         <style>
-            .stDataFrame {
-                overflow-x: auto;
-            }
-            .css-1n76uvr {
-                width: 100%;
-            }
+        /* Estilo para la sección de datos */
+        .excel-like {
+            background: white;
+            padding: 1rem;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Estilo para los botones */
+        .excel-button {
+            background-color: #0066CC;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin: 0 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .excel-button:hover {
+            background-color: #0052a3;
+        }
+        
+        /* Estilo para la tabla */
+        .dataframe {
+            border: 1px solid #ddd;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        .dataframe th {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .dataframe td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        
+        .dataframe tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        /* Estilo para el área de búsqueda */
+        .search-box {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            width: 100%;
+        }
         </style>
     """, unsafe_allow_html=True)
     
-    st.header("Exportación de Datos")
+    st.header("Gestión de Datos")
     
-    # CSS para el botón de exportar
+    # Guía de uso
+    with st.expander("ℹ️ Guía de uso"):
+        st.markdown("""
+        ### Instrucciones:
+        1. **Importar datos**: Use el botón '📥 Importar' para cargar archivos CSV o Excel.
+        2. **Filtrar por fecha y hora**: 
+           - Seleccione el rango de fechas deseado
+           - Puede especificar horas para un filtrado más preciso
+        3. **Filtrar por tipo de datos**: 
+           - Use el selector para filtrar por tipo de variable (tensiones, corrientes, etc.)
+           - Los datos mostrados se actualizarán automáticamente
+        4. **Exportar datos**: 
+           - El botón 'Exportar CSV' descargará solo los datos filtrados actualmente visibles
+           - El archivo incluirá la fecha y hora en su nombre para mejor organización
+        """)
+
+    # Contenedor principal
+    with st.container():
+        # Barra de herramientas - Primera fila
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            uploaded_file = st.file_uploader("📥 Importar", type=['csv', 'xlsx'])
+            if uploaded_file is not None:
+                try:
+                    if uploaded_file.name.endswith('.csv'):
+                        df_new = pd.read_csv(uploaded_file)
+                    else:
+                        df_new = pd.read_excel(uploaded_file)
+                    st.success('Archivo importado correctamente')
+                except Exception as e:
+                    st.error(f'Error al importar: {str(e)}')
+        
+        # Segunda fila - Filtros de fecha y hora
+        st.markdown("##### 📅 Selección de período")
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            fecha_inicio = st.date_input(
+                "Fecha inicial",
+                min_value=df['fecha_hora'].min().date(),
+                max_value=df['fecha_hora'].max().date(),
+                value=df['fecha_hora'].min().date()
+            )
+        
+        with col2:
+            hora_inicio = st.time_input('Hora inicial', value=datetime.min.time())
+            
+        with col3:
+            fecha_fin = st.date_input(
+                "Fecha final",
+                min_value=df['fecha_hora'].min().date(),
+                max_value=df['fecha_hora'].max().date(),
+                value=df['fecha_hora'].max().date()
+            )
+            
+        with col4:
+            hora_fin = st.time_input('Hora final', value=datetime.max.time())
+        
+        # Tercera fila - Filtros de datos
+        st.markdown("##### 🔍 Filtros de datos")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            tipo_dato = st.selectbox(
+                "Tipo de dato",
+                options=['Todos', 'Tensiones', 'Corrientes', 'Potencias'],
+                help="Seleccione el tipo de datos que desea visualizar"
+            )
+            
+        with col2:
+            if tipo_dato == 'Tensiones':
+                variables = ['Todas', 'va', 'vb', 'vc']
+            elif tipo_dato == 'Corrientes':
+                variables = ['Todas', 'ia', 'ib', 'ic']
+            elif tipo_dato == 'Potencias':
+                variables = ['Todas', 'p_act', 'p_react', 'fp']
+            else:
+                variables = ['Todas']
+            
+            variable_especifica = st.selectbox(
+                "Variable específica",
+                options=variables,
+                help="Seleccione la variable específica a visualizar"
+            )
+    
+    # Crear timestamps completos para el filtrado
+    datetime_inicio = datetime.combine(fecha_inicio, hora_inicio)
+    datetime_fin = datetime.combine(fecha_fin, hora_fin)
+    
+    # Filtrar por fecha y hora
+    df_filtered = df[
+        (df['fecha_hora'] >= datetime_inicio) & 
+        (df['fecha_hora'] <= datetime_fin)
+    ]
+    
+    # Filtrar por tipo de dato y variable específica
+    if tipo_dato != 'Todos':
+        if tipo_dato == 'Tensiones':
+            columnas = ['fecha_hora', 'va', 'vb', 'vc']
+            if variable_especifica != 'Todas':
+                columnas = ['fecha_hora', variable_especifica]
+        elif tipo_dato == 'Corrientes':
+            columnas = ['fecha_hora', 'ia', 'ib', 'ic']
+            if variable_especifica != 'Todas':
+                columnas = ['fecha_hora', variable_especifica]
+        else:  # Potencias
+            columnas = ['fecha_hora', 'p_act', 'p_react', 'fp']
+            if variable_especifica != 'Todas':
+                columnas = ['fecha_hora', variable_especifica]
+        
+        df_filtered = df_filtered[columnas]
+    
+    # Información del filtrado
+    st.markdown(f"""
+        <div style='padding: 1rem; background-color: rgba(28, 131, 225, 0.1); border-radius: 5px; margin: 1rem 0;'>
+            <h6 style='margin: 0; color: #0066CC;'>Resumen de datos filtrados:</h6>
+            <p style='margin: 0.5rem 0 0 0;'>Período: {datetime_inicio.strftime('%Y-%m-%d %H:%M')} a {datetime_fin.strftime('%Y-%m-%d %H:%M')}</p>
+            <p style='margin: 0.2rem 0 0 0;'>Tipo de datos: {tipo_dato} - Variable: {variable_especifica}</p>
+            <p style='margin: 0.2rem 0 0 0;'>Registros encontrados: {len(df_filtered)}</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Botón de exportación con estilo mejorado
     st.markdown("""
         <style>
-        .stDownloadButton button {
+        div[data-testid="stDownloadButton"] button {
             background-color: #0066CC;
             color: white;
             font-weight: bold;
@@ -497,59 +669,34 @@ if check_password():
             border-radius: 5px;
             border: none;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 100%;
             transition: all 0.3s ease;
         }
-        .stDownloadButton button:hover {
+        div[data-testid="stDownloadButton"] button:hover {
             background-color: #0052a3;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         </style>
     """, unsafe_allow_html=True)
     
-    # Agregar selector de fechas con mejor diseño
-    st.markdown("##### Seleccione el rango de fechas para exportar")
-    col1, col2 = st.columns(2)
-    with col1:
-        fecha_inicio = st.date_input(
-            "Fecha de inicio",
-            min_value=df['fecha_hora'].min().date(),
-            max_value=df['fecha_hora'].max().date(),
-            value=df['fecha_hora'].min().date()
-        )
+    # Contenedor para el botón de exportación
+    col1, col2, col3 = st.columns([1,1,1])
     with col2:
-        fecha_fin = st.date_input(
-            "Fecha de fin",
-            min_value=df['fecha_hora'].min().date(),
-            max_value=df['fecha_hora'].max().date(),
-            value=df['fecha_hora'].max().date()
+        csv = df_filtered.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📊 Exportar datos filtrados (CSV)",
+            data=csv,
+            file_name=f'datos_osm27_{datetime_inicio.strftime("%Y%m%d_%H%M")}_{datetime_fin.strftime("%Y%m%d_%H%M")}.csv',
+            mime='text/csv',
+            help="Descarga los datos filtrados actuales en formato CSV"
         )
     
-    # Filtrar datos según las fechas seleccionadas
-    df_filtered = df[
-        (df['fecha_hora'].dt.date >= fecha_inicio) & 
-        (df['fecha_hora'].dt.date <= fecha_fin)
-    ]
-    
-    # Mostrar resumen del filtro con mejor diseño
-    st.markdown(f"""
-        <div style='padding: 1rem; background-color: rgba(28, 131, 225, 0.1); border-radius: 5px; margin: 1rem 0;'>
-            <h6 style='margin: 0; color: #0066CC;'>Resumen de datos seleccionados:</h6>
-            <p style='margin: 0.5rem 0 0 0;'>Período: {fecha_inicio} a {fecha_fin}</p>
-            <p style='margin: 0.2rem 0 0 0;'>Total de registros: {len(df_filtered)}</p>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    # Agregar botón de exportación directa
-    csv = df_filtered.to_csv(index=False).encode('utf-8')
-    st.download_button(
-        label="📊 Exportar Datos Filtrados",
-        data=csv,
-        file_name=f'datos_osm27_{fecha_inicio}_{fecha_fin}.csv',
-        mime='text/csv',
+    # Mostrar datos con estilo Excel
+    st.dataframe(
+        df_filtered,
+        use_container_width=True,
+        height=400,
+        hide_index=True
     )
-    
-    # Mostrar tabla de datos con Mito
-    st.markdown("##### Vista previa de datos:")
-    new_dfs, _ = spreadsheet(df_filtered)
     
     # Fin del programa
