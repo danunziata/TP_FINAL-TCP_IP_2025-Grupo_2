@@ -279,136 +279,198 @@ if check_password():
         <p style='margin-bottom: 2rem'>Visualización de variables en tiempo real</p>
     """, unsafe_allow_html=True)
     
+    # Configuración de estilo industrial
+    COLORS = {
+        'va': '#0066CC',  # Azul corporativo
+        'vb': '#003366',  # Azul oscuro
+        'vc': '#0099FF',  # Azul claro
+        'ia': '#CC0000',  # Rojo corporativo
+        'ib': '#990000',  # Rojo oscuro
+        'ic': '#FF0000',  # Rojo claro
+        'p_act': '#006633',  # Verde corporativo
+        'p_react': '#009966',  # Verde claro
+        'fp': '#333333'  # Gris oscuro
+    }
+    
+    PLOT_BGCOLOR = 'rgb(240,240,240)'  # Fondo gris claro profesional
+    GRID_COLOR = 'white'
+    PLOT_HEIGHT = 300  # Altura para cada gráfico individual
+    
     # Contenedor para los gráficos
     with st.container():
-        # Primer gráfico - Eventos de reconexión
-        with st.container():
-            fig = px.scatter(df, x='fecha_hora', y='estado', template='seaborn')
-        fig.update_traces(marker=dict(size=10, color='#264653'))
-        fig.update_layout(
-            title=dict(
-                text="Eventos de reconexión en el tiempo",
-                x=0,
-                font=dict(size=20)
-            ),
-            margin=dict(l=40, r=40, t=60, b=40),
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            yaxis_title="Estado",
-            xaxis_title="Tiempo",
-            height=400,  # Altura fija para mejor visualización
-            showlegend=True,
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-        )
-        st.plotly_chart(fig, use_container_width=True)
-        
-        st.markdown("---")  # Separador visual
-        
-        # Segundo gráfico - Variable seleccionada
-        fig = go.Figure()
-        colors = ['#264653', '#2a9d8f', '#e9c46a']  # Color scheme
-        
-        for i, var in enumerate(variable_options[selected_var]):
-            fig.add_trace(go.Scatter(
-                x=df['fecha_hora'], 
-                y=df[var], 
-                name=var.upper(), 
-                line=dict(width=2, color=colors[i])
-            ))
-        
-        # Configuración específica según el tipo de variable
         if selected_var == 'Tensiones':
-            y_range = [0, max(df[['va', 'vb', 'vc']].max()) * 1.1]
-            fig.add_hline(y=220, line_dash="dash", line_color="red", annotation_text="Tensión nominal")
-        elif selected_var == 'Corrientes':
-            y_range = [0, max(df[['ia', 'ib', 'ic']].max()) * 1.1]
-        else:  # Potencias
-            y_range = [min(df[['p_act', 'p_react']].min()) * 1.1, 
-                      max(df[['p_act', 'p_react']].max()) * 1.1]
-        
-        fig.update_layout(
-            title=dict(
-                text=f"{selected_var} en tiempo real",
-                x=0,
-                font=dict(size=20)
-            ),
-            margin=dict(l=40, r=40, t=60, b=40),
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(245,245,245,1)',
-            yaxis=dict(
-                title=f"{selected_var} ({unidad})",
-                range=y_range,
-                gridcolor='white'
-            ),
-            xaxis=dict(
-                title="Tiempo",
-                gridcolor='white'
-            ),
-            height=450,
-            showlegend=True,
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02,
-                xanchor="right",
-                x=1,
-                bgcolor='rgba(255,255,255,0.8)'
-            ),
-            hovermode='x unified'
-        )
-        st.plotly_chart(fig, use_container_width=True)
-        
-        st.markdown("---")  # Separador visual
-        
-        # Tercer gráfico - Análisis específico según variable
-        if selected_var == 'Potencias':
-            # Gráfico de factor de potencia y potencias
-            fig = make_subplots(rows=2, cols=1, 
-                              subplot_titles=("Factor de Potencia", "Potencia Activa vs Reactiva"),
-                              vertical_spacing=0.15)
+            variables = ['va', 'vb', 'vc']
+            titles = ['Tensión Fase A', 'Tensión Fase B', 'Tensión Fase C']
             
-            fig.add_trace(
-                go.Scatter(x=df['fecha_hora'], y=df['fp'], name="Factor de Potencia", 
-                          line=dict(color='#264653')),
-                row=1, col=1
-            )
-            
-            fig.add_trace(
-                go.Scatter(x=df['fecha_hora'], y=df['p_act'], name="P. Activa",
-                          line=dict(color='#2a9d8f')),
-                row=2, col=1
-            )
-            fig.add_trace(
-                go.Scatter(x=df['fecha_hora'], y=df['p_react'], name="P. Reactiva",
-                          line=dict(color='#e9c46a')),
-                row=2, col=1
-            )
-            
-        else:
-            # Valores RMS y análisis de desbalance
-            df_rms = df[variable_options[selected_var]].rolling(window=20).mean()
-            max_vals = df_rms.max()
-            min_vals = df_rms.min()
-            desbalance = ((max_vals - min_vals) / max_vals * 100).mean()
-            
-            fig = make_subplots(rows=1, cols=1,
-                              subplot_titles=(f"Valores RMS y Desbalance: {desbalance:.1f}%"))
-            
-            for i, var in enumerate(variable_options[selected_var]):
+            for var, title in zip(variables, titles):
+                fig = go.Figure()
                 fig.add_trace(
-                    go.Scatter(x=df['fecha_hora'], y=df_rms[var], 
-                              name=f"{var.upper()} RMS", line=dict(color=colors[i]))
+                    go.Scatter(
+                        x=df['fecha_hora'],
+                        y=df[var],
+                        name=var.upper(),
+                        line=dict(color=COLORS[var], width=2)
+                    )
                 )
-        
-        fig.update_layout(
-            height=400,
-            showlegend=True,
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-            margin=dict(l=40, r=40, t=60, b=40),
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(245,245,245,1)',
-        )
-        st.plotly_chart(fig, use_container_width=True)
+                
+                fig.add_hline(
+                    y=220,
+                    line_dash="dash",
+                    line_color="rgba(255,0,0,0.5)",
+                    annotation_text="Tensión nominal"
+                )
+                
+                fig.update_layout(
+                    title=dict(text=title, x=0, font=dict(size=16)),
+                    margin=dict(l=40, r=40, t=40, b=20),
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor=PLOT_BGCOLOR,
+                    yaxis=dict(
+                        title="Tensión (V)",
+                        gridcolor=GRID_COLOR,
+                        zeroline=False
+                    ),
+                    xaxis=dict(
+                        title="Tiempo",
+                        gridcolor=GRID_COLOR,
+                        zeroline=False
+                    ),
+                    height=PLOT_HEIGHT,
+                    showlegend=False,
+                    hovermode='x unified'
+                )
+                st.plotly_chart(fig, use_container_width=True)
+                
+        elif selected_var == 'Corrientes':
+            variables = ['ia', 'ib', 'ic']
+            titles = ['Corriente Fase A', 'Corriente Fase B', 'Corriente Fase C']
+            
+            for var, title in zip(variables, titles):
+                fig = go.Figure()
+                fig.add_trace(
+                    go.Scatter(
+                        x=df['fecha_hora'],
+                        y=df[var],
+                        name=var.upper(),
+                        line=dict(color=COLORS[var], width=2)
+                    )
+                )
+                
+                fig.update_layout(
+                    title=dict(text=title, x=0, font=dict(size=16)),
+                    margin=dict(l=40, r=40, t=40, b=20),
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor=PLOT_BGCOLOR,
+                    yaxis=dict(
+                        title="Corriente (A)",
+                        gridcolor=GRID_COLOR,
+                        zeroline=False
+                    ),
+                    xaxis=dict(
+                        title="Tiempo",
+                        gridcolor=GRID_COLOR,
+                        zeroline=False
+                    ),
+                    height=PLOT_HEIGHT,
+                    showlegend=False,
+                    hovermode='x unified'
+                )
+                st.plotly_chart(fig, use_container_width=True)
+                
+        else:  # Potencias
+            # Potencia Activa
+            fig = go.Figure()
+            fig.add_trace(
+                go.Scatter(
+                    x=df['fecha_hora'],
+                    y=df['p_act'],
+                    name="Potencia Activa",
+                    line=dict(color=COLORS['p_act'], width=2)
+                )
+            )
+            fig.update_layout(
+                title=dict(text="Potencia Activa", x=0, font=dict(size=16)),
+                margin=dict(l=40, r=40, t=40, b=20),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor=PLOT_BGCOLOR,
+                yaxis=dict(
+                    title="Potencia (W)",
+                    gridcolor=GRID_COLOR,
+                    zeroline=False
+                ),
+                xaxis=dict(
+                    title="Tiempo",
+                    gridcolor=GRID_COLOR,
+                    zeroline=False
+                ),
+                height=PLOT_HEIGHT,
+                showlegend=False,
+                hovermode='x unified'
+            )
+            st.plotly_chart(fig, use_container_width=True)
+            
+            # Potencia Reactiva
+            fig = go.Figure()
+            fig.add_trace(
+                go.Scatter(
+                    x=df['fecha_hora'],
+                    y=df['p_react'],
+                    name="Potencia Reactiva",
+                    line=dict(color=COLORS['p_react'], width=2)
+                )
+            )
+            fig.update_layout(
+                title=dict(text="Potencia Reactiva", x=0, font=dict(size=16)),
+                margin=dict(l=40, r=40, t=40, b=20),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor=PLOT_BGCOLOR,
+                yaxis=dict(
+                    title="Potencia (VAR)",
+                    gridcolor=GRID_COLOR,
+                    zeroline=False
+                ),
+                xaxis=dict(
+                    title="Tiempo",
+                    gridcolor=GRID_COLOR,
+                    zeroline=False
+                ),
+                height=PLOT_HEIGHT,
+                showlegend=False,
+                hovermode='x unified'
+            )
+            st.plotly_chart(fig, use_container_width=True)
+            
+            # Factor de Potencia
+            fig = go.Figure()
+            fig.add_trace(
+                go.Scatter(
+                    x=df['fecha_hora'],
+                    y=df['fp'],
+                    name="Factor de Potencia",
+                    line=dict(color=COLORS['fp'], width=2)
+                )
+            )
+            fig.update_layout(
+                title=dict(text="Factor de Potencia", x=0, font=dict(size=16)),
+                margin=dict(l=40, r=40, t=40, b=20),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor=PLOT_BGCOLOR,
+                yaxis=dict(
+                    title="Factor de Potencia",
+                    gridcolor=GRID_COLOR,
+                    zeroline=False,
+                    range=[0, 1]
+                ),
+                xaxis=dict(
+                    title="Tiempo",
+                    gridcolor=GRID_COLOR,
+                    zeroline=False
+                ),
+                height=PLOT_HEIGHT,
+                showlegend=False,
+                hovermode='x unified'
+            )
+            st.plotly_chart(fig, use_container_width=True)
         
     # Sección de Mito con responsive design
     st.markdown("""
@@ -422,29 +484,72 @@ if check_password():
         </style>
     """, unsafe_allow_html=True)
     
-    st.header("Editor de Datos Interactivo")
+    st.header("Exportación de Datos")
     
-    # Mostrar hoja de cálculo Mito con los datos actuales
-    new_dfs, code = spreadsheet(df)
+    # CSS para el botón de exportar
+    st.markdown("""
+        <style>
+        .stDownloadButton button {
+            background-color: #0066CC;
+            color: white;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .stDownloadButton button:hover {
+            background-color: #0052a3;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        </style>
+    """, unsafe_allow_html=True)
     
-    if code:
-        st.subheader("Código Python Generado")
-        st.code(code)
+    # Agregar selector de fechas con mejor diseño
+    st.markdown("##### Seleccione el rango de fechas para exportar")
+    col1, col2 = st.columns(2)
+    with col1:
+        fecha_inicio = st.date_input(
+            "Fecha de inicio",
+            min_value=df['fecha_hora'].min().date(),
+            max_value=df['fecha_hora'].max().date(),
+            value=df['fecha_hora'].min().date()
+        )
+    with col2:
+        fecha_fin = st.date_input(
+            "Fecha de fin",
+            min_value=df['fecha_hora'].min().date(),
+            max_value=df['fecha_hora'].max().date(),
+            value=df['fecha_hora'].max().date()
+        )
     
-    # Función para limpiar caché
-    def clear_mito_backend_cache():
-        _get_mito_backend.clear()
-
-    @st.cache_resource
-    def get_cached_time():
-        return {"last_executed_time": None}
-
-    def try_clear_cache():
-        CLEAR_DELTA = timedelta(hours=12)
-        current_time = datetime.now()
-        cached_time = get_cached_time()
-        if cached_time["last_executed_time"] is None or cached_time["last_executed_time"] + CLEAR_DELTA < current_time:
-            clear_mito_backend_cache()
-            cached_time["last_executed_time"] = current_time
-
-    try_clear_cache()
+    # Filtrar datos según las fechas seleccionadas
+    df_filtered = df[
+        (df['fecha_hora'].dt.date >= fecha_inicio) & 
+        (df['fecha_hora'].dt.date <= fecha_fin)
+    ]
+    
+    # Mostrar resumen del filtro con mejor diseño
+    st.markdown(f"""
+        <div style='padding: 1rem; background-color: rgba(28, 131, 225, 0.1); border-radius: 5px; margin: 1rem 0;'>
+            <h6 style='margin: 0; color: #0066CC;'>Resumen de datos seleccionados:</h6>
+            <p style='margin: 0.5rem 0 0 0;'>Período: {fecha_inicio} a {fecha_fin}</p>
+            <p style='margin: 0.2rem 0 0 0;'>Total de registros: {len(df_filtered)}</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Agregar botón de exportación directa
+    csv = df_filtered.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="📊 Exportar Datos Filtrados",
+        data=csv,
+        file_name=f'datos_osm27_{fecha_inicio}_{fecha_fin}.csv',
+        mime='text/csv',
+    )
+    
+    # Mostrar tabla de datos con Mito
+    st.markdown("##### Vista previa de datos:")
+    new_dfs, _ = spreadsheet(df_filtered)
+    
+    # Fin del programa
