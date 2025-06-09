@@ -17,7 +17,3 @@ EXPOSE 5020
 
 # Definimos el comando por defecto (puedes cambiarlo luego)
 CMD ["python", "server.py"]
-
-# Usar:
-# docker build -t server_modbus .
-# docker run --name server_modbus -p 5020:5020 server_modbus:latest
