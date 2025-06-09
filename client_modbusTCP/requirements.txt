@@ -1,2 +1,2 @@
-pymodbus==3.6.2
+pymodbus
 influxdb-client==1.38.0
