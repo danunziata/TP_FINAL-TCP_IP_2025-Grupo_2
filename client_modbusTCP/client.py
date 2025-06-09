@@ -9,9 +9,9 @@ MODBUS_PORT = 5020
 
 # Configuración de InfluxDB
 INFLUXDB_URL = "http://localhost:8086"
-INFLUXDB_TOKEN = "tu-token-aqui"  # Reemplazar con tu token
-INFLUXDB_ORG = "tu-org"  # Reemplazar con tu organización
-INFLUXDB_BUCKET = "modbus_data"
+INFLUXDB_TOKEN = "9b87FS8_-PvJYOYfVlU5-7MF6Oes9jhgFWitRcZp7-efOsaI3tMLoshBGdAQM_m-akDeE7fd1IoRNl8-aOzQwg=="  # Reemplazar con tu token
+INFLUXDB_ORG = "Fila3"  # Reemplazar con tu organización
+INFLUXDB_BUCKET = "Fila3"
 
 # Lista de registros (nombre, offset)
 registros = [
