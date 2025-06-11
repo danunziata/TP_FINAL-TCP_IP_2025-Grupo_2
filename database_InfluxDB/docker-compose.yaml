@@ -7,12 +7,13 @@ services:
     volumes:
       - influxdb_data:/var/lib/influxdb2
     environment:
-      DOCKER_INFLUXDB_INIT_MODE: setup
-      DOCKER_INFLUXDB_INIT_USERNAME: Reconectador
-      DOCKER_INFLUXDB_INIT_PASSWORD: Capo1234
-      DOCKER_INFLUXDB_INIT_ORG: Fila3
-      DOCKER_INFLUXDB_INIT_BUCKET: Fila3
-      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: 9b87FS8_-PvJYOYfVlU5-7MF6Oes9jhgFWitRcZp7-efOsaI3tMLoshBGdAQM_m-akDeE7fd1IoRNl8-aOzQwg==
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=Reconectador
+      - DOCKER_INFLUXDB_INIT_PASSWORD=Capo1234
+      - DOCKER_INFLUXDB_INIT_ORG=Fila3
+      - DOCKER_INFLUXDB_INIT_BUCKET=Fila3
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=9b87FS8_-PvJYOYfVlU5-7MF6Oes9jhgFWitRcZp7-efOsaI3tMLoshBGdAQM_m-akDeE7fd1IoRNl8-aOzQwg==
 
 volumes:
   influxdb_data:
+    name: influxdb_data
