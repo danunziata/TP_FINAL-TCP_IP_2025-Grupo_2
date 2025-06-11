@@ -359,9 +359,13 @@ if check_password():
                 if len(df) == 0:
                     return pd.DataFrame()
                     
-                # Renombrar columnas y mantener UTC
+                # Renombrar columnas y mantener fecha_hora como datetime
                 df = df.rename(columns={'_time': 'fecha_hora'})
                 df['fecha_hora'] = pd.to_datetime(df['fecha_hora'], utc=True)
+                
+                # Eliminar las columnas que no queremos
+                columns_to_drop = ['result', 'table', '_start', '_stop', '_measurement']
+                df = df.drop(columns=[col for col in columns_to_drop if col in df.columns])
                 
                 return df
             except Exception as e:
@@ -832,7 +836,7 @@ if check_password():
     
     # Mostrar datos con estilo Excel
     st.dataframe(
-        df_filtered,
+        df_filtered.assign(fecha_hora=df_filtered['fecha_hora'].dt.strftime('%Y-%m-%d %H:%M:%S')),
         use_container_width=True,
         height=400,
         hide_index=True
