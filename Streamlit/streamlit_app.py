@@ -359,11 +359,11 @@ if check_password():
                 if len(df) == 0:
                     return pd.DataFrame()
                     
-                # Renombrar columnas y mantener fecha_hora como datetime
+                # Convertir timestamps de UTC a America/Argentina/Cordoba
                 df = df.rename(columns={'_time': 'fecha_hora'})
-                df['fecha_hora'] = pd.to_datetime(df['fecha_hora'], utc=True)
+                df['fecha_hora'] = pd.to_datetime(df['fecha_hora']).dt.tz_convert('America/Argentina/Cordoba')
                 
-                # Eliminar las columnas que no queremos
+                # Eliminar columnas no deseadas
                 columns_to_drop = ['result', 'table', '_start', '_stop', '_measurement']
                 df = df.drop(columns=[col for col in columns_to_drop if col in df.columns])
                 
