@@ -19,4 +19,4 @@ services:
 
 volumes:
   influxdb_data:
-    external: true
+    name: influxdb_data
