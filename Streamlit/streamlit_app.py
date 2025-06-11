@@ -15,6 +15,19 @@ import base64
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 
+# Función para cargar el logo
+def load_logo():
+    """Carga el logo si existe, si no retorna None"""
+    try:
+        with open('Logo_unrc_horizontal2.png', 'rb') as f:
+            return base64.b64encode(f.read()).decode()
+    except FileNotFoundError:
+        st.warning("Logo no encontrado. Verificar que 'Logo_unrc_horizontal2.png' existe en el directorio.")
+        return None
+    except Exception as e:
+        st.error(f"Error al cargar el logo: {str(e)}")
+        return None
+
 # Configuración de InfluxDB
 INFLUXDB_URL = "http://localhost:8086"
 INFLUXDB_TOKEN = "9b87FS8_-PvJYOYfVlU5-7MF6Oes9jhgFWitRcZp7-efOsaI3tMLoshBGdAQM_m-akDeE7fd1IoRNl8-aOzQwg=="
@@ -98,12 +111,14 @@ def check_password():
             """, unsafe_allow_html=True)
             
             # Logo UNRC
-            st.markdown(f"""
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <img src="data:image/png;base64,{base64.b64encode(open('Logo_unrc_horizontal2.png', 'rb').read()).decode()}" 
-                         style="max-width: 300px; margin: auto;" alt="UNRC Logo">
-                </div>
-            """, unsafe_allow_html=True)
+            logo = load_logo()
+            if logo:
+                st.markdown(f"""
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <img src="data:image/png;base64,{logo}" 
+                             style="max-width: 300px; margin: auto;" alt="UNRC Logo">
+                    </div>
+                """, unsafe_allow_html=True)
 
             # Columnas originales sin centrado adicional
             col1, col2 = st.columns(2)
@@ -180,12 +195,14 @@ def check_password():
             
             with col2:
                 # Logo UNRC
-                st.markdown(f"""
-                    <div style="text-align: center; margin-bottom: 2rem;">
-                        <img src="data:image/png;base64,{base64.b64encode(open('Logo_unrc_horizontal2.png', 'rb').read()).decode()}" 
-                             style="max-width: 300px; margin: auto;" alt="UNRC Logo">
-                    </div>
-                """, unsafe_allow_html=True)
+                logo = load_logo()
+                if logo:
+                    st.markdown(f"""
+                        <div style="text-align: center; margin-bottom: 2rem;">
+                            <img src="data:image/png;base64,{logo}" 
+                                 style="max-width: 300px; margin: auto;" alt="UNRC Logo">
+                        </div>
+                    """, unsafe_allow_html=True)
 
                 with st.container():
                     col1, col2 = st.columns(2)
@@ -318,16 +335,32 @@ if check_password():
     """, unsafe_allow_html=True)
 
     # Header con mejor diseño
-    header_html = f"""
-        <div class="header-container">
-            <img class="header-logo" src="data:image/jpeg;base64,{base64.b64encode(open('Logo_unrc_horizontal2.png', 'rb').read()).decode()}" alt="UNRC Logo">
-            <div class="header-text">
-                <h1>Sistema de Monitoreo OSM27 - IPSEP UNRC</h1>
-                <p><strong>UNRC - Facultad de Ingeniería</strong></p>
-            </div>
-        </div>
-    """
-    st.markdown(header_html, unsafe_allow_html=True)
+    def show_header():
+        """Muestra el header con o sin logo"""
+        logo = load_logo()
+        if logo:
+            header_html = f"""
+                <div class="header-container">
+                    <img class="header-logo" src="data:image/jpeg;base64,{logo}" alt="UNRC Logo">
+                    <div class="header-text">
+                        <h1>Sistema de Monitoreo OSM27 - IPSEP UNRC</h1>
+                        <p><strong>UNRC - Facultad de Ingeniería</strong></p>
+                    </div>
+                </div>
+            """
+        else:
+            header_html = f"""
+                <div class="header-container">
+                    <div class="header-text">
+                        <h1>Sistema de Monitoreo OSM27 - IPSEP UNRC</h1>
+                        <p><strong>UNRC - Facultad de Ingeniería</strong></p>
+                    </div>
+                </div>
+            """
+        st.markdown(header_html, unsafe_allow_html=True)
+    
+    # Reemplazar el header antiguo con la nueva función
+    show_header()
     
     # Botón para cerrar sesión
     if st.sidebar.button("Cerrar Sesión"):
