@@ -303,11 +303,42 @@ def load_data():
         # Eliminar columnas no deseadas
         columns_to_drop = ['result', 'table', '_start', '_stop', '_measurement']
         df = df.drop(columns=[col for col in columns_to_drop if col in df.columns])
+
+        # Eliminar la columna 'eventos' si existe
+        if 'eventos' in df.columns:
+            df = df.drop(columns=['eventos'])
         
         return df
     except Exception as e:
         st.error(f"Error al conectar con InfluxDB: {str(e)}")
         return pd.DataFrame()
+
+def load_eventos():
+    """Carga la columna 'eventos' desde InfluxDB y la muestra en formato tabla en Streamlit."""
+    try:
+        client = influxdb_client.InfluxDBClient(
+            url=INFLUXDB_URL,
+            token=INFLUXDB_TOKEN,
+            org=INFLUXDB_ORG
+        )
+        query_api = client.query_api()
+        query = '''
+        from(bucket: "Fila3")
+          |> range(start: -24h)
+          |> filter(fn: (r) => r["_measurement"] == "mediciones_recloser")
+          |> filter(fn: (r) => r["_field"] == "eventos")
+          |> keep(columns: ["_time", "_value"])
+        '''
+        df = query_api.query_data_frame(query)
+        if len(df) == 0:
+            st.info("No hay eventos registrados en las últimas 24 horas.")
+            return
+        df = df.rename(columns={"_time": "fecha_hora", "_value": "evento"})
+        df['fecha_hora'] = pd.to_datetime(df['fecha_hora']).dt.tz_convert('America/Argentina/Cordoba')
+        st.subheader("Tabla de eventos registrados")
+        st.dataframe(df[['fecha_hora', 'evento']], use_container_width=True, hide_index=True)
+    except Exception as e:
+        st.error(f"Error al consultar eventos: {str(e)}")
 
 # Verificar contraseña
 if check_password():
@@ -713,6 +744,9 @@ if check_password():
                 
                 # Agregar el auto-refresh (15 segundos = 15000 ms)
                 count = st_autorefresh(interval=15000, key="fizzbuzzcounter")
+
+    # Mostrar tabla de eventos
+    load_eventos()
 
     # 3. Remove the duplicate autorefresh calls
     # Keep only one at the beginning of the file and remove all others
