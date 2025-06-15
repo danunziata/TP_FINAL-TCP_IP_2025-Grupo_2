@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_autorefresh import st_autorefresh
 import time
 import pandas as pd
 import plotly.express as px
@@ -15,6 +16,23 @@ import base64
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 
+# 1. PRIMERO: Configuración de la página (debe ser lo primero)
+st.set_page_config(
+    page_title='Sistema de Monitoreo OSM27',
+    page_icon=':electric_plug:',
+    layout='wide',
+    initial_sidebar_state='collapsed'
+)
+
+# 2. Configurar el auto-refresh
+count = st_autorefresh(interval=15000, key="datarefresh")
+
+# 3. Resto de las importaciones y configuraciones
+INFLUXDB_URL = "http://localhost:8086"
+INFLUXDB_TOKEN = "9b87FS8_-PvJYOYfVlU5-7MF6Oes9jhgFWitRcZp7-efOsaI3tMLoshBGdAQM_m-akDeE7fd1IoRNl8-aOzQwg=="
+INFLUXDB_ORG = "Fila3"
+INFLUXDB_BUCKET = "Fila3"
+
 # Función para cargar el logo
 def load_logo():
     """Carga el logo si existe, si no retorna None"""
@@ -27,12 +45,6 @@ def load_logo():
     except Exception as e:
         st.error(f"Error al cargar el logo: {str(e)}")
         return None
-
-# Configuración de InfluxDB
-INFLUXDB_URL = "http://localhost:8086"
-INFLUXDB_TOKEN = "9b87FS8_-PvJYOYfVlU5-7MF6Oes9jhgFWitRcZp7-efOsaI3tMLoshBGdAQM_m-akDeE7fd1IoRNl8-aOzQwg=="
-INFLUXDB_ORG = "Fila3"
-INFLUXDB_BUCKET = "Fila3"
 
 # Función para cargar usuarios
 def load_users():
@@ -264,14 +276,6 @@ def filter_dataframe(df, fecha_inicio, hora_inicio, fecha_fin, hora_fin):
 
 # Verificar contraseña
 if check_password():
-    # Configuración de la página
-    st.set_page_config(
-        page_title='Sistema de Monitoreo OSM27',
-        page_icon=':electric_plug:',
-        layout='wide',
-        initial_sidebar_state='collapsed'
-    )
-    
     # CSS para responsividad y layout
     st.markdown("""
         <style>
@@ -371,8 +375,8 @@ if check_password():
     with st.spinner('Actualizando Reporte...'):
         
         # Cargar datos
-        @st.cache_data
         def load_data():
+            """Carga datos desde InfluxDB sin caché para permitir actualizaciones en tiempo real"""
             try:
                 client = influxdb_client.InfluxDBClient(
                     url=INFLUXDB_URL,
@@ -715,91 +719,158 @@ if check_password():
     
     st.header("Gestión de Datos")
     
-    # Guía de uso
-    with st.expander("ℹ️ Guía de uso"):
-        st.markdown("""
-        ### Instrucciones:
-        1. **Importar datos**: Use el botón '📥 Importar' para cargar archivos CSV o Excel.
-        2. **Filtrar por fecha y hora**: 
-           - Seleccione el rango de fechas deseado
-           - Puede especificar horas para un filtrado más preciso
-        3. **Filtrar por tipo de datos**: 
-           - Use el selector para filtrar por tipo de variable (tensiones, corrientes, etc.)
-           - Los datos mostrados se actualizarán automáticamente
-        4. **Exportar datos**: 
-           - El botón 'Exportar CSV' descargará solo los datos filtrados actualmente visibles
-           - El archivo incluirá la fecha y hora en su nombre para mejor organización
-        """)
+    # Crear dos expanders lado a lado
+    col1, col2 = st.columns(2)
 
-    # Contenedor principal
-    with st.container():
-        # Barra de herramientas - Primera fila
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            uploaded_file = st.file_uploader("📥 Importar", type=['csv', 'xlsx'])
-            if uploaded_file is not None:
-                try:
-                    if uploaded_file.name.endswith('.csv'):
-                        df_new = pd.read_csv(uploaded_file)
-                    else:
-                        df_new = pd.read_excel(uploaded_file)
-                    st.success('Archivo importado correctamente')
-                except Exception as e:
-                    st.error(f'Error al importar: {str(e)}')
-        
-        # Segunda fila - Filtros de fecha y hora
-        st.markdown("##### 📅 Selección de período")
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            fecha_inicio = st.date_input(
-                "Fecha inicial",
-                min_value=df['fecha_hora'].min().date(),
-                max_value=df['fecha_hora'].max().date(),
-                value=df['fecha_hora'].min().date()
-            )
-        
-        with col2:
-            hora_inicio = st.time_input('Hora inicial', value=datetime.min.time())
+    with col1:
+        with st.expander("ℹ️ Guía de uso"):
+            st.markdown("""
+            ### Instrucciones:
+            1. **Importar datos**: Use el botón '📥 Importar' para cargar archivos CSV o Excel.
+            2. **Filtrar por fecha y hora**: 
+               - Seleccione el rango de fechas deseado
+               - Puede especificar horas para un filtrado más preciso
+            3. **Filtrar por tipo de datos**: 
+               - Use el selector para filtrar por tipo de variable (tensiones, corrientes, etc.)
+               - Los datos mostrados se actualizarán automáticamente
+            4. **Exportar datos**: 
+               - El botón 'Exportar CSV' descargará solo los datos filtrados actualmente visibles
+               - El archivo incluirá la fecha y hora en su nombre para mejor organización
+            """)
+
+    with col2:
+        with st.expander("📊 Guía de datos"):
+            st.markdown("""
+            # 📊 Mapa de Registros NOJA – OSM27
             
-        with col3:
-            fecha_fin = st.date_input(
-                "Fecha final",
-                min_value=df['fecha_hora'].min().date(),
-                max_value=df['fecha_hora'].max().date(),
-                value=df['fecha_hora'].max().date()
-            )
+            ### Input Registers (3X) – Datos analógicos
             
-        with col4:
-            hora_fin = st.time_input('Hora final', value=datetime.max.time())
+            #### Corrientes (A)
+            - **Ia**: Corriente fase A
+            - **Ib**: Corriente fase B
+            - **Ic**: Corriente fase C
+            
+            #### Tensiones (V)
+            - **Ua**: Tensión fase A
+            - **Ub**: Tensión fase B
+            - **Uc**: Tensión fase C
+            - **Ur**: Tensión de referencia R
+            - **Us**: Tensión de referencia S
+            - **Ut**: Tensión de referencia T
+            - **Uab**: Tensión línea AB
+            - **Ubc**: Tensión línea BC
+            - **Uca**: Tensión línea CA
+            - **Urs**: Tensión ref. RS
+            - **Ust**: Tensión ref. ST
+            - **Utr**: Tensión ref. TR
+            
+            #### Potencias
+            - **KVA_A**: Potencia Aparente fase A
+            - **KVA_B**: Potencia Aparente fase B
+            - **KVA_C**: Potencia Aparente fase C
+            - **KW_A**: Potencia Activa fase A
+            - **KW_B**: Potencia Activa fase B
+            - **KW_C**: Potencia Activa fase C
+            - **KVAr_A**: Potencia Reactiva fase A
+            - **KVAr_B**: Potencia Reactiva fase B
+            - **KVAr_C**: Potencia Reactiva fase C
+            - **KVA_total**: Potencia Aparente total
+            - **KVAr_total**: Potencia Reactiva total
+            - **KW_total**: Potencia Activa total
+            
+            #### Frecuencia y Factor de Potencia
+            - **Freq_abc**: Frecuencia ABC
+            - **Freq_rst**: Frecuencia RST
+            - **FP_total**: Factor de Potencia total
+            - **FP_A**: Factor de Potencia fase A
+            - **FP_B**: Factor de Potencia fase B
+            - **FP_C**: Factor de Potencia fase C
+            
+            ### Discrete Inputs (1X) – Estados
+            - **AR_initiated**: Auto-recierre iniciado
+            - **Closed_AR**: Cerrado por auto-recierre
+            - **Open_EF1+**: Apertura por falla a tierra
+            - **Open_SEF+**: Apertura por falla sensible a tierra
+            - **Open_UF**: Apertura por baja frecuencia
+            - **Open_Local**: Apertura local
+            - **Alarm**: Alarma activa
+            - **Malfunction**: Mal funcionamiento
+            - **Excessive_Too**: Temperatura excesiva de operación
+            - **Excessive_Tcc**: Temperatura excesiva de control
+            
+            ### Actualización de datos:
+            - Frecuencia de actualización: cada 15 segundos
+            - Rango de históricos: últimas 24 horas
+            - Zona horaria: Argentina (UTC-3)
+            """)
+    
+    # Barra de herramientas - Primera fila
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        uploaded_file = st.file_uploader("📥 Importar", type=['csv', 'xlsx'])
+        if uploaded_file is not None:
+            try:
+                if uploaded_file.name.endswith('.csv'):
+                    df_new = pd.read_csv(uploaded_file)
+                else:
+                    df_new = pd.read_excel(uploaded_file)
+                st.success('Archivo importado correctamente')
+            except Exception as e:
+                st.error(f'Error al importar: {str(e)}')
+    
+    # Segunda fila - Filtros de fecha y hora
+    st.markdown("##### 📅 Selección de período")
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        fecha_inicio = st.date_input(
+            "Fecha inicial",
+            min_value=df['fecha_hora'].min().date(),
+            max_value=df['fecha_hora'].max().date(),
+            value=df['fecha_hora'].min().date()
+        )
+    
+    with col2:
+        hora_inicio = st.time_input('Hora inicial', value=datetime.min.time())
         
-        # Tercera fila - Filtros de datos
-        st.markdown("##### 🔍 Filtros de datos")
-        col1, col2 = st.columns(2)
+    with col3:
+        fecha_fin = st.date_input(
+            "Fecha final",
+            min_value=df['fecha_hora'].min().date(),
+            max_value=df['fecha_hora'].max().date(),
+            value=df['fecha_hora'].max().date()
+        )
         
-        with col1:
-            tipo_dato = st.selectbox(
-                "Tipo de dato",
-                options=['Todos', 'Tensiones', 'Corrientes', 'Potencias'],
-                help="Seleccione el tipo de datos que desea visualizar"
-            )
-            
-        with col2:
-            if tipo_dato == 'Tensiones':
-                variables = ['Todas', 'Ua', 'Ub', 'Uc']
-            elif tipo_dato == 'Corrientes':
-                variables = ['Todas', 'Ia', 'Ib', 'Ic']
-            elif tipo_dato == 'Potencias':
-                variables = ['Todas', 'KW', 'KVAr', 'KVA']
-            else:
-                variables = ['Todas']
-            
-            variable_especifica = st.selectbox(
-                "Variable específica",
-                options=variables,
-                help="Seleccione la variable específica a visualizar"
-            )
+    with col4:
+        hora_fin = st.time_input('Hora final', value=datetime.max.time())
+    
+    # Tercera fila - Filtros de datos
+    st.markdown("##### 🔍 Filtros de datos")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        tipo_dato = st.selectbox(
+            "Tipo de dato",
+            options=['Todos', 'Tensiones', 'Corrientes', 'Potencias'],
+            help="Seleccione el tipo de datos que desea visualizar"
+        )
+        
+    with col2:
+        if tipo_dato == 'Tensiones':
+            variables = ['Todas', 'Ua', 'Ub', 'Uc']
+        elif tipo_dato == 'Corrientes':
+            variables = ['Todas', 'Ia', 'Ib', 'Ic']
+        elif tipo_dato == 'Potencias':
+            variables = ['Todas', 'KW', 'KVAr', 'KVA']
+        else:
+            variables = ['Todas']
+        
+        variable_especifica = st.selectbox(
+            "Variable específica",
+            options=variables,
+            help="Seleccione la variable específica a visualizar"
+        )
     
     # Filtrar por fecha y hora
     df_filtered = filter_dataframe(df, fecha_inicio, hora_inicio, fecha_fin, hora_fin)
@@ -875,4 +946,7 @@ if check_password():
         hide_index=True
     )
     
+    # Agregar el auto-refresh (15 segundos = 15000 ms)
+    count = st_autorefresh(interval=15000, key="fizzbuzzcounter")
+
     # Fin del programa
