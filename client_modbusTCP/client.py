@@ -3,8 +3,8 @@ from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 import time
 
-MODBUS_HOST = "10.13.1.16"
-MODBUS_PORT = 23
+MODBUS_HOST = "localhost"  # Reemplazar con la IP del servidor Modbus
+MODBUS_PORT = 5020
 
 # Configuración de InfluxDB
 INFLUXDB_URL = "http://localhost:8086"
