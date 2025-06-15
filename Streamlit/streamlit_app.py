@@ -16,6 +16,23 @@ import base64
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 
+# 1. PRIMERO: Configuración de la página (debe ser lo primero)
+st.set_page_config(
+    page_title='Sistema de Monitoreo OSM27',
+    page_icon=':electric_plug:',
+    layout='wide',
+    initial_sidebar_state='collapsed'
+)
+
+# 2. Configurar el auto-refresh
+count = st_autorefresh(interval=15000, key="datarefresh")
+
+# 3. Resto de las importaciones y configuraciones
+INFLUXDB_URL = "http://localhost:8086"
+INFLUXDB_TOKEN = "9b87FS8_-PvJYOYfVlU5-7MF6Oes9jhgFWitRcZp7-efOsaI3tMLoshBGdAQM_m-akDeE7fd1IoRNl8-aOzQwg=="
+INFLUXDB_ORG = "Fila3"
+INFLUXDB_BUCKET = "Fila3"
+
 # Función para cargar el logo
 def load_logo():
     """Carga el logo si existe, si no retorna None"""
@@ -28,12 +45,6 @@ def load_logo():
     except Exception as e:
         st.error(f"Error al cargar el logo: {str(e)}")
         return None
-
-# Configuración de InfluxDB
-INFLUXDB_URL = "http://localhost:8086"
-INFLUXDB_TOKEN = "9b87FS8_-PvJYOYfVlU5-7MF6Oes9jhgFWitRcZp7-efOsaI3tMLoshBGdAQM_m-akDeE7fd1IoRNl8-aOzQwg=="
-INFLUXDB_ORG = "Fila3"
-INFLUXDB_BUCKET = "Fila3"
 
 # Función para cargar usuarios
 def load_users():
@@ -265,14 +276,6 @@ def filter_dataframe(df, fecha_inicio, hora_inicio, fecha_fin, hora_fin):
 
 # Verificar contraseña
 if check_password():
-    # Configuración de la página
-    st.set_page_config(
-        page_title='Sistema de Monitoreo OSM27',
-        page_icon=':electric_plug:',
-        layout='wide',
-        initial_sidebar_state='collapsed'
-    )
-    
     # CSS para responsividad y layout
     st.markdown("""
         <style>
@@ -372,8 +375,8 @@ if check_password():
     with st.spinner('Actualizando Reporte...'):
         
         # Cargar datos
-        @st.cache_data
         def load_data():
+            """Carga datos desde InfluxDB sin caché para permitir actualizaciones en tiempo real"""
             try:
                 client = influxdb_client.InfluxDBClient(
                     url=INFLUXDB_URL,
@@ -738,23 +741,62 @@ if check_password():
     with col2:
         with st.expander("📊 Guía de datos"):
             st.markdown("""
-            ### Variables disponibles:
+            # 📊 Mapa de Registros NOJA – OSM27
             
-            #### Tensiones (V)
-            - **Ua**: Tensión Fase A
-            - **Ub**: Tensión Fase B
-            - **Uc**: Tensión Fase C
-            - Valor nominal: 220V
+            ### Input Registers (3X) – Datos analógicos
             
             #### Corrientes (A)
-            - **Ia**: Corriente Fase A
-            - **Ib**: Corriente Fase B
-            - **Ic**: Corriente Fase C
+            - **Ia**: Corriente fase A
+            - **Ib**: Corriente fase B
+            - **Ic**: Corriente fase C
+            
+            #### Tensiones (V)
+            - **Ua**: Tensión fase A
+            - **Ub**: Tensión fase B
+            - **Uc**: Tensión fase C
+            - **Ur**: Tensión de referencia R
+            - **Us**: Tensión de referencia S
+            - **Ut**: Tensión de referencia T
+            - **Uab**: Tensión línea AB
+            - **Ubc**: Tensión línea BC
+            - **Uca**: Tensión línea CA
+            - **Urs**: Tensión ref. RS
+            - **Ust**: Tensión ref. ST
+            - **Utr**: Tensión ref. TR
             
             #### Potencias
-            - **KW**: Potencia Activa (Watts)
-            - **KVAr**: Potencia Reactiva (VAR)
-            - **KVA**: Potencia Aparente (VA)
+            - **KVA_A**: Potencia Aparente fase A
+            - **KVA_B**: Potencia Aparente fase B
+            - **KVA_C**: Potencia Aparente fase C
+            - **KW_A**: Potencia Activa fase A
+            - **KW_B**: Potencia Activa fase B
+            - **KW_C**: Potencia Activa fase C
+            - **KVAr_A**: Potencia Reactiva fase A
+            - **KVAr_B**: Potencia Reactiva fase B
+            - **KVAr_C**: Potencia Reactiva fase C
+            - **KVA_total**: Potencia Aparente total
+            - **KVAr_total**: Potencia Reactiva total
+            - **KW_total**: Potencia Activa total
+            
+            #### Frecuencia y Factor de Potencia
+            - **Freq_abc**: Frecuencia ABC
+            - **Freq_rst**: Frecuencia RST
+            - **FP_total**: Factor de Potencia total
+            - **FP_A**: Factor de Potencia fase A
+            - **FP_B**: Factor de Potencia fase B
+            - **FP_C**: Factor de Potencia fase C
+            
+            ### Discrete Inputs (1X) – Estados
+            - **AR_initiated**: Auto-recierre iniciado
+            - **Closed_AR**: Cerrado por auto-recierre
+            - **Open_EF1+**: Apertura por falla a tierra
+            - **Open_SEF+**: Apertura por falla sensible a tierra
+            - **Open_UF**: Apertura por baja frecuencia
+            - **Open_Local**: Apertura local
+            - **Alarm**: Alarma activa
+            - **Malfunction**: Mal funcionamiento
+            - **Excessive_Too**: Temperatura excesiva de operación
+            - **Excessive_Tcc**: Temperatura excesiva de control
             
             ### Actualización de datos:
             - Frecuencia de actualización: cada 15 segundos
