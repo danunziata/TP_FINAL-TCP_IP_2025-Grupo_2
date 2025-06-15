@@ -274,6 +274,41 @@ def filter_dataframe(df, fecha_inicio, hora_inicio, fecha_fin, hora_fin):
     mask = (df['fecha_hora'] >= datetime_inicio) & (df['fecha_hora'] <= datetime_fin)
     return df.loc[mask].copy()
 
+# Agregar después de las configuraciones de InfluxDB
+def load_data():
+    """Carga datos desde InfluxDB sin caché para permitir actualizaciones en tiempo real"""
+    try:
+        client = influxdb_client.InfluxDBClient(
+            url=INFLUXDB_URL,
+            token=INFLUXDB_TOKEN,
+            org=INFLUXDB_ORG
+        )
+        
+        query_api = client.query_api()
+        query = '''
+        from(bucket: "Fila3")
+          |> range(start: -24h)
+          |> filter(fn: (r) => r["_measurement"] == "mediciones_recloser")
+          |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
+        '''
+        
+        df = query_api.query_data_frame(query)
+        if len(df) == 0:
+            return pd.DataFrame()
+            
+        # Convertir timestamps de UTC a America/Argentina/Cordoba
+        df = df.rename(columns={'_time': 'fecha_hora'})
+        df['fecha_hora'] = pd.to_datetime(df['fecha_hora']).dt.tz_convert('America/Argentina/Cordoba')
+        
+        # Eliminar columnas no deseadas
+        columns_to_drop = ['result', 'table', '_start', '_stop', '_measurement']
+        df = df.drop(columns=[col for col in columns_to_drop if col in df.columns])
+        
+        return df
+    except Exception as e:
+        st.error(f"Error al conectar con InfluxDB: {str(e)}")
+        return pd.DataFrame()
+
 # Verificar contraseña
 if check_password():
     # CSS para responsividad y layout
@@ -371,359 +406,12 @@ if check_password():
         st.session_state["password_correct"] = False
         st.rerun()
 
-    ## Data
-    with st.spinner('Actualizando Reporte...'):
-        
-        # Cargar datos
-        def load_data():
-            """Carga datos desde InfluxDB sin caché para permitir actualizaciones en tiempo real"""
-            try:
-                client = influxdb_client.InfluxDBClient(
-                    url=INFLUXDB_URL,
-                    token=INFLUXDB_TOKEN,
-                    org=INFLUXDB_ORG
-                )
-                
-                query_api = client.query_api()
-                query = '''
-                from(bucket: "Fila3")
-                  |> range(start: -24h)
-                  |> filter(fn: (r) => r["_measurement"] == "mediciones_recloser")
-                  |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
-                '''
-                
-                df = query_api.query_data_frame(query)
-                if len(df) == 0:
-                    return pd.DataFrame()
-                    
-                # Convertir timestamps de UTC a America/Argentina/Cordoba
-                df = df.rename(columns={'_time': 'fecha_hora'})
-                df['fecha_hora'] = pd.to_datetime(df['fecha_hora']).dt.tz_convert('America/Argentina/Cordoba')
-                
-                # Eliminar columnas no deseadas
-                columns_to_drop = ['result', 'table', '_start', '_stop', '_measurement']
-                df = df.drop(columns=[col for col in columns_to_drop if col in df.columns])
-                
-                return df
-            except Exception as e:
-                st.error(f"Error al conectar con InfluxDB: {str(e)}")
-                return pd.DataFrame()
-        
-        df = load_data()
-        
-        # Selector de variables
-        variable_options = {
-            'Tensiones': ['Ua', 'Ub', 'Uc'],
-            'Corrientes': ['Ia', 'Ib', 'Ic'],
-            'Potencias': ['KW', 'KVAr', 'KVA']  # Cambiamos p_act, p_react por KW, KVAr
-        }
-        
-        selected_var = st.selectbox('Elegir Variable a Visualizar', 
-                                   list(variable_options.keys()), 
-                                   help='Seleccionar qué variables mostrar en los gráficos')
-        
-        # Métricas en contenedor responsive
-        st.markdown("""
-            <style>
-                div[data-testid="metric-container"] {
-                    background-color: rgba(28, 131, 225, 0.1);
-                    border: 1px solid rgba(28, 131, 225, 0.1);
-                    padding: 1rem;
-                    border-radius: 5px;
-                    margin-bottom: 0.5rem;
-                }
-                div[data-testid="metric-container"] > div {
-                    width: 100%;
-                }
-                div[data-testid="metric-container"] label {
-                    white-space: wrap;
-                }
-            </style>
-        """, unsafe_allow_html=True)
-        
-        m1, m2, m3, m4 = st.columns((1,1,1,1))
-
-        if selected_var == 'Tensiones':
-            valor_pico = max(df[['Ua', 'Ub', 'Uc']].max())
-            valor_anterior = df[['Ua', 'Ub', 'Uc']].iloc[-2].max() if len(df) > 1 else 0
-            unidad = "V"
-        elif selected_var == 'Corrientes':
-            valor_pico = max(df[['Ia', 'Ib', 'Ic']].max())
-            valor_anterior = df[['Ia', 'Ib', 'Ic']].iloc[-2].max() if len(df) > 1 else 0
-            unidad = "A"
-        else:  # Potencias
-            valor_pico = max(df[['KW']].max())
-            valor_anterior = df[['KW']].iloc[-2].max() if len(df) > 1 else 0
-            unidad = "W"
-
-        m1.write('')
-        m2.metric(label ='Total de eventos de reconexión',
-                  value = "Próximamente", 
-                  delta = '', 
-                  delta_color = 'off')
-        m3.metric(label ='Tiempo desde última reconexión',
-                  value = "Próximamente", 
-                  delta = '', 
-                  delta_color = 'off')
-        m4.metric(label = f'{selected_var} - Valor pico',
-                  value = f"{valor_pico:.2f} {unidad}", 
-                  delta = f'{(valor_pico - valor_anterior):.2f} {unidad} vs anterior', 
-                  delta_color = 'inverse')
-        m1.write('')
-         
-    # Container para gráficos
-    st.markdown("""
-        <h3 style='margin-bottom: 0'>Gráficos de Monitoreo</h3>
-        <p style='margin-bottom: 2rem'>Visualización de variables en tiempo real</p>
-    """, unsafe_allow_html=True)
-    
-    # Configuración de estilo industrial
-    COLORS = {
-        'Ua': '#0066CC',  # Azul corporativo
-        'Ub': '#003366',  # Azul oscuro
-        'Uc': '#0099FF',  # Azul claro
-        'Ia': '#CC0000',  # Rojo corporativo
-        'Ib': '#990000',  # Rojo oscuro
-        'Ic': '#FF0000',  # Rojo claro
-        'KW': '#006633',  # Verde corporativo
-        'KVAr': '#009966',  # Verde claro
-        'KVA': '#333333'  # Gris oscuro
-    }
-    
-    PLOT_BGCOLOR = 'rgb(240,240,240)'  # Fondo gris claro profesional
-    GRID_COLOR = 'white'
-    PLOT_HEIGHT = 300  # Altura para cada gráfico individual
-    
-    # Contenedor para los gráficos
-    with st.container():
-        if selected_var == 'Tensiones':
-            variables = ['Ua', 'Ub', 'Uc']
-            titles = ['Tensión Fase A', 'Tensión Fase B', 'Tensión Fase C']
-            
-            for var, title in zip(variables, titles):
-                fig = go.Figure()
-                fig.add_trace(
-                    go.Scatter(
-                        x=df['fecha_hora'],
-                        y=df[var],
-                        name=var.upper(),
-                        line=dict(color=COLORS[var], width=2)
-                    )
-                )
-                
-                fig.add_hline(
-                    y=220,
-                    line_dash="dash",
-                    line_color="rgba(255,0,0,0.5)",
-                    annotation_text="Tensión nominal"
-                )
-                
-                fig.update_layout(
-                    title=dict(text=title, x=0, font=dict(size=16)),
-                    margin=dict(l=40, r=40, t=40, b=20),
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor=PLOT_BGCOLOR,
-                    yaxis=dict(
-                        title="Tensión (V)",
-                        gridcolor=GRID_COLOR,
-                        zeroline=False
-                    ),
-                    xaxis=dict(
-                        title="Tiempo",
-                        gridcolor=GRID_COLOR,
-                        zeroline=False
-                    ),
-                    height=PLOT_HEIGHT,
-                    showlegend=False,
-                    hovermode='x unified'
-                )
-                st.plotly_chart(fig, use_container_width=True)
-                
-        elif selected_var == 'Corrientes':
-            variables = ['Ia', 'Ib', 'Ic']
-            titles = ['Corriente Fase A', 'Corriente Fase B', 'Corriente Fase C']
-            
-            for var, title in zip(variables, titles):
-                fig = go.Figure()
-                fig.add_trace(
-                    go.Scatter(
-                        x=df['fecha_hora'],
-                        y=df[var],
-                        name=var.upper(),
-                        line=dict(color=COLORS[var], width=2)
-                    )
-                )
-                
-                fig.update_layout(
-                    title=dict(text=title, x=0, font=dict(size=16)),
-                    margin=dict(l=40, r=40, t=40, b=20),
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor=PLOT_BGCOLOR,
-                    yaxis=dict(
-                        title="Corriente (A)",
-                        gridcolor=GRID_COLOR,
-                        zeroline=False
-                    ),
-                    xaxis=dict(
-                        title="Tiempo",
-                        gridcolor=GRID_COLOR,
-                        zeroline=False
-                    ),
-                    height=PLOT_HEIGHT,
-                    showlegend=False,
-                    hovermode='x unified'
-                )
-                st.plotly_chart(fig, use_container_width=True)
-                
-        else:  # Potencias
-            # Potencia Activa
-            fig = go.Figure()
-            fig.add_trace(
-                go.Scatter(
-                    x=df['fecha_hora'],
-                    y=df['KW'],
-                    name="Potencia Activa",
-                    line=dict(color=COLORS['KW'], width=2)
-                )
-            )
-            fig.update_layout(
-                title=dict(text="Potencia Activa", x=0, font=dict(size=16)),
-                margin=dict(l=40, r=40, t=40, b=20),
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor=PLOT_BGCOLOR,
-                yaxis=dict(
-                    title="Potencia (W)",
-                    gridcolor=GRID_COLOR,
-                    zeroline=False
-                ),
-                xaxis=dict(
-                    title="Tiempo",
-                    gridcolor=GRID_COLOR,
-                    zeroline=False
-                ),
-                height=PLOT_HEIGHT,
-                showlegend=False,
-                hovermode='x unified'
-            )
-            st.plotly_chart(fig, use_container_width=True)
-            
-            # Potencia Reactiva
-            fig = go.Figure()
-            fig.add_trace(
-                go.Scatter(
-                    x=df['fecha_hora'],
-                    y=df['KVAr'],  # Cambiado de p_react a KVAr
-                    name="Potencia Reactiva",
-                    line=dict(color=COLORS['KVAr'], width=2)  # Cambiado de p_react a KVAr
-                )
-            )
-            fig.update_layout(
-                title=dict(text="Potencia Reactiva", x=0, font=dict(size=16)),
-                margin=dict(l=40, r=40, t=40, b=20),
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor=PLOT_BGCOLOR,
-                yaxis=dict(
-                    title="Potencia (VAR)",
-                    gridcolor=GRID_COLOR,
-                    zeroline=False
-                ),
-                xaxis=dict(
-                    title="Tiempo",
-                    gridcolor=GRID_COLOR,
-                    zeroline=False
-                ),
-                height=PLOT_HEIGHT,
-                showlegend=False,
-                hovermode='x unified'
-            )
-            st.plotly_chart(fig, use_container_width=True)
-            
-            # Factor de Potencia
-            fig = go.Figure()
-            fig.add_annotation(
-                text="Factor de Potencia - Próximamente",
-                xref="paper", yref="paper",
-                x=0.5, y=0.5,
-                showarrow=False,
-                font=dict(size=16)
-            )
-            fig.update_layout(
-                title=dict(text="Factor de Potencia", x=0, font=dict(size=16)),
-                margin=dict(l=40, r=40, t=40, b=20),
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor=PLOT_BGCOLOR,
-                height=PLOT_HEIGHT
-            )
-            st.plotly_chart(fig, use_container_width=True)
-        
-    # Sección de manejo de datos estilo Excel
-    st.markdown("""
-        <style>
-        /* Estilo para la sección de datos */
-        .excel-like {
-            background: white;
-            padding: 1rem;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        /* Estilo para los botones */
-        .excel-button {
-            background-color: #0066CC;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            margin: 0 0.5rem;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .excel-button:hover {
-            background-color: #0052a3;
-        }
-        
-        /* Estilo para la tabla */
-        .dataframe {
-            border: 1px solid #ddd;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-        
-        .dataframe th {
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        
-        .dataframe td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        
-        .dataframe tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-        
-        /* Estilo para el área de búsqueda */
-        .search-box {
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-            width: 100%;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-    
-    st.header("Gestión de Datos")
-    
-    # Crear dos expanders lado a lado
+    # 1. First add the guides
+    st.header("Documentación del Sistema")
     col1, col2 = st.columns(2)
 
     with col1:
-        with st.expander("ℹ️ Guía de uso"):
+        with st.expander("ℹ️ Guía de uso", expanded=True):
             st.markdown("""
             ### Instrucciones:
             1. **Importar datos**: Use el botón '📥 Importar' para cargar archivos CSV o Excel.
@@ -736,217 +424,295 @@ if check_password():
             4. **Exportar datos**: 
                - El botón 'Exportar CSV' descargará solo los datos filtrados actualmente visibles
                - El archivo incluirá la fecha y hora en su nombre para mejor organización
+            5. **Visualización de gráficos**:
+               - Seleccione la categoría de variables que desea visualizar
+               - Elija la variable específica para ver su comportamiento en el tiempo
+               - Los gráficos se actualizan automáticamente cada 15 segundos
             """)
 
     with col2:
-        with st.expander("📊 Guía de datos"):
+        with st.expander("📊 Guía de datos", expanded=True):
             st.markdown("""
-            # 📊 Mapa de Registros NOJA – OSM27
-            
-            ### Input Registers (3X) – Datos analógicos
-            
-            #### Corrientes (A)
-            - **Ia**: Corriente fase A
-            - **Ib**: Corriente fase B
-            - **Ic**: Corriente fase C
+            ### Variables disponibles:
             
             #### Tensiones (V)
-            - **Ua**: Tensión fase A
-            - **Ub**: Tensión fase B
-            - **Uc**: Tensión fase C
-            - **Ur**: Tensión de referencia R
-            - **Us**: Tensión de referencia S
-            - **Ut**: Tensión de referencia T
-            - **Uab**: Tensión línea AB
-            - **Ubc**: Tensión línea BC
-            - **Uca**: Tensión línea CA
-            - **Urs**: Tensión ref. RS
-            - **Ust**: Tensión ref. ST
-            - **Utr**: Tensión ref. TR
+            - **Fase (Ua, Ub, Uc)**: Tensiones de cada fase
+            - **Referencia (Ur, Us, Ut)**: Tensiones de referencia
+            - **Línea (Uab, Ubc, Uca)**: Tensiones entre líneas
+            - **Referencia (Urs, Ust, Utr)**: Tensiones de referencia entre líneas
+            - Valor nominal: 220V
+            
+            #### Corrientes (A)
+            - **Ia**: Corriente Fase A
+            - **Ib**: Corriente Fase B
+            - **Ic**: Corriente Fase C
             
             #### Potencias
-            - **KVA_A**: Potencia Aparente fase A
-            - **KVA_B**: Potencia Aparente fase B
-            - **KVA_C**: Potencia Aparente fase C
-            - **KW_A**: Potencia Activa fase A
-            - **KW_B**: Potencia Activa fase B
-            - **KW_C**: Potencia Activa fase C
-            - **KVAr_A**: Potencia Reactiva fase A
-            - **KVAr_B**: Potencia Reactiva fase B
-            - **KVAr_C**: Potencia Reactiva fase C
-            - **KVA_total**: Potencia Aparente total
-            - **KVAr_total**: Potencia Reactiva total
-            - **KW_total**: Potencia Activa total
+            - **KVA**: Potencia Aparente (VA)
+            - **KW**: Potencia Activa (W)
+            - **KVAr**: Potencia Reactiva (VAR)
+            - Disponible por fase (A, B, C) y total
             
             #### Frecuencia y Factor de Potencia
-            - **Freq_abc**: Frecuencia ABC
-            - **Freq_rst**: Frecuencia RST
-            - **FP_total**: Factor de Potencia total
-            - **FP_A**: Factor de Potencia fase A
-            - **FP_B**: Factor de Potencia fase B
-            - **FP_C**: Factor de Potencia fase C
-            
-            ### Discrete Inputs (1X) – Estados
-            - **AR_initiated**: Auto-recierre iniciado
-            - **Closed_AR**: Cerrado por auto-recierre
-            - **Open_EF1+**: Apertura por falla a tierra
-            - **Open_SEF+**: Apertura por falla sensible a tierra
-            - **Open_UF**: Apertura por baja frecuencia
-            - **Open_Local**: Apertura local
-            - **Alarm**: Alarma activa
-            - **Malfunction**: Mal funcionamiento
-            - **Excessive_Too**: Temperatura excesiva de operación
-            - **Excessive_Tcc**: Temperatura excesiva de control
+            - **Freq_abc**: Frecuencia sistema ABC
+            - **Freq_rst**: Frecuencia sistema RST
+            - **FP**: Factor de Potencia (total y por fase)
             
             ### Actualización de datos:
             - Frecuencia de actualización: cada 15 segundos
             - Rango de históricos: últimas 24 horas
             - Zona horaria: Argentina (UTC-3)
+            
+            ### Valores nominales:
+            - Tensión de fase: 220V
+            - Frecuencia: 50Hz
+            - Factor de potencia ideal: >0.95
             """)
-    
-    # Barra de herramientas - Primera fila
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        uploaded_file = st.file_uploader("📥 Importar", type=['csv', 'xlsx'])
-        if uploaded_file is not None:
-            try:
-                if uploaded_file.name.endswith('.csv'):
-                    df_new = pd.read_csv(uploaded_file)
-                else:
-                    df_new = pd.read_excel(uploaded_file)
-                st.success('Archivo importado correctamente')
-            except Exception as e:
-                st.error(f'Error al importar: {str(e)}')
-    
-    # Segunda fila - Filtros de fecha y hora
-    st.markdown("##### 📅 Selección de período")
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        fecha_inicio = st.date_input(
-            "Fecha inicial",
-            min_value=df['fecha_hora'].min().date(),
-            max_value=df['fecha_hora'].max().date(),
-            value=df['fecha_hora'].min().date()
-        )
-    
-    with col2:
-        hora_inicio = st.time_input('Hora inicial', value=datetime.min.time())
-        
-    with col3:
-        fecha_fin = st.date_input(
-            "Fecha final",
-            min_value=df['fecha_hora'].min().date(),
-            max_value=df['fecha_hora'].max().date(),
-            value=df['fecha_hora'].max().date()
-        )
-        
-    with col4:
-        hora_fin = st.time_input('Hora final', value=datetime.max.time())
-    
-    # Tercera fila - Filtros de datos
-    st.markdown("##### 🔍 Filtros de datos")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        tipo_dato = st.selectbox(
-            "Tipo de dato",
-            options=['Todos', 'Tensiones', 'Corrientes', 'Potencias'],
-            help="Seleccione el tipo de datos que desea visualizar"
-        )
-        
-    with col2:
-        if tipo_dato == 'Tensiones':
-            variables = ['Todas', 'Ua', 'Ub', 'Uc']
-        elif tipo_dato == 'Corrientes':
-            variables = ['Todas', 'Ia', 'Ib', 'Ic']
-        elif tipo_dato == 'Potencias':
-            variables = ['Todas', 'KW', 'KVAr', 'KVA']
-        else:
-            variables = ['Todas']
-        
-        variable_especifica = st.selectbox(
-            "Variable específica",
-            options=variables,
-            help="Seleccione la variable específica a visualizar"
-        )
-    
-    # Filtrar por fecha y hora
-    df_filtered = filter_dataframe(df, fecha_inicio, hora_inicio, fecha_fin, hora_fin)
-    
-    # Filtrar por tipo de dato y variable específica
-    if tipo_dato != 'Todos':
-        if tipo_dato == 'Tensiones':
-            columnas = ['fecha_hora', 'Ua', 'Ub', 'Uc']
-            if variable_especifica != 'Todas':
-                columnas = ['fecha_hora', variable_especifica]
-        elif tipo_dato == 'Corrientes':
-            columnas = ['fecha_hora', 'Ia', 'Ib', 'Ic']
-            if variable_especifica != 'Todas':
-                columnas = ['fecha_hora', variable_especifica]
-        else:  # Potencias
-            columnas = ['fecha_hora', 'KW', 'KVAr', 'KVA']
-            if variable_especifica != 'Todas':
-                columnas = ['fecha_hora', variable_especifica]
-        
-        df_filtered = df_filtered[columnas]
-    # Información del filtrado
-    st.markdown(f"""
-        <div style='padding: 1rem; background-color: rgba(28, 131, 225, 0.1); border-radius: 5px; margin: 1rem 0;'>
-            <h6 style='margin: 0; color: #0066CC;'>Resumen de datos filtrados:</h6>
-            <p style='margin: 0.5rem 0 0 0;'>Período: {df_filtered['fecha_hora'].min().strftime('%Y-%m-%d %H:%M:%S')} UTC a {df_filtered['fecha_hora'].max().strftime('%Y-%m-%d %H:%M:%S')} UTC</p>
-            <p style='margin: 0.2rem 0 0 0;'>Tipo de datos: {tipo_dato} - Variable: {variable_especifica}</p>
-            <p style='margin: 0.2rem 0 0 0;'>Registros encontrados: {len(df_filtered)}</p>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    # Botón de exportación con estilo mejorado
-    st.markdown("""
-        <style>
-        div[data-testid="stDownloadButton"] button {
-            background-color: #0066CC;
-            color: white;
-            font-weight: bold;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            border: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-        div[data-testid="stDownloadButton"] button:hover {
-            background-color: #0052a3;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        </style>
-    """, unsafe_allow_html=True)
-    
-    # Contenedor para el botón de exportación
-    col1, col2, col3 = st.columns([1,1,1])
-    with col2:
-        # Crear timestamps para el nombre del archivo
-        export_inicio = datetime.combine(fecha_inicio, hora_inicio)
-        export_fin = datetime.combine(fecha_fin, hora_fin)
-        
-        csv = df_filtered.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label="📊 Exportar datos filtrados (CSV)",
-            data=csv,
-            file_name=f'datos_osm27_{export_inicio.strftime("%Y%m%d_%H%M")}_{export_fin.strftime("%Y%m%d_%H%M")}.csv',
-            mime='text/csv',
-            help="Descarga los datos filtrados actuales en formato CSV"
-        )
-    
-    # Mostrar datos con estilo Excel
-    st.dataframe(
-        df_filtered.assign(fecha_hora=df_filtered['fecha_hora'].dt.strftime('%Y-%m-%d %H:%M:%S')),
-        use_container_width=True,
-        height=400,
-        hide_index=True
-    )
-    
-    # Agregar el auto-refresh (15 segundos = 15000 ms)
-    count = st_autorefresh(interval=15000, key="fizzbuzzcounter")
 
-    # Fin del programa
+    ## 2. Then load and display data
+    with st.spinner('Actualizando Reporte...'):
+        df = load_data()
+        
+        if df.empty:
+            st.error("No hay datos disponibles")
+        else:
+            # Definir las categorías y variables disponibles
+            VARIABLES_CONFIG = {
+                'Tensiones': {
+                    'variables': ['Ua', 'Ub', 'Uc', 'Ur', 'Us', 'Ut', 'Uab', 'Ubc', 'Uca', 'Urs', 'Ust', 'Utr'],
+                    'unidad': 'V',
+                    'color': '#0066CC',
+                    'nominal': 220,
+                    'titulo': 'Tensión'
+                },
+                'Corrientes': {
+                    'variables': ['Ia', 'Ib', 'Ic'],
+                    'unidad': 'A',
+                    'color': '#CC0000',
+                    'titulo': 'Corriente'
+                },
+                'Potencias': {
+                    'variables': ['KVA_A', 'KVA_B', 'KVA_C', 'KW_A', 'KW_B', 'KW_C',
+                                 'KVAr_A', 'KVAr_B', 'KVAr_C', 'KVA_total', 'KVAr_total', 'KW_total'],
+                    'unidad': 'W/VA/VAR',
+                    'color': '#006633',
+                    'titulo': 'Potencia'
+                },
+                'Frecuencia y FP': {
+                    'variables': ['Freq_abc', 'Freq_rst', 'FP_total', 'FP_A', 'FP_B', 'FP_C'],
+                    'unidad': 'Hz/%',
+                    'color': '#663399',
+                    'titulo': 'Frecuencia/Factor de Potencia'
+                }
+            }
+
+            # Sección de gráficos
+            st.markdown("""
+                <h3 style='margin-bottom: 0'>Gráfico de Monitoreo</h3>
+                <p style='margin-bottom: 2rem'>Visualización de variables en tiempo real</p>
+            """, unsafe_allow_html=True)
+
+            # Selectores para categoría y variable
+            col1, col2 = st.columns(2)
+
+            with col1:
+                categoria = st.selectbox(
+                    'Categoría',
+                    options=list(VARIABLES_CONFIG.keys()),
+                    help='Seleccione la categoría de variables a visualizar'
+                )
+
+            with col2:
+                variable = st.selectbox(
+                    'Variable',
+                    options=VARIABLES_CONFIG[categoria]['variables'],
+                    help='Seleccione la variable específica a graficar'
+                )
+
+            # Crear gráfico
+            fig = go.Figure()
+
+            # Agregar la línea de datos
+            fig.add_trace(
+                go.Scatter(
+                    x=df['fecha_hora'],
+                    y=df[variable],
+                    name=variable,
+                    line=dict(
+                        color=VARIABLES_CONFIG[categoria]['color'],
+                        width=2
+                    )
+                )
+            )
+
+            # Agregar línea nominal si es tensión
+            if categoria == 'Tensiones':
+                fig.add_hline(
+                    y=VARIABLES_CONFIG[categoria]['nominal'],
+                    line_dash="dash",
+                    line_color="rgba(255,0,0,0.5)",
+                    annotation_text="Valor nominal"
+                )
+
+            # Actualizar diseño
+            fig.update_layout(
+                title=dict(
+                    text=f"{VARIABLES_CONFIG[categoria]['titulo']} - {variable}",
+                    x=0,
+                    font=dict(size=16)
+                ),
+                margin=dict(l=40, r=40, t=40, b=20),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgb(240,240,240)',
+                yaxis=dict(
+                    title=f"{VARIABLES_CONFIG[categoria]['titulo']} ({VARIABLES_CONFIG[categoria]['unidad']})",
+                    gridcolor='white',
+                    zeroline=False
+                ),
+                xaxis=dict(
+                    title="Tiempo",
+                    gridcolor='white',
+                    zeroline=False
+                ),
+                height=500,
+                showlegend=False,
+                hovermode='x unified'
+            )
+
+            # Mostrar gráfico
+            st.plotly_chart(fig, use_container_width=True)
+
+            # Mostrar estadísticas básicas
+            col1, col2, col3, col4 = st.columns(4)
+
+            with col1:
+                st.metric(
+                    label=f"Valor actual",
+                    value=f"{df[variable].iloc[-1]:.2f} {VARIABLES_CONFIG[categoria]['unidad']}"
+                )
+
+            with col2:
+                st.metric(
+                    label=f"Promedio",
+                    value=f"{df[variable].mean():.2f} {VARIABLES_CONFIG[categoria]['unidad']}"
+                )
+
+            with col3:
+                st.metric(
+                    label=f"Máximo",
+                    value=f"{df[variable].max():.2f} {VARIABLES_CONFIG[categoria]['unidad']}"
+                )
+
+            with col4:
+                st.metric(
+                    label=f"Mínimo",
+                    value=f"{df[variable].min():.2f} {VARIABLES_CONFIG[categoria]['unidad']}"
+                )
+
+            # Continuar con el resto del código (filtros de fecha, etc.)
+            st.markdown("##### 📅 Selección de período")
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                fecha_inicio = st.date_input(
+                    "Fecha inicial",
+                    min_value=df['fecha_hora'].min().date(),
+                    max_value=df['fecha_hora'].max().date(),
+                    value=df['fecha_hora'].min().date()
+                )
+            
+            with col2:
+                hora_inicio = st.time_input('Hora inicial', value=datetime.min.time())
+                
+            with col3:
+                fecha_fin = st.date_input(
+                    "Fecha final",
+                    min_value=df['fecha_hora'].min().date(),
+                    max_value=df['fecha_hora'].max().date(),
+                    value=df['fecha_hora'].max().date()
+                )
+                
+            with col4:
+                hora_fin = st.time_input('Hora final', value=datetime.max.time())
+    
+            # Tercera fila - Filtros de datos
+            st.markdown("##### 🔍 Filtros de datos")
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                tipo_dato = st.selectbox(
+                    "Tipo de dato",
+                    options=['Todos', 'Tensiones', 'Corrientes', 'Potencias'],
+                    help="Seleccione el tipo de datos que desea visualizar"
+                )
+                
+            with col2:
+                if tipo_dato == 'Tensiones':
+                    variables = ['Todas', 'Ua', 'Ub', 'Uc', 'Ur', 'Us', 'Ut', 'Uab', 'Ubc', 'Uca', 'Urs', 'Ust', 'Utr']
+                elif tipo_dato == 'Corrientes':
+                    variables = ['Todas', 'Ia', 'Ib', 'Ic']
+                elif tipo_dato == 'Potencias':
+                    variables = ['Todas', 'KVA_A', 'KVA_B', 'KVA_C', 'KW_A', 'KW_B', 'KW_C',
+                                'KVAr_A', 'KVAr_B', 'KVAr_C', 'KVA_total', 'KVAr_total', 'KW_total']
+                else:
+                    variables = ['Todas']
+                
+                variable_especifica = st.selectbox(
+                    "Variable específica",
+                    options=variables,
+                    help="Seleccione la variable específica para exportar"
+                )
+
+            # Filtrar DataFrame según selección
+            df_filtered = filter_dataframe(df, fecha_inicio, hora_inicio, fecha_fin, hora_fin)
+            
+            # Mostrar información del filtrado
+            if len(df_filtered) > 0:
+                st.markdown(f"""
+                    <div style='padding: 1rem; background-color: rgba(28, 131, 225, 0.1); border-radius: 5px; margin: 1rem 0;'>
+                        <h6 style='margin: 0; color: #0066CC;'>Resumen de datos filtrados:</h6>
+                        <p style='margin: 0.5rem 0 0 0;'>Período: {df_filtered['fecha_hora'].min().strftime('%Y-%m-%d %H:%M:%S')} a {df_filtered['fecha_hora'].max().strftime('%Y-%m-%d %H:%M:%S')}</p>
+                        <p style='margin: 0.2rem 0 0 0;'>Tipo de datos: {tipo_dato}</p>
+                        <p style='margin: 0.2rem 0 0 0;'>Registros encontrados: {len(df_filtered)}</p>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                # Filtrar columnas según selección
+                if tipo_dato != 'Todos':
+                    if variable_especifica != 'Todas':
+                        df_filtered = df_filtered[['fecha_hora', variable_especifica]]
+                    else:
+                        # Seleccionar todas las variables de la categoría
+                        if tipo_dato == 'Tensiones':
+                            columnas = ['fecha_hora'] + [v for v in variables if v != 'Todas']
+                        elif tipo_dato == 'Corrientes':
+                            columnas = ['fecha_hora'] + [v for v in variables if v != 'Todas']
+                        else:  # Potencias
+                            columnas = ['fecha_hora'] + [v for v in variables if v != 'Todas']
+                        df_filtered = df_filtered[columnas]
+
+                # Botón de exportación
+                col1, col2, col3 = st.columns([1,1,1])
+                with col2:
+                    csv = df_filtered.to_csv(index=False).encode('utf-8')
+                    st.download_button(
+                        label="📊 Exportar datos filtrados (CSV)",
+                        data=csv,
+                        file_name=f'datos_osm27_{fecha_inicio.strftime("%Y%m%d")}_{fecha_fin.strftime("%Y%m%d")}.csv',
+                        mime='text/csv',
+                        help="Descarga los datos filtrados actuales en formato CSV"
+                    )
+
+                # Mostrar datos
+                st.dataframe(
+                    df_filtered.assign(fecha_hora=df_filtered['fecha_hora'].dt.strftime('%Y-%m-%d %H:%M:%S')),
+                    use_container_width=True,
+                    height=400,
+                    hide_index=True
+                )
+                
+                # Agregar el auto-refresh (15 segundos = 15000 ms)
+                count = st_autorefresh(interval=15000, key="fizzbuzzcounter")
+
+    # 3. Remove the duplicate autorefresh calls
+    # Keep only one at the beginning of the file and remove all others
