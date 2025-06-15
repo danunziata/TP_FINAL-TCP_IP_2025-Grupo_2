@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_autorefresh import st_autorefresh
 import time
 import pandas as pd
 import plotly.express as px
@@ -875,4 +876,7 @@ if check_password():
         hide_index=True
     )
     
+    # Agregar el auto-refresh (15 segundos = 15000 ms)
+    count = st_autorefresh(interval=15000, key="fizzbuzzcounter")
+
     # Fin del programa
