@@ -716,91 +716,119 @@ if check_password():
     
     st.header("Gestión de Datos")
     
-    # Guía de uso
-    with st.expander("ℹ️ Guía de uso"):
-        st.markdown("""
-        ### Instrucciones:
-        1. **Importar datos**: Use el botón '📥 Importar' para cargar archivos CSV o Excel.
-        2. **Filtrar por fecha y hora**: 
-           - Seleccione el rango de fechas deseado
-           - Puede especificar horas para un filtrado más preciso
-        3. **Filtrar por tipo de datos**: 
-           - Use el selector para filtrar por tipo de variable (tensiones, corrientes, etc.)
-           - Los datos mostrados se actualizarán automáticamente
-        4. **Exportar datos**: 
-           - El botón 'Exportar CSV' descargará solo los datos filtrados actualmente visibles
-           - El archivo incluirá la fecha y hora en su nombre para mejor organización
-        """)
+    # Crear dos expanders lado a lado
+    col1, col2 = st.columns(2)
 
-    # Contenedor principal
-    with st.container():
-        # Barra de herramientas - Primera fila
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            uploaded_file = st.file_uploader("📥 Importar", type=['csv', 'xlsx'])
-            if uploaded_file is not None:
-                try:
-                    if uploaded_file.name.endswith('.csv'):
-                        df_new = pd.read_csv(uploaded_file)
-                    else:
-                        df_new = pd.read_excel(uploaded_file)
-                    st.success('Archivo importado correctamente')
-                except Exception as e:
-                    st.error(f'Error al importar: {str(e)}')
-        
-        # Segunda fila - Filtros de fecha y hora
-        st.markdown("##### 📅 Selección de período")
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            fecha_inicio = st.date_input(
-                "Fecha inicial",
-                min_value=df['fecha_hora'].min().date(),
-                max_value=df['fecha_hora'].max().date(),
-                value=df['fecha_hora'].min().date()
-            )
-        
-        with col2:
-            hora_inicio = st.time_input('Hora inicial', value=datetime.min.time())
+    with col1:
+        with st.expander("ℹ️ Guía de uso"):
+            st.markdown("""
+            ### Instrucciones:
+            1. **Importar datos**: Use el botón '📥 Importar' para cargar archivos CSV o Excel.
+            2. **Filtrar por fecha y hora**: 
+               - Seleccione el rango de fechas deseado
+               - Puede especificar horas para un filtrado más preciso
+            3. **Filtrar por tipo de datos**: 
+               - Use el selector para filtrar por tipo de variable (tensiones, corrientes, etc.)
+               - Los datos mostrados se actualizarán automáticamente
+            4. **Exportar datos**: 
+               - El botón 'Exportar CSV' descargará solo los datos filtrados actualmente visibles
+               - El archivo incluirá la fecha y hora en su nombre para mejor organización
+            """)
+
+    with col2:
+        with st.expander("📊 Guía de datos"):
+            st.markdown("""
+            ### Variables disponibles:
             
-        with col3:
-            fecha_fin = st.date_input(
-                "Fecha final",
-                min_value=df['fecha_hora'].min().date(),
-                max_value=df['fecha_hora'].max().date(),
-                value=df['fecha_hora'].max().date()
-            )
+            #### Tensiones (V)
+            - **Ua**: Tensión Fase A
+            - **Ub**: Tensión Fase B
+            - **Uc**: Tensión Fase C
+            - Valor nominal: 220V
             
-        with col4:
-            hora_fin = st.time_input('Hora final', value=datetime.max.time())
+            #### Corrientes (A)
+            - **Ia**: Corriente Fase A
+            - **Ib**: Corriente Fase B
+            - **Ic**: Corriente Fase C
+            
+            #### Potencias
+            - **KW**: Potencia Activa (Watts)
+            - **KVAr**: Potencia Reactiva (VAR)
+            - **KVA**: Potencia Aparente (VA)
+            
+            ### Actualización de datos:
+            - Frecuencia de actualización: cada 15 segundos
+            - Rango de históricos: últimas 24 horas
+            - Zona horaria: Argentina (UTC-3)
+            """)
+    
+    # Barra de herramientas - Primera fila
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        uploaded_file = st.file_uploader("📥 Importar", type=['csv', 'xlsx'])
+        if uploaded_file is not None:
+            try:
+                if uploaded_file.name.endswith('.csv'):
+                    df_new = pd.read_csv(uploaded_file)
+                else:
+                    df_new = pd.read_excel(uploaded_file)
+                st.success('Archivo importado correctamente')
+            except Exception as e:
+                st.error(f'Error al importar: {str(e)}')
+    
+    # Segunda fila - Filtros de fecha y hora
+    st.markdown("##### 📅 Selección de período")
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        fecha_inicio = st.date_input(
+            "Fecha inicial",
+            min_value=df['fecha_hora'].min().date(),
+            max_value=df['fecha_hora'].max().date(),
+            value=df['fecha_hora'].min().date()
+        )
+    
+    with col2:
+        hora_inicio = st.time_input('Hora inicial', value=datetime.min.time())
         
-        # Tercera fila - Filtros de datos
-        st.markdown("##### 🔍 Filtros de datos")
-        col1, col2 = st.columns(2)
+    with col3:
+        fecha_fin = st.date_input(
+            "Fecha final",
+            min_value=df['fecha_hora'].min().date(),
+            max_value=df['fecha_hora'].max().date(),
+            value=df['fecha_hora'].max().date()
+        )
         
-        with col1:
-            tipo_dato = st.selectbox(
-                "Tipo de dato",
-                options=['Todos', 'Tensiones', 'Corrientes', 'Potencias'],
-                help="Seleccione el tipo de datos que desea visualizar"
-            )
-            
-        with col2:
-            if tipo_dato == 'Tensiones':
-                variables = ['Todas', 'Ua', 'Ub', 'Uc']
-            elif tipo_dato == 'Corrientes':
-                variables = ['Todas', 'Ia', 'Ib', 'Ic']
-            elif tipo_dato == 'Potencias':
-                variables = ['Todas', 'KW', 'KVAr', 'KVA']
-            else:
-                variables = ['Todas']
-            
-            variable_especifica = st.selectbox(
-                "Variable específica",
-                options=variables,
-                help="Seleccione la variable específica a visualizar"
-            )
+    with col4:
+        hora_fin = st.time_input('Hora final', value=datetime.max.time())
+    
+    # Tercera fila - Filtros de datos
+    st.markdown("##### 🔍 Filtros de datos")
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        tipo_dato = st.selectbox(
+            "Tipo de dato",
+            options=['Todos', 'Tensiones', 'Corrientes', 'Potencias'],
+            help="Seleccione el tipo de datos que desea visualizar"
+        )
+        
+    with col2:
+        if tipo_dato == 'Tensiones':
+            variables = ['Todas', 'Ua', 'Ub', 'Uc']
+        elif tipo_dato == 'Corrientes':
+            variables = ['Todas', 'Ia', 'Ib', 'Ic']
+        elif tipo_dato == 'Potencias':
+            variables = ['Todas', 'KW', 'KVAr', 'KVA']
+        else:
+            variables = ['Todas']
+        
+        variable_especifica = st.selectbox(
+            "Variable específica",
+            options=variables,
+            help="Seleccione la variable específica a visualizar"
+        )
     
     # Filtrar por fecha y hora
     df_filtered = filter_dataframe(df, fecha_inicio, hora_inicio, fecha_fin, hora_fin)
