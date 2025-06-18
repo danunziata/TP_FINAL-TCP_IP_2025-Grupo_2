@@ -287,7 +287,7 @@ def load_data():
         query_api = client.query_api()
         query = '''
         from(bucket: "Fila3")
-          |> range(start: -24h)
+          |> range(start: 0)
           |> filter(fn: (r) => r["_measurement"] == "mediciones_recloser")
           |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
         '''
@@ -313,8 +313,8 @@ def load_data():
         st.error(f"Error al conectar con InfluxDB: {str(e)}")
         return pd.DataFrame()
 
-def load_eventos():
-    """Carga la columna 'eventos' desde InfluxDB y la muestra en formato tabla en Streamlit."""
+def load_eventos(fecha_inicio=None, fecha_fin=None):
+    """Carga la columna 'eventos' desde InfluxDB y la muestra en formato tabla en Streamlit, con filtro de fechas."""
     try:
         client = influxdb_client.InfluxDBClient(
             url=INFLUXDB_URL,
@@ -322,16 +322,24 @@ def load_eventos():
             org=INFLUXDB_ORG
         )
         query_api = client.query_api()
-        query = '''
+        # Si no se pasan fechas, traer todo
+        if fecha_inicio is None or fecha_fin is None:
+            rango = '|> range(start: 0)'
+        else:
+            # Convertir fechas a string en formato RFC3339
+            start = fecha_inicio.strftime('%Y-%m-%dT%H:%M:%SZ')
+            end = fecha_fin.strftime('%Y-%m-%dT%H:%M:%SZ')
+            rango = f'|> range(start: {start}, stop: {end})'
+        query = f'''
         from(bucket: "Fila3")
-          |> range(start: -24h)
+          {rango}
           |> filter(fn: (r) => r["_measurement"] == "mediciones_recloser")
           |> filter(fn: (r) => r["_field"] == "eventos")
           |> keep(columns: ["_time", "_value"])
         '''
         df = query_api.query_data_frame(query)
         if len(df) == 0:
-            st.info("No hay eventos registrados en las últimas 24 horas.")
+            st.info("No hay eventos registrados en el rango seleccionado.")
             return
         df = df.rename(columns={"_time": "fecha_hora", "_value": "evento"})
         df['fecha_hora'] = pd.to_datetime(df['fecha_hora']).dt.tz_convert('America/Argentina/Cordoba')
@@ -746,7 +754,13 @@ if check_password():
                 count = st_autorefresh(interval=15000, key="fizzbuzzcounter")
 
     # Mostrar tabla de eventos
-    load_eventos()
-
-    # 3. Remove the duplicate autorefresh calls
-    # Keep only one at the beginning of the file and remove all others
+    st.subheader("Filtrar eventos por fecha")
+    col1, col2 = st.columns(2)
+    with col1:
+        fecha_inicio = st.date_input("Fecha inicial eventos", value=datetime.now().date() - timedelta(days=7))
+    with col2:
+        fecha_fin = st.date_input("Fecha final eventos", value=datetime.now().date())
+    # Convertir a datetime completos para el rango
+    fecha_inicio_dt = datetime.combine(fecha_inicio, datetime.min.time())
+    fecha_fin_dt = datetime.combine(fecha_fin, datetime.max.time())
+    load_eventos(fecha_inicio_dt, fecha_fin_dt)
