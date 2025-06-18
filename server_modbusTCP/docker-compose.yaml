@@ -1,0 +1,7 @@
+services:
+  modbus-server:
+    build: .
+    container_name: modbus_server
+    ports:
+      - "5020:5020"
+    restart: unless-stopped

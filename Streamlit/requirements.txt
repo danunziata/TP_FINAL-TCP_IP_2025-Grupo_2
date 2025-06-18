@@ -1,0 +1,8 @@
+streamlit
+pandas
+plotly
+openpyxl
+mitosheet
+influxdb-client
+streamlit-autorefresh
+streamlit-authenticator
