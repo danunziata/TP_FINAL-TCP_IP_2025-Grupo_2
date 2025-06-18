@@ -278,31 +278,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Header con mejor diseño
-def show_header():
-    """Muestra el header con o sin logo"""
-    logo = load_logo()
-    if logo:
-        header_html = f"""
-            <div class="header-container">
-                <img class="header-logo" src="data:image/jpeg;base64,{logo}" alt="UNRC Logo">
-                <div class="header-text">
-                    <h1>Sistema de Monitoreo OSM27 - IPSEP UNRC</h1>
-                    <p><strong>UNRC - Facultad de Ingeniería</strong></p>
-                </div>
-            </div>
-        """
-    else:
-        header_html = f"""
-            <div class="header-container">
-                <div class="header-text">
-                    <h1>Sistema de Monitoreo OSM27 - IPSEP UNRC</h1>
-                    <p><strong>UNRC - Facultad de Ingeniería</strong></p>
-                </div>
-            </div>
-        """
-    st.markdown(header_html, unsafe_allow_html=True)
-
 # Lógica de inicio de sesión con streamlit-authenticator
 def run_auth():
     with open('config.yaml') as file:
@@ -314,6 +289,22 @@ def run_auth():
         config['cookie']['expiry_days'],
         api_key=config.get('api_key')
     )
+
+    # Título y logos centrados
+    logo_unrc_bytes = open("logo_unrc.png", "rb").read()
+    logo_unrc_base64 = base64.b64encode(logo_unrc_bytes).decode("utf-8")
+    ipsep_logo_bytes = open("ipsep_logo.jpeg", "rb").read()
+    ipsep_logo_base64 = base64.b64encode(ipsep_logo_bytes).decode("utf-8")
+    st.markdown('''
+    <div style="text-align: center; margin-bottom: 32px;">
+        <h2 style="margin-bottom: 18px;">Sistema de Monitoreo para Reconectador NOJA</h2>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 24px;">
+            <img src="data:image/png;base64,{logo_unrc_base64}" style="max-width: 180px;">
+            <img src="data:image/jpeg;base64,{ipsep_logo_base64}" style="max-width: 180px;">
+        </div>
+    </div>
+    '''.format(logo_unrc_base64=logo_unrc_base64, ipsep_logo_base64=ipsep_logo_base64), unsafe_allow_html=True)
+
     # Mostrar primero el login, luego el registro (si no está autenticado)
     login_status = authenticator.login()
     # Mostrar advertencia entre login y registro si corresponde
@@ -323,6 +314,7 @@ def run_auth():
         st.success(f"Bienvenido/a {st.session_state['name']}")
         authenticator.logout("Cerrar sesión", "sidebar")
         return  # No mostrar registro si ya está autenticado
+
     # Si no está autenticado, mostrar registro debajo del login y advertencia
     try:
         email, username, name = authenticator.register_user(two_factor_auth=True)
@@ -337,6 +329,7 @@ def run_auth():
         st.stop()
     elif st.session_state.get("authentication_status") is None:
         st.stop()
+        
 
 # # Botón de logout en la barra lateral
     authenticator.logout("Cerrar sesión", "sidebar")

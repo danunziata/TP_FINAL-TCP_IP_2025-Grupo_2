@@ -5,14 +5,6 @@ cookie:
   name: auth
 credentials:
   usernames:
-    bestiacalchin:
-      email: vale1016_milanesio@hotmail.com
-      first_name: Julian
-      last_name: Alvarez
-      logged_in: false
-      password: $2b$12$nOksloT0Q4SOmGoyMWl/iOH3DL3RrKh8txghZr05lc0tf0MDkkVF6
-      password_hint: b
-      roles: null
     valemilanesio:
       email: valemilanesio@gmail.com
       failed_login_attempts: 0
