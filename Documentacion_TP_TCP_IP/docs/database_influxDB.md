@@ -14,50 +14,7 @@ database_InfluxDB/
         └── engine/
 ```
 
----
-
-## 1. Instalación manual de InfluxDB en Ubuntu/Debian
-
-Puedes instalar InfluxDB directamente en tu sistema operativo siguiendo estos pasos:
-
-**Agregar la clave del repositorio:**
-```bash
-wget -qO- https://repos.influxdata.com/influxdata-archive_compat.key | sudo tee /etc/apt/keyrings/influxdata-archive_compat.key > /dev/null
-```
-
-**Agregar el repositorio APT:**
-```bash
-echo 'deb [signed-by=/etc/apt/keyrings/influxdata-archive_compat.key] https://repos.influxdata.com/debian stable main' | sudo tee /etc/apt/sources.list.d/influxdata.list
-```
-
-**Actualizar e instalar InfluxDB:**
-```bash
-sudo apt update
-sudo apt install influxdb2
-```
-
-**Iniciar y habilitar el servicio:**
-```bash
-sudo systemctl enable influxdb
-sudo systemctl start influxdb
-```
-
-**Verificar que el servicio está corriendo:**
-```bash
-sudo systemctl status influxdb
-```
-
-**Acceder a la interfaz de configuración:**
-
-Abre tu navegador en [http://localhost:8086](http://localhost:8086) y sigue los pasos para crear:
-- Usuario admin
-- Organización
-- Bucket (base de datos)
-- Token de acceso
-
----
-
-## 2. `docker-compose.yaml`
+## 1. `docker-compose.yaml`
 
 Este archivo permite desplegar InfluxDB fácilmente usando Docker Compose. Define el servicio, el volumen persistente y las variables de entorno para la inicialización automática.
 
@@ -93,7 +50,7 @@ volumes:
 
 ---
 
-## 3. Carpeta `data/influxdb/`
+## 2. Carpeta `data/influxdb/`
 
 Esta carpeta almacena los datos persistentes de la base de datos InfluxDB cuando se utiliza Docker. No es necesario modificar su contenido manualmente.
 
@@ -102,7 +59,7 @@ Esta carpeta almacena los datos persistentes de la base de datos InfluxDB cuando
 
 ---
 
-## 4. Comandos para dejar InfluxDB funcionando
+## 3. Comandos para dejar InfluxDB funcionando
 
 A continuación se muestran los comandos necesarios para levantar la base de datos InfluxDB usando Docker Compose y acceder a la interfaz web:
 
