@@ -1,9 +1,16 @@
 site_name: "Sistema de Monitoreo OSM27 - IPSEP UNRC"
 theme:
   name: material
+  features:
+    - content.code.copy
 nav:
   - Inicio: index.md
   - Parcial Integrador: Parcial_Integrador_Tema_2.md
   - Preguntas para el Cliente: Preguntas_Cliente.md
   - Requerimientos: Requerimientos.md
   - Diagrama del Sistema: Diagrama.md
+  - Implementación del Sistema:
+      - Servidor Modbus TCP: server_modbusTCP.md
+      - Cliente Modbus TCP: client_modbusTCP.md
+      - Base de Datos InfluxDB: database_influxDB.md
+
