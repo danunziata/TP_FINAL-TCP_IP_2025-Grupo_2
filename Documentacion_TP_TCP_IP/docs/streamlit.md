@@ -31,7 +31,19 @@ streamlit-autorefresh
 
 ## Funcionalidades principales
 
-### 1. Guía de uso
+### 1. Inicio de sesión y seguridad
+
+La aplicación cuenta con un sistema de autenticación que requiere credenciales institucionales.
+
+![Inicio de sesión](inicio_sesion_streamlit.png)
+
+**Características:**
+- Registro con correo institucional (@ing.unrc.edu.ar)
+- Inicio de sesión seguro
+- Almacenamiento de credenciales en formato JSON
+- Interfaz intuitiva con logo institucional
+
+### 2. Guía de uso
 
 La aplicación está diseñada para ser intuitiva y fácil de usar.
 
@@ -43,7 +55,7 @@ La aplicación está diseñada para ser intuitiva y fácil de usar.
 - Referencias rápidas
 - Ayuda interactiva
 
-### 2. Guía de datos
+### 3. Guía de datos
 
 Incluye documentación integrada sobre los datos mostrados.
 
@@ -55,7 +67,7 @@ Incluye documentación integrada sobre los datos mostrados.
 - Referencias técnicas
 - Ayuda contextual
 
-### 3. Monitoreo en tiempo real
+### 4. Monitoreo en tiempo real
 
 La aplicación muestra gráficos en tiempo real de las variables del recloser.
 
@@ -67,7 +79,7 @@ La aplicación muestra gráficos en tiempo real de las variables del recloser.
 - Visualización de múltiples variables en simultáneo
 - Zoom y herramientas de navegación
 
-### 4. Exportación de datos
+### 5. Exportación de datos
 
 Permite exportar los datos mostrados en diferentes formatos.
 
@@ -80,7 +92,7 @@ Permite exportar los datos mostrados en diferentes formatos.
 - Filtrado de variables a exportar
 - Descarga directa desde la interfaz
 
-### 5. Tabla de eventos
+### 6. Tabla de eventos
 
 Muestra los eventos importantes registrados por el recloser.
 
