@@ -71,7 +71,8 @@ La aplicación muestra gráficos en tiempo real de las variables del recloser.
 
 Permite exportar los datos mostrados en diferentes formatos.
 
-![Exportación de datos](exportacion_datos_streamlit.png)
+![Filtrado de datos](filtro_datos_streamlit.png)
+![Exportación de datos](exportacion_datos_streamlit2.png)
 
 **Características:**
 - Exportación a CSV y Excel
@@ -83,7 +84,7 @@ Permite exportar los datos mostrados en diferentes formatos.
 
 Muestra los eventos importantes registrados por el recloser.
 
-![Tabla de eventos](tabla_de_eventos_streamlit.png)
+![Tabla de eventos](Tablas_de_eventos_streamlit.png)
 
 **Características:**
 - Registro cronológico de eventos
