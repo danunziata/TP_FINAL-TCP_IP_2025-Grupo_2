@@ -1,0 +1,22 @@
+api_key: x8v0ksnv2dbt2x2ca5tz42adgc4pchrc
+cookie:
+  expiry_days: 30
+  key: prueba
+  name: auth
+credentials:
+  usernames:
+    bestiacalchin:
+      email: vale1016_milanesio@hotmail.com
+      first_name: Julian
+      last_name: Alvarez
+      logged_in: false
+      password: $2b$12$nOksloT0Q4SOmGoyMWl/iOH3DL3RrKh8txghZr05lc0tf0MDkkVF6
+      password_hint: b
+      roles: null
+    valemilanesio:
+      email: valemilanesio@gmail.com
+      failed_login_attempts: 0
+      first_name: Valentin
+      last_name: Milanesio
+      logged_in: false
+      password: $2b$12$wUzfQTZu6fOV6Ppr0517bOfwyhul5dbghKuI7kNltqFWTBsatWJ..
