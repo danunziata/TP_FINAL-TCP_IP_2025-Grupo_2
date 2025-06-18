@@ -13,4 +13,6 @@ nav:
       - Servidor Modbus TCP: server_modbusTCP.md
       - Cliente Modbus TCP: client_modbusTCP.md
       - Base de Datos InfluxDB: database_influxDB.md
+  - Visualización:
+      - Página Web con Streamlit: streamlit.md
 
