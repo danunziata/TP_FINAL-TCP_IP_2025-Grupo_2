@@ -1,9 +1,0 @@
-site_name: "Sistema de Monitoreo OSM27 - IPSEP UNRC"
-theme:
-  name: material
-nav:
-  - Inicio: index.md
-  - Parcial Integrador: Parcial_Integrador_Tema_2.md
-  - Preguntas para el Cliente: Preguntas_Cliente.md
-  - Requerimientos: Requerimientos.md
-  - Diagrama del Sistema: Diagrama.md
