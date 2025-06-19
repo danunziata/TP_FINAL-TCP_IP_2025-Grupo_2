@@ -6,7 +6,7 @@ echo "----------------------------------------------------"
 # Detener los contenedores de Docker del servidor
 echo "1. Deteniendo el servidor Modbus TCP..."
 cd server_modbusTCP
-docker-compose down
+docker compose down
 cd ..
 echo "✅ Servidor detenido."
 echo "----------------------------------------------------"
@@ -14,7 +14,7 @@ echo "----------------------------------------------------"
 # Detener los contenedores de Docker de la base de datos
 echo "2. Deteniendo la base de datos InfluxDB..."
 cd database_InfluxDB
-docker-compose down
+docker compose down
 cd ..
 echo "✅ Base de datos detenida."
 echo "----------------------------------------------------"

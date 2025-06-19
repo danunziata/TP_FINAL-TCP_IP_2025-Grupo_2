@@ -36,7 +36,9 @@ INFLUXDB_TOKEN = "9b87FS8_-PvJYOYfVlU5-7MF6Oes9jhgFWitRcZp7-efOsaI3tMLoshBGdAQM_
 INFLUXDB_ORG = "Fila3"
 INFLUXDB_BUCKET = "Fila3"
 
-
+# Cargar imagen de fondo como base64
+with open("ipsep_photo.jpeg", "rb") as image_file:
+    ipsep_bg_base64 = base64.b64encode(image_file.read()).decode()
 
 # Agregar después de las importaciones
 
@@ -217,65 +219,244 @@ def load_eventos(fecha_inicio=None, fecha_fin=None):
         st.error(f"Error al consultar eventos: {str(e)}")
 
 # CSS para responsividad y layout
-st.markdown("""
+st.markdown(f"""
     <style>
-        .block-container {
-            padding: 1rem;
-        }
-        .header-container {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-            padding: 1rem;
-            background-color: #f8f9fa;
-            border-radius: 10px;
+        html, body, [data-testid="stAppViewContainer"] {{
+            height: 100%;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6a89e6 0%, #8f6ed5 100%) !important;
+            background-attachment: fixed !important;
+        }}
+        .main .block-container {{
+            background: none !important;
+        }}
+        /* Glassmorphism para secciones y tarjetas */
+        .section-container, .data-summary, div[data-testid="metric-container"], .streamlit-expanderHeader, .stDataFrame, .stTable {{
+            background: rgba(255,255,255,0.18) !important;
+            border-radius: 18px !important;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18) !important;
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+            border: 1px solid rgba(255,255,255,0.25) !important;
+        }}
+        /* Header principal con glassmorphism */
+        .header-container {{
+            background: rgba(106,137,230,0.85);
+            border-radius: 24px;
+            padding: 2.5rem 2rem 2rem 2rem;
             margin-bottom: 2rem;
-        }
-        .header-logo {
-            flex-shrink: 0;
-            width: 120px;
-            height: auto;
-        }
-        .header-text {
-            flex-grow: 1;
-        }
-        .header-text h1 {
-            margin: 0;
-            font-size: 2rem;
-            color: #1e1e1e;
-        }
-        .header-text p {
-            margin: 0.5rem 0 0 0;
-            color: #4a4a4a;
-        }
-        div[data-testid="metric-container"] {
-            background-color: rgba(28, 131, 225, 0.1);
-            border: 1px solid rgba(28, 131, 225, 0.1);
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin: 0.5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        @media (max-width: 768px) {
-            .block-container {
-                padding: 0.5rem;
-            }
-            .header-container {
-                flex-direction: column;
-                text-align: center;
-                gap: 1rem;
-            }
-            .header-text h1 {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.10);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }}
+        .header-text h1 {{
+            color: #fff;
+            font-size: 2.7rem;
+            font-weight: 800;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.18);
+        }}
+        .header-text p {{
+            color: #f3f3f3;
+            font-size: 1.2rem;
+            font-weight: 400;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.12);
+        }}
+        /* Logos con fondo circular blanco y sombra */
+        .logo-container {{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 48px;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }}
+        .header-logo {{
+            width: 170px;
+            height: 170px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 4px 24px 0 rgba(31, 38, 135, 0.18);
+            padding: 16px;
+            border: 2px solid #e0e0e0;
+            transition: transform 0.3s;
+        }}
+        .header-logo:hover {{
+            transform: scale(1.07);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
+        }}
+        /* Glassmorphism para expanders y tablas */
+        .streamlit-expanderHeader {{
+            background: rgba(255,255,255,0.18) !important;
+            border-radius: 14px !important;
+            box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.10) !important;
+            backdrop-filter: blur(6px) !important;
+            -webkit-backdrop-filter: blur(6px) !important;
+            border: 1px solid rgba(255,255,255,0.18) !important;
+        }}
+        /* Métricas y tarjetas */
+        div[data-testid="metric-container"] {{
+            background: rgba(255,255,255,0.22) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10) !important;
+            border: 1px solid rgba(255,255,255,0.18) !important;
+        }}
+        /* Textos claros y con sombra */
+        h1, h2, h3, h4, h5, h6, label, .stMarkdown, .stText, .stDataFrame, .stTable {{
+            color: #fff !important;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.10);
+        }}
+        /* Inputs y selectores */
+        .stSelectbox > div > div, .stDateInput > div > div, .stTimeInput > div > div {{
+            background: rgba(255,255,255,0.22) !important;
+            border-radius: 12px !important;
+            border: 1.5px solid rgba(255,255,255,0.25) !important;
+            color: #222 !important;
+        }}
+        /* Botones */
+        .stButton > button {{
+            background: linear-gradient(135deg, #6a89e6 0%, #8f6ed5 100%) !important;
+            border: none !important;
+            border-radius: 12px !important;
+            padding: 0.75rem 1.5rem !important;
+            font-weight: 600 !important;
+            color: #fff !important;
+            box-shadow: 0 4px 16px rgba(106,137,230,0.18);
+            transition: all 0.3s;
+        }}
+        .stButton > button:hover {{
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(106,137,230,0.25);
+        }}
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {{
+            width: 8px;
+        }}
+        ::-webkit-scrollbar-thumb {{
+            background: linear-gradient(135deg, #6a89e6 0%, #8f6ed5 100%);
+            border-radius: 4px;
+        }}
+        /* Responsividad */
+        @media (max-width: 768px) {{
+            .header-container {{
+                padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+            }}
+            .header-text h1 {{
                 font-size: 1.5rem;
-            }
-            div[data-testid="metric-container"] {
-                padding: 1rem;
-            }
-            .element-container {
-                font-size: 0.8rem;
-            }
-        }
+            }}
+            .logo-container {{
+                gap: 18px;
+            }}
+            .header-logo {{
+                width: 110px;
+                height: 110px;
+                padding: 8px;
+            }}
+        }}
+        .stMetric {{
+            background: rgba(255,255,255,0.22) !important;
+            border-radius: 18px !important;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10) !important;
+            border: 1.5px solid rgba(255,255,255,0.18) !important;
+            padding: 1.2rem 0.5rem 1.2rem 0.5rem !important;
+            margin: 0.5rem 0.5rem 0.5rem 0.5rem !important;
+            min-width: 160px;
+            min-height: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }}
+
+        /* Forzar el color del texto a blanco para los labels y valores */
+        .stMetric label, .stMetric div[data-testid="metric-value"] {{
+            color: #fff !important;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.10);
+        }}
+
+        /* Ajuste responsivo */
+        @media (max-width: 768px) {{
+            .stMetric {{
+                min-width: 100px;
+                min-height: 60px;
+                padding: 0.7rem 0.2rem 0.7rem 0.2rem !important;
+            }}
+        }}
+
+        .streamlit-expander, .stExpander {{
+            background: rgba(255,255,255,0.22) !important;
+            border-radius: 18px !important;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10) !important;
+            border: 1.5px solid rgba(255,255,255,0.18) !important;
+            margin-bottom: 0.5rem !important;
+            margin-top: 0.5rem !important;
+        }}
+
+        .glass-card {{
+            background: rgba(255,255,255,0.22) !important;
+            border-radius: 18px !important;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10) !important;
+            border: 1.5px solid rgba(255,255,255,0.18) !important;
+            padding: 1.5rem 1.5rem 1.5rem 1.5rem !important;
+            margin-bottom: 2rem !important;
+            margin-top: 0.5rem !important;
+        }}
+
+        body, html, [data-testid="stAppViewContainer"] {{
+            position: relative;
+        }}
+        .background-image-blur {{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            background: url('data:image/jpeg;base64,{ipsep_bg_base64}') center center/cover no-repeat;
+            opacity: 0.18;
+            filter: blur(3px);
+            pointer-events: none;
+        }}
+        .main .block-container, .glass-card, .section-container, .data-summary, .stMetric, .streamlit-expander, .stExpander {{
+            position: relative;
+            z-index: 1;
+        }}
+
+        /* Centrar y compactar formularios de login y registro */
+        .stAuthForm, .stRegisterForm, .stForm, .stLoginForm {{
+            max-width: 420px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            margin-top: 6vh !important;
+            margin-bottom: 6vh !important;
+            background: rgba(255,255,255,0.18) !important;
+            border-radius: 18px !important;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18) !important;
+            padding: 2.2rem 2.2rem 1.5rem 2.2rem !important;
+            backdrop-filter: blur(6px) !important;
+            -webkit-backdrop-filter: blur(6px) !important;
+        }}
+
+        /* Ajustar títulos de formularios */
+        .stAuthForm h2, .stRegisterForm h2, .stForm h2, .stLoginForm h2 {{
+            font-size: 2rem !important;
+            font-weight: 700 !important;
+            text-align: center !important;
+            margin-bottom: 1.2rem !important;
+        }}
+
+        /* Ajuste responsivo */
+        @media (max-width: 600px) {{
+            .stAuthForm, .stRegisterForm, .stForm, .stLoginForm {{
+                max-width: 98vw !important;
+                padding: 1.1rem 0.5rem 1.1rem 0.5rem !important;
+            }}
+        }}
     </style>
+    <div class="background-image-blur"></div>
 """, unsafe_allow_html=True)
 
 # Lógica de inicio de sesión con streamlit-authenticator
@@ -293,110 +474,200 @@ def run_auth():
     # Título y logos centrados
     logo_unrc_bytes = open("logo_unrc.png", "rb").read()
     logo_unrc_base64 = base64.b64encode(logo_unrc_bytes).decode("utf-8")
-    ipsep_logo_bytes = open("ipsep_logo.jpeg", "rb").read()
+    ipsep_logo_bytes = open("logo_ipsep.png", "rb").read()
     ipsep_logo_base64 = base64.b64encode(ipsep_logo_bytes).decode("utf-8")
     st.markdown('''
-    <div style="text-align: center; margin-bottom: 32px;">
-        <h2 style="margin-bottom: 18px;">Sistema de Monitoreo para Reconectador NOJA</h2>
-        <div style="display: flex; justify-content: center; align-items: center; gap: 40px; margin-bottom: 24px;">
-            <img src="data:image/png;base64,{logo_unrc_base64}" style="max-width: 180px;">
-            <img src="data:image/jpeg;base64,{ipsep_logo_base64}" style="max-width: 180px;">
+    <div class="header-container" style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 32px;">
+        <div style="flex:1; display: flex; justify-content: flex-end;">
+            <img src="data:image/png;base64,{logo_unrc_base64}" class="header-logo" alt="Logo UNRC">
+        </div>
+        <div class="header-text" style="flex:2; text-align: center;">
+            <h1>Sistema de Monitoreo para Reconectador NOJA</h1>
+            <p>Monitoreo en tiempo real de variables eléctricas y eventos del sistema</p>
+        </div>
+        <div style="flex:1; display: flex; justify-content: flex-start;">
+            <img src="data:image/jpeg;base64,{ipsep_logo_base64}" class="header-logo" alt="Logo IPSEP">
         </div>
     </div>
+    <style>
+    .header-logo {{
+        width: 220px !important;
+        height: 220px !important;
+        min-width: 120px;
+        min-height: 120px;
+        object-fit: contain;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 4px 24px 0 rgba(31, 38, 135, 0.18);
+        padding: 18px;
+        border: 2px solid #e0e0e0;
+        transition: transform 0.3s;
+    }}
+    @media (max-width: 1100px) {{
+        .header-logo {{
+            width: 140px !important;
+            height: 140px !important;
+            padding: 10px;
+        }}
+    }}
+    @media (max-width: 768px) {{
+        .header-container {{
+            flex-direction: column !important;
+            gap: 12px !important;
+        }}
+        .header-logo {{
+            width: 90px !important;
+            height: 90px !important;
+            padding: 6px;
+        }}
+        .header-text {{
+            text-align: center !important;
+        }}
+    }}
+    </style>
     '''.format(logo_unrc_base64=logo_unrc_base64, ipsep_logo_base64=ipsep_logo_base64), unsafe_allow_html=True)
 
-    # Mostrar primero el login, luego el registro (si no está autenticado)
-    login_status = authenticator.login()
-    # Mostrar advertencia entre login y registro si corresponde
+    # Mostrar primero el login y el registro en columnas si no está autenticado
     if st.session_state.get("authentication_status") is None:
-        st.warning("Por favor, introduce tus credenciales")
-    if st.session_state.get("authentication_status"):
-        st.success(f"Bienvenido/a {st.session_state['name']}")
+        _, col_login, col_gap, col_register, _ = st.columns([0.5, 1.2, 0.08, 1.2, 0.5])
+        with col_login:
+            login_status = authenticator.login()
+        with col_register:
+            try:
+                email, username, name = authenticator.register_user(two_factor_auth=True)
+                if email:
+                    st.success("Registro exitoso. Ahora puedes iniciar sesión.")
+                    with open('config.yaml', 'w') as file:
+                        yaml.dump(config, file, default_flow_style=False)
+            except Exception as e:
+                st.error(e)
+        st.markdown('''
+            <div style="width: 100%; text-align: center; margin-top: 48px; margin-bottom: 12px; color: #f3f3f3; font-size: 1.05rem; opacity: 0.85; letter-spacing: 0.02em;">
+                © 2025 Grupo F3. Diseñado por Coassolo, Laborda, Lambrese, Magallanes, Milanesio, Novisardi, Tizzian. Todos los derechos reservados.
+            </div>
+        ''', unsafe_allow_html=True)
+        st.stop()
+    elif st.session_state.get("authentication_status"):
+        st.markdown(
+            f'''<div style="background: rgba(60, 220, 120, 0.22); border-radius: 18px; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10); border: 1.5px solid rgba(60, 220, 120, 0.18); padding: 1.1rem 1.2rem; margin-bottom: 1.2rem; display: inline-block; color: #167c2b; font-weight: bold; font-size: 1.15rem; text-shadow: 0 1px 6px rgba(0,0,0,0.10);">Bienvenido/a {st.session_state["name"]}</div>''',
+            unsafe_allow_html=True
+        )
         authenticator.logout("Cerrar sesión", "sidebar")
-        return  # No mostrar registro si ya está autenticado
-
-    # Si no está autenticado, mostrar registro debajo del login y advertencia
-    try:
-        email, username, name = authenticator.register_user(two_factor_auth=True)
-        if email:
-            st.success("Registro exitoso. Ahora puedes iniciar sesión.")
-            with open('config.yaml', 'w') as file:
-                yaml.dump(config, file, default_flow_style=False)
-    except Exception as e:
-        st.error(e)
-    if st.session_state.get("authentication_status") is False:
+        return
+    elif st.session_state.get("authentication_status") is False:
         st.error("Usuario o contraseña incorrectos")
+        st.markdown('''
+            <div style="width: 100%; text-align: center; margin-top: 48px; margin-bottom: 12px; color: #f3f3f3; font-size: 1.05rem; opacity: 0.85; letter-spacing: 0.02em;">
+                © 2025 F3  [Coassolo, Laborda, Lambrese, Magallanes, Milanesio, Novisardi, Tizzian] . Todos los derechos reservados.
+            </div>
+        ''', unsafe_allow_html=True)
         st.stop()
-    elif st.session_state.get("authentication_status") is None:
-        st.stop()
-        
 
-# # Botón de logout en la barra lateral
-    authenticator.logout("Cerrar sesión", "sidebar")
+# Agregar CSS para el contenedor flex de login y registro
+st.markdown(f"""
+<style>
+.auth-flex-container {{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 48px;
+    margin-top: 4vh;
+    margin-bottom: 4vh;
+    width: 100%;
+    z-index: 2;
+}}
+.auth-flex-separator {{
+    width: 32px;
+    min-width: 32px;
+    height: 1px;
+    display: block;
+}}
+@media (max-width: 900px) {{
+    .auth-flex-container {{
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+    }}
+    .auth-flex-separator {{
+        width: 100%;
+        min-width: 0;
+        height: 24px;
+    }}
+}}
+</style>
+""", unsafe_allow_html=True)
 
 run_auth()
 
 # 1. First add the guides
-st.header("Documentación del Sistema")
+st.markdown('<h1 class="main-title">📚 Documentación del Sistema</h1>', unsafe_allow_html=True)
+
 col1, col2 = st.columns(2)
 
 with col1:
     with st.expander("ℹ️ Guía de uso", expanded=True):
         st.markdown("""
-        ### Instrucciones:
-        1. **Importar datos**: Use el botón '📥 Importar' para cargar archivos CSV o Excel.
-        2. **Filtrar por fecha y hora**: 
-           - Seleccione el rango de fechas deseado
-           - Puede especificar horas para un filtrado más preciso
-        3. **Filtrar por tipo de datos**: 
-           - Use el selector para filtrar por tipo de variable (tensiones, corrientes, etc.)
-           - Los datos mostrados se actualizarán automáticamente
-        4. **Exportar datos**: 
-           - El botón 'Exportar CSV' descargará solo los datos filtrados actualmente visibles
-           - El archivo incluirá la fecha y hora en su nombre para mejor organización
-        5. **Visualización de gráficos**:
-           - Seleccione la categoría de variables que desea visualizar
-           - Elija la variable específica para ver su comportamiento en el tiempo
-           - Los gráficos se actualizan automáticamente cada 15 segundos
+        ### 🚀 Instrucciones de uso:
+        
+        **1. Importar datos** 
+        - Use el botón '📥 Importar' para cargar archivos CSV o Excel.
+        
+        **2. Filtrar por fecha y hora** 
+        - Seleccione el rango de fechas deseado
+        - Puede especificar horas para un filtrado más preciso
+        
+        **3. Filtrar por tipo de datos** 
+        - Use el selector para filtrar por tipo de variable (tensiones, corrientes, etc.)
+        - Los datos mostrados se actualizarán automáticamente
+        
+        **4. Exportar datos** 
+        - El botón 'Exportar CSV' descargará solo los datos filtrados actualmente visibles
+        - El archivo incluirá la fecha y hora en su nombre para mejor organización
+        
+        **5. Visualización de gráficos**
+        - Seleccione la categoría de variables que desea visualizar
+        - Elija la variable específica para ver su comportamiento en el tiempo
+        - Los gráficos se actualizan automáticamente cada 15 segundos
         """)
 
 with col2:
     with st.expander("📊 Guía de datos", expanded=True):
         st.markdown("""
-        ### Variables disponibles:
+        ### ⚡ Variables disponibles:
         
-        #### Tensiones (V)
+        **🔌 Tensiones (V)**
         - **Fase (Ua, Ub, Uc)**: Tensiones de cada fase
         - **Referencia (Ur, Us, Ut)**: Tensiones de referencia
         - **Línea (Uab, Ubc, Uca)**: Tensiones entre líneas
         - **Referencia (Urs, Ust, Utr)**: Tensiones de referencia entre líneas
-        - Valor nominal: 220V
+        - Valor nominal: **220V**
         
-        #### Corrientes (A)
+        **⚡ Corrientes (A)**
         - **Ia**: Corriente Fase A
         - **Ib**: Corriente Fase B
         - **Ic**: Corriente Fase C
         
-        #### Potencias
+        **🔋 Potencias**
         - **KVA**: Potencia Aparente (VA)
         - **KW**: Potencia Activa (W)
         - **KVAr**: Potencia Reactiva (VAR)
         - Disponible por fase (A, B, C) y total
         
-        #### Frecuencia y Factor de Potencia
+        **📈 Frecuencia y Factor de Potencia**
         - **Freq_abc**: Frecuencia sistema ABC
         - **Freq_rst**: Frecuencia sistema RST
         - **FP**: Factor de Potencia (total y por fase)
         
-        ### Actualización de datos:
-        - Frecuencia de actualización: cada 15 segundos
-        - Rango de históricos: últimas 24 horas
-        - Zona horaria: Argentina (UTC-3)
+        ### ⏰ Actualización de datos:
+        - Frecuencia de actualización: **cada 15 segundos**
+        - Rango de históricos: **últimas 24 horas**
+        - Zona horaria: **Argentina (UTC-3)**
         
-        ### Valores nominales:
-        - Tensión de fase: 220V
-        - Frecuencia: 50Hz
-        - Factor de potencia ideal: >0.95
+        ### 📋 Valores nominales:
+        - Tensión de fase: **220V**
+        - Frecuencia: **50Hz**
+        - Factor de potencia ideal: **>0.95**
         """)
 
 ## 2. Then load and display data
@@ -437,9 +708,12 @@ with st.spinner('Actualizando Reporte...'):
         }
 
         # Sección de gráficos
+        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
         st.markdown("""
-            <h3 style='margin-bottom: 0'>Gráfico de Monitoreo</h3>
-            <p style='margin-bottom: 2rem'>Visualización de variables en tiempo real</p>
+            <div class="section-container" style="background: transparent; box-shadow: none; border: none; padding: 0; margin: 0;">
+                <h2 style='margin-bottom: 0; color: #fff; font-weight: 700;'>📊 Gráfico de Monitoreo</h2>
+                <p style='margin-bottom: 2rem; color: #f3f3f3; font-size: 1.1rem;'>Visualización de variables en tiempo real con actualización automática</p>
+            </div>
         """, unsafe_allow_html=True)
 
         # Selectores para categoría y variable
@@ -489,24 +763,31 @@ with st.spinner('Actualizando Reporte...'):
             title=dict(
                 text=f"{VARIABLES_CONFIG[categoria]['titulo']} - {variable}",
                 x=0,
-                font=dict(size=16)
+                font=dict(size=16, color='white')
             ),
             margin=dict(l=40, r=40, t=40, b=20),
             paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgb(240,240,240)',
+            plot_bgcolor='rgba(0,0,0,0)',
             yaxis=dict(
                 title=f"{VARIABLES_CONFIG[categoria]['titulo']} ({VARIABLES_CONFIG[categoria]['unidad']})",
-                gridcolor='white',
-                zeroline=False
+                gridcolor='rgba(255,255,255,0.15)',
+                zeroline=False,
+                color='white',
+                titlefont=dict(color='white'),
+                tickfont=dict(color='white')
             ),
             xaxis=dict(
                 title="Tiempo",
-                gridcolor='white',
-                zeroline=False
+                gridcolor='rgba(255,255,255,0.15)',
+                zeroline=False,
+                color='white',
+                titlefont=dict(color='white'),
+                tickfont=dict(color='white')
             ),
             height=500,
             showlegend=False,
-            hovermode='x unified'
+            hovermode='x unified',
+            font=dict(color='white')
         )
 
         # Mostrar gráfico
@@ -540,7 +821,12 @@ with st.spinner('Actualizando Reporte...'):
             )
 
         # Continuar con el resto del código (filtros de fecha, etc.)
-        st.markdown("##### 📅 Selección de período")
+        st.markdown("""
+            <div class="section-container">
+                <h3 style='margin-bottom: 1rem; color: #2d3748; font-weight: 700;'>📅 Selección de período</h3>
+            </div>
+        """, unsafe_allow_html=True)
+        
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
@@ -566,7 +852,12 @@ with st.spinner('Actualizando Reporte...'):
             hora_fin = st.time_input('Hora final', value=datetime.max.time())
 
         # Tercera fila - Filtros de datos
-        st.markdown("##### 🔍 Filtros de datos")
+        st.markdown("""
+            <div class="section-container">
+                <h3 style='margin-bottom: 1rem; color: #2d3748; font-weight: 700;'>🔍 Filtros de datos</h3>
+            </div>
+        """, unsafe_allow_html=True)
+        
         col1, col2 = st.columns(2)
         
         with col1:
@@ -599,11 +890,11 @@ with st.spinner('Actualizando Reporte...'):
         # Mostrar información del filtrado
         if len(df_filtered) > 0:
             st.markdown(f"""
-                <div style='padding: 1rem; background-color: rgba(28, 131, 225, 0.1); border-radius: 5px; margin: 1rem 0;'>
-                    <h6 style='margin: 0; color: #0066CC;'>Resumen de datos filtrados:</h6>
-                    <p style='margin: 0.5rem 0 0 0;'>Período: {df_filtered['fecha_hora'].min().strftime('%Y-%m-%d %H:%M:%S')} a {df_filtered['fecha_hora'].max().strftime('%Y-%m-%d %H:%M:%S')}</p>
-                    <p style='margin: 0.2rem 0 0 0;'>Tipo de datos: {tipo_dato}</p>
-                    <p style='margin: 0.2rem 0 0 0;'>Registros encontrados: {len(df_filtered)}</p>
+                <div class="data-summary">
+                    <h6>📊 Resumen de datos filtrados</h6>
+                    <p><strong>📅 Período:</strong> {df_filtered['fecha_hora'].min().strftime('%Y-%m-%d %H:%M:%S')} a {df_filtered['fecha_hora'].max().strftime('%Y-%m-%d %H:%M:%S')}</p>
+                    <p><strong>🔍 Tipo de datos:</strong> {tipo_dato}</p>
+                    <p><strong>📈 Registros encontrados:</strong> {len(df_filtered)}</p>
                 </div>
             """, unsafe_allow_html=True)
             
@@ -622,16 +913,16 @@ with st.spinner('Actualizando Reporte...'):
                     df_filtered = df_filtered[columnas]
 
             # Botón de exportación
-            col1, col2, col3 = st.columns([1,1,1])
-            with col2:
-                csv = df_filtered.to_csv(index=False).encode('utf-8')
-                st.download_button(
-                    label="📊 Exportar datos filtrados (CSV)",
-                    data=csv,
-                    file_name=f'datos_osm27_{fecha_inicio.strftime("%Y%m%d")}_{fecha_fin.strftime("%Y%m%d")}.csv',
-                    mime='text/csv',
-                    help="Descarga los datos filtrados actuales en formato CSV"
-                )
+            st.markdown('<div style="display: flex; justify-content: center; margin-top: 1.5rem; margin-bottom: 1.5rem;">', unsafe_allow_html=True)
+            csv = df_filtered.to_csv(index=False).encode('utf-8')
+            st.download_button(
+                label="📊 Exportar datos filtrados (CSV)",
+                data=csv,
+                file_name=f'datos_osm27_{fecha_inicio.strftime("%Y%m%d")}_{fecha_fin.strftime("%Y%m%d")}.csv',
+                mime='text/csv',
+                help="Descarga los datos filtrados actuales en formato CSV"
+            )
+            st.markdown('</div>', unsafe_allow_html=True)
 
             # Mostrar datos
             st.dataframe(
@@ -645,7 +936,12 @@ with st.spinner('Actualizando Reporte...'):
             count = st_autorefresh(interval=15000, key="fizzbuzzcounter")
 
 # Mostrar tabla de eventos
-st.subheader("Filtrar eventos por fecha")
+st.markdown("""
+    <div class="section-container">
+        <h2 style='margin-bottom: 1rem; color: #2d3748; font-weight: 700;'>📋 Filtro de eventos por fecha</h2>
+    </div>
+""", unsafe_allow_html=True)
+
 col1, col2 = st.columns(2)
 with col1:
     fecha_inicio = st.date_input("Fecha inicial eventos", value=datetime.now().date() - timedelta(days=7))
@@ -655,3 +951,10 @@ with col2:
 fecha_inicio_dt = datetime.combine(fecha_inicio, datetime.min.time())
 fecha_fin_dt = datetime.combine(fecha_fin, datetime.max.time())
 load_eventos(fecha_inicio_dt, fecha_fin_dt)
+
+# Pie de página
+st.markdown('''
+    <div style="width: 100%; text-align: center; margin-top: 48px; margin-bottom: 12px; color: #f3f3f3; font-size: 1.05rem; opacity: 0.85; letter-spacing: 0.02em;">
+        © 2025 F3  [Coassolo, Laborda, Lambrese, Magallanes, Milanesio, Novisardi, Tizzian] . Todos los derechos reservados.
+    </div>
+''', unsafe_allow_html=True)
