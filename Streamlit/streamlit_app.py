@@ -558,7 +558,7 @@ def run_auth():
         st.error("Usuario o contraseña incorrectos")
         st.markdown('''
             <div style="width: 100%; text-align: center; margin-top: 48px; margin-bottom: 12px; color: #f3f3f3; font-size: 1.05rem; opacity: 0.85; letter-spacing: 0.02em;">
-                © 2025 F3  [Coassolo, Laborda, Lambrese, Magallanes, Milanesio, Novisardi, Tizzian] . Todos los derechos reservados.
+                © 2025 Grupo F3. Diseñado por Coassolo, Laborda, Lambrese, Magallanes, Milanesio, Novisardi, Tizzian. Todos los derechos reservados.
             </div>
         ''', unsafe_allow_html=True)
         st.stop()
@@ -763,35 +763,48 @@ with st.spinner('Actualizando Reporte...'):
             title=dict(
                 text=f"{VARIABLES_CONFIG[categoria]['titulo']} - {variable}",
                 x=0,
-                font=dict(size=16, color='white')
+                font=dict(size=16, color='#222')
             ),
             margin=dict(l=40, r=40, t=40, b=20),
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='white',
+            plot_bgcolor='white',
             yaxis=dict(
                 title=f"{VARIABLES_CONFIG[categoria]['titulo']} ({VARIABLES_CONFIG[categoria]['unidad']})",
-                gridcolor='rgba(255,255,255,0.15)',
+                gridcolor='rgba(34,34,34,0.08)',  # gris claro
                 zeroline=False,
-                color='white',
-                titlefont=dict(color='white'),
-                tickfont=dict(color='white')
+                color='#222',
+                titlefont=dict(color='#222'),
+                tickfont=dict(color='#222')
             ),
             xaxis=dict(
                 title="Tiempo",
-                gridcolor='rgba(255,255,255,0.15)',
+                gridcolor='rgba(34,34,34,0.08)',  # gris claro
                 zeroline=False,
-                color='white',
-                titlefont=dict(color='white'),
-                tickfont=dict(color='white')
+                color='#222',
+                titlefont=dict(color='#222'),
+                tickfont=dict(color='#222')
             ),
             height=500,
             showlegend=False,
             hovermode='x unified',
-            font=dict(color='white')
+            font=dict(color='#222')
         )
 
         # Mostrar gráfico
         st.plotly_chart(fig, use_container_width=True)
+
+        # Botón de pausa/play debajo del gráfico
+        if 'auto_refresh' not in st.session_state:
+            st.session_state['auto_refresh'] = True
+        col_pause, _ = st.columns([0.18, 0.82])
+        with col_pause:
+            if st.session_state['auto_refresh']:
+                if st.button('⏸️ Pausar actualización', key='pause_btn'):
+                    st.session_state['auto_refresh'] = False
+            else:
+                if st.button('▶️ Reanudar actualización', key='resume_btn'):
+                    st.session_state['auto_refresh'] = True
+                    st.rerun()
 
         # Mostrar estadísticas básicas
         col1, col2, col3, col4 = st.columns(4)
@@ -933,7 +946,8 @@ with st.spinner('Actualizando Reporte...'):
             )
             
             # Agregar el auto-refresh (15 segundos = 15000 ms)
-            count = st_autorefresh(interval=15000, key="fizzbuzzcounter")
+            if st.session_state['auto_refresh']:
+                count = st_autorefresh(interval=15000, key="fizzbuzzcounter")
 
 # Mostrar tabla de eventos
 st.markdown("""
@@ -955,6 +969,6 @@ load_eventos(fecha_inicio_dt, fecha_fin_dt)
 # Pie de página
 st.markdown('''
     <div style="width: 100%; text-align: center; margin-top: 48px; margin-bottom: 12px; color: #f3f3f3; font-size: 1.05rem; opacity: 0.85; letter-spacing: 0.02em;">
-        © 2025 F3  [Coassolo, Laborda, Lambrese, Magallanes, Milanesio, Novisardi, Tizzian] . Todos los derechos reservados.
+        © 2025 Grupo F3. Diseñado por Coassolo, Laborda, Lambrese, Magallanes, Milanesio, Novisardi, Tizzian. Todos los derechos reservados.
     </div>
 ''', unsafe_allow_html=True)
