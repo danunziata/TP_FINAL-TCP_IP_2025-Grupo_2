@@ -53,8 +53,4 @@ docker compose up -d
 cd ..
 echo "✅ Aplicación Streamlit iniciada en segundo plano."
 echo "----------------------------------------------------"
-
-# Mensaje final al cerrar Streamlit (con Ctrl+C)
-echo "----------------------------------------------------"
-echo "🛑 Aplicación Streamlit detenida."
-echo "Para detener todos los servicios por completo, ejecuta el script 'detener_simulacion.sh' o los comandos de 'docker-compose down' en las carpetas correspondientes."
+echo "👍 Todos los servicios han sido iniciados."
