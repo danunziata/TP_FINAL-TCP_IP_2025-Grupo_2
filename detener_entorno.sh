@@ -26,4 +26,12 @@ pkill -f "python3 client.py"
 echo "✅ Cliente detenido."
 echo "----------------------------------------------------"
 
+# Detener el contenedor de Streamlit
+echo "4. Deteniendo la página web..."
+cd Streamlit
+docker compose down
+cd ..
+echo "✅ Página web detenida."
+echo "----------------------------------------------------"
+
 echo "👍 Todos los servicios han sido detenidos."

@@ -10,9 +10,9 @@ echo "1. Instalando dependencias de Python desde requirements.txt..."
 cd client_modbusTCP
 pip install -r requirements.txt
 cd ..
-cd Streamlit
-pip install -r requirements.txt
-cd ..
+# cd Streamlit
+# pip install -r requirements.txt
+# cd ..
 echo "✅ Dependencias instaladas."
 echo "----------------------------------------------------"
 
@@ -49,7 +49,10 @@ echo "----------------------------------------------------"
 # Paso 5: Iniciar la aplicación de visualización con Streamlit
 echo "5. Iniciando la aplicación de visualización con Streamlit..."
 cd Streamlit
-streamlit run streamlit_app.py
+docker compose up -d
+cd ..
+echo "✅ Aplicación Streamlit iniciada en segundo plano."
+echo "----------------------------------------------------"
 
 # Mensaje final al cerrar Streamlit (con Ctrl+C)
 echo "----------------------------------------------------"

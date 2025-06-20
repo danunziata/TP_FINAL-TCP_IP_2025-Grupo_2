@@ -18,6 +18,11 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
+import warnings
+from influxdb_client.client.warnings import MissingPivotFunction
+
+# Deshabilitar el warning de MissingPivotFunction
+warnings.simplefilter("ignore", MissingPivotFunction)
 
 # 1. PRIMERO: Configuración de la página (debe ser lo primero)
 st.set_page_config(
@@ -37,99 +42,10 @@ INFLUXDB_ORG = "Fila3"
 INFLUXDB_BUCKET = "Fila3"
 
 # Cargar imagen de fondo como base64
-with open("ipsep_photo.jpeg", "rb") as image_file:
+with open("images/ipsep_photo.jpeg", "rb") as image_file:
     ipsep_bg_base64 = base64.b64encode(image_file.read()).decode()
 
 # Agregar después de las importaciones
-
-def filter_dataframe(df, fecha_inicio, hora_inicio, fecha_fin, hora_fin):
-    """
-    Filtra el DataFrame por fecha y hora.
-    Maneja las zonas horarias correctamente usando UTC.
-    """
-    # Crear timestamps UTC para comparación
-    datetime_inicio = pd.Timestamp(datetime.combine(fecha_inicio, hora_inicio)).tz_localize('UTC')
-    datetime_fin = pd.Timestamp(datetime.combine(fecha_fin, hora_fin)).tz_localize('UTC')
-    
-    # Filtrar el DataFrame
-    mask = (df['fecha_hora'] >= datetime_inicio) & (df['fecha_hora'] <= datetime_fin)
-    return df.loc[mask].copy()
-
-# Agregar después de las configuraciones de InfluxDB
-def load_data():
-    """Carga datos desde InfluxDB sin caché para permitir actualizaciones en tiempo real"""
-    try:
-        client = influxdb_client.InfluxDBClient(
-            url=INFLUXDB_URL,
-            token=INFLUXDB_TOKEN,
-            org=INFLUXDB_ORG
-        )
-        
-        query_api = client.query_api()
-        query = '''
-        from(bucket: "Fila3")
-          |> range(start: 0)
-          |> filter(fn: (r) => r["_measurement"] == "mediciones_recloser")
-          |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
-        '''
-        
-        df = query_api.query_data_frame(query)
-        if len(df) == 0:
-            return pd.DataFrame()
-            
-        # Convertir timestamps de UTC a America/Argentina/Cordoba
-        df = df.rename(columns={'_time': 'fecha_hora'})
-        df['fecha_hora'] = pd.to_datetime(df['fecha_hora']).dt.tz_convert('America/Argentina/Cordoba')
-        
-        # Eliminar columnas no deseadas
-        columns_to_drop = ['result', 'table', '_start', '_stop', '_measurement']
-        df = df.drop(columns=[col for col in columns_to_drop if col in df.columns])
-
-        # Eliminar la columna 'eventos' si existe
-        if 'eventos' in df.columns:
-            df = df.drop(columns=['eventos'])
-        
-        return df
-    except Exception as e:
-        st.error(f"Error al conectar con InfluxDB: {str(e)}")
-        return pd.DataFrame()
-
-def load_eventos(fecha_inicio=None, fecha_fin=None):
-    """Carga la columna 'eventos' desde InfluxDB y la muestra en formato tabla en Streamlit, con filtro de fechas."""
-    try:
-        client = influxdb_client.InfluxDBClient(
-            url=INFLUXDB_URL,
-            token=INFLUXDB_TOKEN,
-            org=INFLUXDB_ORG
-        )
-        query_api = client.query_api()
-        # Si no se pasan fechas, traer todo
-        if fecha_inicio is None or fecha_fin is None:
-            rango = '|> range(start: 0)'
-        else:
-            # Convertir fechas a string en formato RFC3339
-            start = fecha_inicio.strftime('%Y-%m-%dT%H:%M:%SZ')
-            end = fecha_fin.strftime('%Y-%m-%dT%H:%M:%SZ')
-            rango = f'|> range(start: {start}, stop: {end})'
-        query = f'''
-        from(bucket: "Fila3")
-          {rango}
-          |> filter(fn: (r) => r["_measurement"] == "mediciones_recloser")
-          |> filter(fn: (r) => r["_field"] == "eventos")
-          |> keep(columns: ["_time", "_value"])
-        '''
-        df = query_api.query_data_frame(query)
-        if len(df) == 0:
-            st.info("No hay eventos registrados en el rango seleccionado.")
-            return
-        df = df.rename(columns={"_time": "fecha_hora", "_value": "evento"})
-        df['fecha_hora'] = pd.to_datetime(df['fecha_hora']).dt.tz_convert('America/Argentina/Cordoba')
-        st.subheader("Tabla de eventos registrados")
-        st.dataframe(df[['fecha_hora', 'evento']], use_container_width=True, hide_index=True)
-    except Exception as e:
-        st.error(f"Error al consultar eventos: {str(e)}")
-
-# Eliminamos toda la lógica de usuarios y autenticación
 
 def filter_dataframe(df, fecha_inicio, hora_inicio, fecha_fin, hora_fin):
     """
@@ -319,7 +235,7 @@ st.markdown(f"""
         /* Botones */
         .stButton > button {{
             background: linear-gradient(135deg, #6a89e6 0%, #8f6ed5 100%) !important;
-            border: none !important;
+            border: 2px solid #fff !important;
             border-radius: 12px !important;
             padding: 0.75rem 1.5rem !important;
             font-weight: 600 !important;
@@ -427,7 +343,7 @@ st.markdown(f"""
 
         /* Centrar y compactar formularios de login y registro */
         .stAuthForm, .stRegisterForm, .stForm, .stLoginForm {{
-            max-width: 420px !important;
+            max-width: 600px !important;
             margin-left: auto !important;
             margin-right: auto !important;
             margin-top: 6vh !important;
@@ -455,13 +371,39 @@ st.markdown(f"""
                 padding: 1.1rem 0.5rem 1.1rem 0.5rem !important;
             }}
         }}
+
+        /* --- Estilo definitivo para el formulario "Cambiar contraseña" en la sidebar --- */
+        [data-testid="stSidebar"] [data-testid="stForm"] {{
+            background: linear-gradient(135deg, #6a89e6 0%, #8f6ed5 100%) !important;
+            border-radius: 18px !important;
+            padding: 1.5rem !important;
+            border: 1px solid rgba(255,255,255,0.25) !important;
+        }}
+
+        /* Texto del encabezado (h3) y labels dentro del formulario */
+        [data-testid="stSidebar"] [data-testid="stForm"] h3,
+        [data-testid="stSidebar"] [data-testid="stForm"] label {{
+            color: white !important;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+        }}
+
+        /* Botón de submit dentro del formulario de la sidebar */
+        [data-testid="stSidebar"] [data-testid="stForm"] button {{
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }}
+        [data-testid="stSidebar"] [data-testid="stForm"] button:hover {{
+            background-color: rgba(255, 255, 255, 0.3) !important;
+        }}
+
     </style>
     <div class="background-image-blur"></div>
 """, unsafe_allow_html=True)
 
 # Lógica de inicio de sesión con streamlit-authenticator
 def run_auth():
-    with open('config.yaml') as file:
+    with open('./config.yaml') as file:
         config = yaml.load(file, Loader=SafeLoader)
     authenticator = stauth.Authenticate(
         config['credentials'],
@@ -472,9 +414,9 @@ def run_auth():
     )
 
     # Título y logos centrados
-    logo_unrc_bytes = open("logo_unrc.png", "rb").read()
+    logo_unrc_bytes = open("images/logo_unrc.png", "rb").read()
     logo_unrc_base64 = base64.b64encode(logo_unrc_bytes).decode("utf-8")
-    ipsep_logo_bytes = open("logo_ipsep.png", "rb").read()
+    ipsep_logo_bytes = open("images/logo_ipsep.png", "rb").read()
     ipsep_logo_base64 = base64.b64encode(ipsep_logo_bytes).decode("utf-8")
     st.markdown('''
     <div class="header-container" style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 32px;">
@@ -528,34 +470,170 @@ def run_auth():
     '''.format(logo_unrc_base64=logo_unrc_base64, ipsep_logo_base64=ipsep_logo_base64), unsafe_allow_html=True)
 
     # Mostrar primero el login y el registro en columnas si no está autenticado
-    if st.session_state.get("authentication_status") is None:
-        _, col_login, col_gap, col_register, _ = st.columns([0.5, 1.2, 0.08, 1.2, 0.5])
-        with col_login:
-            login_status = authenticator.login()
-        with col_register:
-            try:
-                email, username, name = authenticator.register_user(two_factor_auth=True)
-                if email:
-                    st.success("Registro exitoso. Ahora puedes iniciar sesión.")
-                    with open('config.yaml', 'w') as file:
-                        yaml.dump(config, file, default_flow_style=False)
-            except Exception as e:
-                st.error(e)
-        st.markdown('''
-            <div style="width: 100%; text-align: center; margin-top: 48px; margin-bottom: 12px; color: #f3f3f3; font-size: 1.05rem; opacity: 0.85; letter-spacing: 0.02em;">
-                © 2025 Grupo F3. Diseñado por Coassolo, Laborda, Lambrese, Magallanes, Milanesio, Novisardi, Tizzian. Todos los derechos reservados.
-            </div>
-        ''', unsafe_allow_html=True)
-        st.stop()
-    elif st.session_state.get("authentication_status"):
+    if st.session_state.get("authentication_status"):
         st.markdown(
-            f'''<div style="background: rgba(60, 220, 120, 0.22); border-radius: 18px; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10); border: 1.5px solid rgba(60, 220, 120, 0.18); padding: 1.1rem 1.2rem; margin-bottom: 1.2rem; display: inline-block; color: #167c2b; font-weight: bold; font-size: 1.15rem; text-shadow: 0 1px 6px rgba(0,0,0,0.10);">Bienvenido/a {st.session_state["name"]}</div>''',
+            f'''<div style="
+                background: rgba(60, 220, 120, 0.92);
+                border-radius: 22px;
+                box-shadow: 0 12px 36px 0 rgba(0, 0, 0, 0.25);
+                border: 2px solid rgba(60, 220, 120, 1);
+                padding: 1.5rem 1.6rem;
+                margin-bottom: 1.8rem;
+                display: inline-block;
+                color: #ffffff;
+                font-weight: bold;
+                font-size: 1.35rem;
+                text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                text-align: center;
+            ">
+                ✅ Bienvenido/a {st.session_state["name"]}
+            </div>''',
             unsafe_allow_html=True
         )
         authenticator.logout("Cerrar sesión", "sidebar")
+        
+        # Volver a comprobar el estado de la sesión DESPUÉS de mostrar el botón de logout.
+        # Esto evita que el widget de reseteo de contraseña se ejecute durante el proceso de logout.
+        if st.session_state.get("authentication_status"):
+            try:
+                if authenticator.reset_password(
+                    st.session_state.get('username'),
+                    "sidebar",
+                    fields={'Form name': 'Cambiar contraseña',
+                            'Current password': 'Contraseña actual',
+                            'New password': 'Nueva contraseña',
+                            'Repeat password': 'Repetir contraseña',
+                            'Reset': 'Cambiar contraseña'}
+                ):
+                    with open('config.yaml', 'w') as file:
+                        yaml.dump(config, file, default_flow_style=False, allow_unicode=True)
+                    st.success("Contraseña modificada correctamente")
+            except Exception as e:
+                st.error(e)    
         return
-    elif st.session_state.get("authentication_status") is False:
-        st.error("Usuario o contraseña incorrectos")
+    
+    # Recuperación de usuario o de contraseña    
+    elif st.session_state.get("authentication_status") is None or st.session_state.get("authentication_status") is False:
+        _, col_login, col_gap, col_register, _ = st.columns([0.5, 1.2, 0.08, 1.2, 0.5])
+        
+        with st.expander("¿Olvidaste tu contraseña o tu nombre de usuario?"):
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.subheader("Recuperar contraseña")
+                st.write("Si olvidaste tu contraseña, ingresa tu usuario para recibir una nueva.")
+                try:
+                    username_of_forgotten_password, \
+                    email_of_forgotten_password, \
+                    new_random_password = authenticator.forgot_password(
+                        send_email=True,
+                        fields={'Form name': 'Olvidé mi contraseña',
+                                'Username': 'Nombre de usuario',
+                                'Submit': 'Recuperar contraseña'}
+                        )
+                    
+                    if username_of_forgotten_password:
+                        with open('config.yaml', 'w') as file:
+                            yaml.dump(config, file, default_flow_style=False, allow_unicode=True)
+                        st.success('Nueva contraseña enviada a su correo electrónico.')
+
+                    elif username_of_forgotten_password == False:
+                        st.error('Usuario no encontrado')
+                except Exception as e:
+                    st.error(f"Error recuperando contraseña: {e}")
+
+            with col2:
+                st.subheader("Recuperar nombre de usuario")
+                st.write("Si olvidaste tu nombre de usuario, ingresa tu correo electrónico.")
+                try:
+                    username_of_forgotten_username, \
+                    email_of_forgotten_username = authenticator.forgot_username(
+                        send_email=True,
+                        fields={'Form name': 'Olvidé mi usuario',
+                                'Submit': 'Recuperar usuario'}
+                        )
+
+                    if username_of_forgotten_username:
+                        st.success('El nombre de usuario fue enviado a su correo electrónico.')
+                    elif username_of_forgotten_username == False:
+                        st.error('Email no encontrado')
+                except Exception as e:
+                    st.error(f"Error recuperando nombre de usuario: {e}")
+
+                
+        with col_login:
+            login_status = authenticator.login(
+                fields={'Form name': 'Inicio de sesión',
+                        'Username': 'Usuario',
+                        'Password': 'Contraseña',
+                        'Login': 'Iniciar sesión'
+                        },
+            )
+            if st.session_state.get("authentication_status") is False:
+                st.markdown(
+                    '''
+                    <div style="background-color: #e63946; color: white; padding: 1rem 1.2rem; border-radius: 10px;
+                                font-weight: bold; font-size: 1.05rem; margin-bottom: 1.2rem;
+                                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); text-align: center;">
+                        Usuario o contraseña incorrectos
+                    </div>
+                    ''',
+                    unsafe_allow_html=True
+                )
+
+        with col_register:
+            try:
+                email, username, name = authenticator.register_user(
+                    two_factor_auth=True,
+                    fields={'Form name': 'Registro de usuario',
+                            'First name': 'Nombre',
+                            'Last name': 'Apellido',
+                            'Email': 'Email',
+                            'Username': 'Nombre de usuario',
+                            'Password': 'Contraseña',
+                            'Repeat password': 'Repetir contraseña',
+                            'Register': 'Registrarse'
+                            },
+                    password_hint=False
+                    )
+                if email:
+                    st.success("Registro exitoso. Ahora puedes iniciar sesión.")
+                    with open('config.yaml', 'w') as file:
+                        yaml.dump(config, file, default_flow_style=False, allow_unicode=True)
+
+            except Exception as e:
+                error_msg = str(e).lower()
+
+                if "email not valid" in error_msg:
+                    st.markdown(
+                        '''
+                        <div style="background-color: #f94144; color: white; padding: 1rem 1.2rem; border-radius: 10px;
+                                    font-weight: bold; font-size: 1.05rem; margin-bottom: 1.2rem;
+                                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); text-align: center;">
+                            ⚠️ Por favor, completa todos los campos del formulario.
+                        </div>
+                        ''',
+                        unsafe_allow_html=True
+                    )
+                elif "password" in error_msg:
+                    st.markdown(
+                        '''
+                        <div style="background-color: #f3722c; color: white; padding: 1.1rem 1.3rem; border-radius: 12px;
+                                    font-weight: bold; font-size: 1rem; margin-bottom: 1.2rem;
+                                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); text-align: left;">
+                            🔐 La contraseña ingresada no cumple con los requisitos mínimos:<br><br>
+                            • Entre 8 y 20 caracteres.<br>
+                            • Al menos una letra <strong>minúscula</strong>.<br>
+                            • Al menos una letra <strong>mayúscula</strong>.<br>
+                            • Al menos un <strong>número</strong>.<br>
+                            • Al menos un <strong>carácter especial</strong>: <code>!@#$%^&*()_+-=[]{};:'\"|,.&lt;&gt;/?`~</code>
+                        </div>
+                        ''',
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.error(e)
+
         st.markdown('''
             <div style="width: 100%; text-align: center; margin-top: 48px; margin-bottom: 12px; color: #f3f3f3; font-size: 1.05rem; opacity: 0.85; letter-spacing: 0.02em;">
                 © 2025 Grupo F3. Diseñado por Coassolo, Laborda, Lambrese, Magallanes, Milanesio, Novisardi, Tizzian. Todos los derechos reservados.
@@ -601,7 +679,7 @@ st.markdown(f"""
 run_auth()
 
 # 1. First add the guides
-st.markdown('<h1 class="main-title">📚 Documentación del Sistema</h1>', unsafe_allow_html=True)
+st.header("📚 Documentación del Sistema")
 
 col1, col2 = st.columns(2)
 
@@ -683,7 +761,6 @@ with st.spinner('Actualizando Reporte...'):
                 'variables': ['Ua', 'Ub', 'Uc', 'Ur', 'Us', 'Ut', 'Uab', 'Ubc', 'Uca', 'Urs', 'Ust', 'Utr'],
                 'unidad': 'V',
                 'color': '#0066CC',
-                'nominal': 220,
                 'titulo': 'Tensión'
             },
             'Corrientes': {
@@ -699,22 +776,23 @@ with st.spinner('Actualizando Reporte...'):
                 'color': '#006633',
                 'titulo': 'Potencia'
             },
-            'Frecuencia y FP': {
-                'variables': ['Freq_abc', 'Freq_rst', 'FP_total', 'FP_A', 'FP_B', 'FP_C'],
-                'unidad': 'Hz/%',
+            'Frecuencias': {
+                'variables': ['Freq_abc', 'Freq_rst'],
+                'unidad': 'Hz',
                 'color': '#663399',
-                'titulo': 'Frecuencia/Factor de Potencia'
+                'titulo': 'Frecuencia'
+            },
+            'Factor de Potencia': {
+                'variables': ['FP_total', 'FP_A', 'FP_B', 'FP_C'],
+                'unidad': 'Adimensional',
+                'color': '#663399',
+                'titulo': 'Factor de Potencia'
             }
         }
 
         # Sección de gráficos
-        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.markdown("""
-            <div class="section-container" style="background: transparent; box-shadow: none; border: none; padding: 0; margin: 0;">
-                <h2 style='margin-bottom: 0; color: #fff; font-weight: 700;'>📊 Gráfico de Monitoreo</h2>
-                <p style='margin-bottom: 2rem; color: #f3f3f3; font-size: 1.1rem;'>Visualización de variables en tiempo real con actualización automática</p>
-            </div>
-        """, unsafe_allow_html=True)
+        st.header("📊 Gráfico de Monitoreo")
+        st.markdown("<p style='margin-bottom: 2rem; color: #f3f3f3; font-size: 1.1rem;'>Visualización de variables en tiempo real con actualización automática</p>", unsafe_allow_html=True)
 
         # Selectores para categoría y variable
         col1, col2 = st.columns(2)
@@ -733,29 +811,38 @@ with st.spinner('Actualizando Reporte...'):
                 help='Seleccione la variable específica a graficar'
             )
 
+        # Botones de pausa/play y cambio de vista temporal DEBAJO de la gráfica
+        if 'auto_refresh' not in st.session_state:
+            st.session_state['auto_refresh'] = True
+        if 'temporal_view_idx' not in st.session_state:
+            st.session_state['temporal_view_idx'] = 0  # 0: 1h, 1d, 1w, Todo
+        temporal_views = [
+            ("1 hora", timedelta(hours=1)),
+            ("1 día", timedelta(days=1)),
+            ("1 semana", timedelta(weeks=1)),
+            ("Todo", None)
+        ]
+        current_view, current_delta = temporal_views[st.session_state['temporal_view_idx']]
+
+        # Filtrar datos para la gráfica según la vista temporal
+        df_plot = df.copy()
+        if current_delta is not None:
+            max_time = df_plot['fecha_hora'].max()
+            min_time = max_time - current_delta
+            df_plot = df_plot[df_plot['fecha_hora'] >= min_time]
+
         # Crear gráfico
         fig = go.Figure()
-
-        # Agregar la línea de datos
         fig.add_trace(
             go.Scatter(
-                x=df['fecha_hora'],
-                y=df[variable],
+                x=df_plot['fecha_hora'],
+                y=df_plot[variable],
                 name=variable,
                 line=dict(
                     color=VARIABLES_CONFIG[categoria]['color'],
                     width=2
                 )
             )
-        )
-
-        # Agregar línea nominal si es tensión
-        if categoria == 'Tensiones':
-            fig.add_hline(
-                y=VARIABLES_CONFIG[categoria]['nominal'],
-                line_dash="dash",
-                line_color="rgba(255,0,0,0.5)",
-                annotation_text="Valor nominal"
             )
 
         # Actualizar diseño
@@ -790,13 +877,11 @@ with st.spinner('Actualizando Reporte...'):
             font=dict(color='#222')
         )
 
-        # Mostrar gráfico
+        # Mostrar la gráfica PRIMERO
         st.plotly_chart(fig, use_container_width=True)
 
-        # Botón de pausa/play debajo del gráfico
-        if 'auto_refresh' not in st.session_state:
-            st.session_state['auto_refresh'] = True
-        col_pause, _ = st.columns([0.18, 0.82])
+        # Luego mostrar los botones DEBAJO de la gráfica
+        col_pause, col_temporal, _ = st.columns([0.30, 0.50, 1.5])
         with col_pause:
             if st.session_state['auto_refresh']:
                 if st.button('⏸️ Pausar actualización', key='pause_btn'):
@@ -805,6 +890,10 @@ with st.spinner('Actualizando Reporte...'):
                 if st.button('▶️ Reanudar actualización', key='resume_btn'):
                     st.session_state['auto_refresh'] = True
                     st.rerun()
+        with col_temporal:
+            if st.button(f'Cambiar vista temporal: {current_view}', key='temporal_btn'):
+                st.session_state['temporal_view_idx'] = (st.session_state['temporal_view_idx'] + 1) % len(temporal_views)
+                st.rerun()
 
         # Mostrar estadísticas básicas
         col1, col2, col3, col4 = st.columns(4)
@@ -812,75 +901,54 @@ with st.spinner('Actualizando Reporte...'):
         with col1:
             st.metric(
                 label=f"Valor actual",
-                value=f"{df[variable].iloc[-1]:.2f} {VARIABLES_CONFIG[categoria]['unidad']}"
+                value=f"{df_plot[variable].iloc[-1]:.2f} {VARIABLES_CONFIG[categoria]['unidad']}"
             )
 
         with col2:
             st.metric(
                 label=f"Promedio",
-                value=f"{df[variable].mean():.2f} {VARIABLES_CONFIG[categoria]['unidad']}"
+                value=f"{df_plot[variable].mean():.2f} {VARIABLES_CONFIG[categoria]['unidad']}"
             )
 
         with col3:
             st.metric(
                 label=f"Máximo",
-                value=f"{df[variable].max():.2f} {VARIABLES_CONFIG[categoria]['unidad']}"
+                value=f"{df_plot[variable].max():.2f} {VARIABLES_CONFIG[categoria]['unidad']}"
             )
 
         with col4:
             st.metric(
                 label=f"Mínimo",
-                value=f"{df[variable].min():.2f} {VARIABLES_CONFIG[categoria]['unidad']}"
+                value=f"{df_plot[variable].min():.2f} {VARIABLES_CONFIG[categoria]['unidad']}"
             )
+            
+        # Mostrar tabla de eventos
+        st.header("📋 Filtro de eventos por fecha")
+
+        col1_eventos, col2_eventos = st.columns(2)
+        with col1_eventos:
+            fecha_inicio_eventos = st.date_input("Fecha inicial eventos", value=datetime.now().date() - timedelta(days=7))
+        with col2_eventos:
+            fecha_fin_eventos = st.date_input("Fecha final eventos", value=datetime.now().date())
+        # Convertir a datetime completos para el rango
+        fecha_inicio_dt = datetime.combine(fecha_inicio_eventos, datetime.min.time())
+        fecha_fin_dt = datetime.combine(fecha_fin_eventos, datetime.max.time())
+        load_eventos(fecha_inicio_dt, fecha_fin_dt)
 
         # Continuar con el resto del código (filtros de fecha, etc.)
-        st.markdown("""
-            <div class="section-container">
-                <h3 style='margin-bottom: 1rem; color: #2d3748; font-weight: 700;'>📅 Selección de período</h3>
-            </div>
-        """, unsafe_allow_html=True)
+        st.header("🔍 Filtro para exportación de variables")
         
-        col1, col2, col3, col4 = st.columns(4)
+        # Filtros de tipo de dato y variable
+        col_tipo, col_variable = st.columns(2)
         
-        with col1:
-            fecha_inicio = st.date_input(
-                "Fecha inicial",
-                min_value=df['fecha_hora'].min().date(),
-                max_value=df['fecha_hora'].max().date(),
-                value=df['fecha_hora'].min().date()
-            )
-        
-        with col2:
-            hora_inicio = st.time_input('Hora inicial', value=datetime.min.time())
-            
-        with col3:
-            fecha_fin = st.date_input(
-                "Fecha final",
-                min_value=df['fecha_hora'].min().date(),
-                max_value=df['fecha_hora'].max().date(),
-                value=df['fecha_hora'].max().date()
-            )
-            
-        with col4:
-            hora_fin = st.time_input('Hora final', value=datetime.max.time())
-
-        # Tercera fila - Filtros de datos
-        st.markdown("""
-            <div class="section-container">
-                <h3 style='margin-bottom: 1rem; color: #2d3748; font-weight: 700;'>🔍 Filtros de datos</h3>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
+        with col_tipo:
             tipo_dato = st.selectbox(
                 "Tipo de dato",
                 options=['Todos', 'Tensiones', 'Corrientes', 'Potencias'],
                 help="Seleccione el tipo de datos que desea visualizar"
             )
             
-        with col2:
+        with col_variable:
             if tipo_dato == 'Tensiones':
                 variables = ['Todas', 'Ua', 'Ub', 'Uc', 'Ur', 'Us', 'Ut', 'Uab', 'Ubc', 'Uca', 'Urs', 'Ust', 'Utr']
             elif tipo_dato == 'Corrientes':
@@ -896,6 +964,31 @@ with st.spinner('Actualizando Reporte...'):
                 options=variables,
                 help="Seleccione la variable específica para exportar"
             )
+
+        # Filtros de fecha y hora
+        col_fi, col_hi, col_ff, col_hf = st.columns(4)
+        
+        with col_fi:
+            fecha_inicio = st.date_input(
+                "Fecha inicial",
+                min_value=df['fecha_hora'].min().date(),
+                max_value=df['fecha_hora'].max().date(),
+                value=df['fecha_hora'].min().date()
+            )
+        
+        with col_hi:
+            hora_inicio = st.time_input('Hora inicial', value=datetime.min.time())
+            
+        with col_ff:
+            fecha_fin = st.date_input(
+                "Fecha final",
+                min_value=df['fecha_hora'].min().date(),
+                max_value=df['fecha_hora'].max().date(),
+                value=df['fecha_hora'].max().date()
+            )
+            
+        with col_hf:
+            hora_fin = st.time_input('Hora final', value=datetime.max.time())
 
         # Filtrar DataFrame según selección
         df_filtered = filter_dataframe(df, fecha_inicio, hora_inicio, fecha_fin, hora_fin)
@@ -948,23 +1041,6 @@ with st.spinner('Actualizando Reporte...'):
             # Agregar el auto-refresh (15 segundos = 15000 ms)
             if st.session_state['auto_refresh']:
                 count = st_autorefresh(interval=15000, key="fizzbuzzcounter")
-
-# Mostrar tabla de eventos
-st.markdown("""
-    <div class="section-container">
-        <h2 style='margin-bottom: 1rem; color: #2d3748; font-weight: 700;'>📋 Filtro de eventos por fecha</h2>
-    </div>
-""", unsafe_allow_html=True)
-
-col1, col2 = st.columns(2)
-with col1:
-    fecha_inicio = st.date_input("Fecha inicial eventos", value=datetime.now().date() - timedelta(days=7))
-with col2:
-    fecha_fin = st.date_input("Fecha final eventos", value=datetime.now().date())
-# Convertir a datetime completos para el rango
-fecha_inicio_dt = datetime.combine(fecha_inicio, datetime.min.time())
-fecha_fin_dt = datetime.combine(fecha_fin, datetime.max.time())
-load_eventos(fecha_inicio_dt, fecha_fin_dt)
 
 # Pie de página
 st.markdown('''
