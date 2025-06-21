@@ -11,27 +11,16 @@ cd ..
 echo "✅ Servidor detenido."
 echo "----------------------------------------------------"
 
-# Detener los contenedores de Docker de la base de datos
-echo "2. Deteniendo la base de datos InfluxDB..."
-cd database_InfluxDB
+# Detener los contenedores de Docker de la base de datos y la web
+echo "2. Deteniendo la base de datos InfluxDB y la web Streamlit..."
 docker compose down
-cd ..
-echo "✅ Base de datos detenida."
+echo "✅ Base de datos y web detenida."
 echo "----------------------------------------------------"
 
 # Detener el proceso del cliente Python
 echo "3. Deteniendo el cliente Python..."
-# Busca y mata cualquier proceso llamado 'python3 client.py'
-pkill -f "python3 client.py"
+# Mata cualquier proceso llamado 'client.py'
+pkill -f client.py
 echo "✅ Cliente detenido."
 echo "----------------------------------------------------"
-
-# Detener el contenedor de Streamlit
-echo "4. Deteniendo la página web..."
-cd Streamlit
-docker compose down
-cd ..
-echo "✅ Página web detenida."
-echo "----------------------------------------------------"
-
 echo "👍 Todos los servicios han sido detenidos."

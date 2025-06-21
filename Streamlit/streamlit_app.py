@@ -36,7 +36,7 @@ st.set_page_config(
 # count = st_autorefresh(interval=15000, key="datarefresh")
 
 # 3. Resto de las importaciones y configuraciones
-INFLUXDB_URL = "http://localhost:8086"
+INFLUXDB_URL = "http://influxdb:8086"
 INFLUXDB_TOKEN = "9b87FS8_-PvJYOYfVlU5-7MF6Oes9jhgFWitRcZp7-efOsaI3tMLoshBGdAQM_m-akDeE7fd1IoRNl8-aOzQwg=="
 INFLUXDB_ORG = "Fila3"
 INFLUXDB_BUCKET = "Fila3"
@@ -944,7 +944,7 @@ with st.spinner('Actualizando Reporte...'):
         with col_tipo:
             tipo_dato = st.selectbox(
                 "Tipo de dato",
-                options=['Todos', 'Tensiones', 'Corrientes', 'Potencias'],
+                options=['Todos', 'Tensiones', 'Corrientes', 'Potencias', 'Frecuencias', 'Factor de potencia'],
                 help="Seleccione el tipo de datos que desea visualizar"
             )
             
@@ -956,6 +956,10 @@ with st.spinner('Actualizando Reporte...'):
             elif tipo_dato == 'Potencias':
                 variables = ['Todas', 'KVA_A', 'KVA_B', 'KVA_C', 'KW_A', 'KW_B', 'KW_C',
                             'KVAr_A', 'KVAr_B', 'KVAr_C', 'KVA_total', 'KVAr_total', 'KW_total']
+            elif tipo_dato == 'Frecuencias':
+                variables = ['Todas', 'Freq_abc', 'Freq_rst']
+            elif tipo_dato == 'Factor de potencia':
+                variables = ['Todos', 'FP_total', 'FP_A', 'FP_B', 'FP_C']
             else:
                 variables = ['Todas']
             

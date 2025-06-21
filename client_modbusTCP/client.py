@@ -25,7 +25,6 @@ input_registers = [
     ("FP_total", 67), ("FP_A", 68), ("FP_B", 69), ("FP_C", 70),
 ]
 
-# Mapeo de direcciones booleanas a nombres técnicos
 discrete_inputs = {
     3: "AR initiated",
     43: "Open (EF1+)",
@@ -39,7 +38,6 @@ discrete_inputs = {
     106: "SIM Module Fault",
 }
 
-# Mapeo de direcciones a descripciones legibles
 descripciones_eventos = {
     3: "Se inició un ciclo de reconexión automática",
     43: "Apertura por falla a tierra positiva",
@@ -55,29 +53,36 @@ descripciones_eventos = {
 
 def guardar_en_influxdb(write_api, analogos, eventos):
     point = Point("mediciones_recloser")
-
-    # Campos analógicos
     for nombre, valor in analogos.items():
-        if nombre.startswith("Freq") or nombre.startswith("FP"):
-            valor = valor / 100.0
         point.field(nombre, valor)
-
-    # Campo eventos como string
     if eventos:
         eventos_str = ", ".join(eventos)
         point.field("eventos", eventos_str)
-
     write_api.write(bucket=INFLUXDB_BUCKET, record=point)
+
+def conectar_influxdb():
+    while True:
+        try:
+            influx_client = InfluxDBClient(
+                url=INFLUXDB_URL, token=INFLUXDB_TOKEN, org=INFLUXDB_ORG, timeout=5000
+            )
+            # Verificar conectividad intentando obtener información de la organización
+            _ = influx_client.ping()
+            print("✅ Conexión a InfluxDB establecida.")
+            return influx_client
+        except Exception as e:
+            print(f"[ERROR] No se pudo conectar a InfluxDB: {e}")
+            print("Reintentando en 10 segundos...")
+            time.sleep(10)
 
 def main():
     client = ModbusTcpClient(MODBUS_HOST, port=MODBUS_PORT)
-    influx_client = InfluxDBClient(url=INFLUXDB_URL, token=INFLUXDB_TOKEN, org=INFLUXDB_ORG)
-    write_api = influx_client.write_api(write_options=SYNCHRONOUS)
-
     if not client.connect():
         print("No se pudo conectar al servidor Modbus.")
         return
 
+    influx_client = conectar_influxdb()
+    write_api = influx_client.write_api(write_options=SYNCHRONOUS)
     estados_anteriores = {offset: None for offset in discrete_inputs}
 
     try:
@@ -86,17 +91,21 @@ def main():
             eventos = []
             print("\n--- Consulta de registros ---")
 
-            # Lectura de registros analógicos
             for nombre, offset in input_registers:
                 result = client.read_input_registers(offset, count=1)
                 if result.isError():
                     print(f"[ERROR] {nombre} (30000+{offset}): {result}")
                 else:
-                    valor = result.registers[0]
+                    valor_raw = result.registers[0]
+                    if offset in (60, 61):
+                        valor = valor_raw / 100.0
+                    elif offset in range(67, 71):
+                        valor = valor_raw / 1000.0
+                    else:
+                        valor = valor_raw
                     analogos[nombre] = valor
                     print(f"{nombre} = {valor}")
 
-            # Lectura de eventos
             for offset, nombre_tecnico in discrete_inputs.items():
                 result = client.read_discrete_inputs(offset, count=1)
                 if result.isError():
@@ -104,21 +113,22 @@ def main():
                 else:
                     estado = result.bits[0]
                     estado_anterior = estados_anteriores[offset]
-
                     if estado_anterior is None:
                         estados_anteriores[offset] = estado
                     elif estado != estado_anterior:
                         descripcion = descripciones_eventos.get(offset, nombre_tecnico)
                         eventos.append(descripcion)
                         estados_anteriores[offset] = estado
-
                     print(f"{nombre_tecnico} = {'ON' if estado else 'OFF'}")
 
-            guardar_en_influxdb(write_api, analogos, eventos)
-            if eventos:
-                print(f"Eventos detectados y guardados: {', '.join(eventos)}")
-            else:
-                print("No hubo eventos nuevos.")
+            try:
+                guardar_en_influxdb(write_api, analogos, eventos)
+                if eventos:
+                    print(f"Eventos detectados y guardados: {', '.join(eventos)}")
+                else:
+                    print("No hubo eventos nuevos.")
+            except Exception as e:
+                print(f"[ERROR] Al guardar en InfluxDB: {e}")
 
             time.sleep(15)
 
