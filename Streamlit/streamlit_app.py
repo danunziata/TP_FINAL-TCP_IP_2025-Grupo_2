@@ -959,7 +959,7 @@ with st.spinner('Actualizando Reporte...'):
             elif tipo_dato == 'Frecuencias':
                 variables = ['Todas', 'Freq_abc', 'Freq_rst']
             elif tipo_dato == 'Factor de potencia':
-                variables = ['Todos', 'FP_total', 'FP_A', 'FP_B', 'FP_C']
+                variables = ['Todas', 'FP_total', 'FP_A', 'FP_B', 'FP_C']
             else:
                 variables = ['Todas']
             
