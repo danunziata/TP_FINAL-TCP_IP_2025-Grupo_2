@@ -15,4 +15,9 @@ nav:
       - Base de Datos InfluxDB: database_influxDB.md
   - Visualización:
       - Página Web con Streamlit: streamlit.md
+  - Documentacion:
+      - Documentación de diseño, implementación y pruebas: Documentacion_de_diseño_implementacion_y_pruebas/Documentacion_de_diseño_implementacion_y_pruebas.md
+      - Especificación de Requerimientos: Especificación_de_Requerimientos/Especificación_de_Requerimientos.md
+      - Manual de Usuario: Manual_usuario/Manual_usuario.md
+
 
