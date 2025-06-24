@@ -33,21 +33,33 @@ streamlit-autorefresh
 
 ### 1. Inicio de sesión y seguridad
 
-La aplicación cuenta con un sistema de autenticación que requiere credenciales institucionales.
+La aplicación cuenta con un sistema de inicio de sesion y registro.
 
-![Inicio de sesión](inicio_sesion_streamlit.png)
+![Inicio de sesión](Inicio_sesion_streamlit.png)
 
 **Características:**
-- Registro con correo institucional (@ing.unrc.edu.ar)
 - Inicio de sesión seguro
-- Almacenamiento de credenciales en formato JSON
-- Interfaz intuitiva con logo institucional
+- Almacenamiento de usuarios registrados.
+_ Registro completo con confirmacion en mail.
+_ El inicio de sesion tiene una duracion de 30 dias.
+- Interfaz intuitiva con logo institucional.
 
-### 2. Guía de uso
+### 2. Encabezado de la página
+
+La aplicación muestra un encabezado institucional con los logos y el nombre del sistema.
+
+![Encabezado de la página](Encabezado_streamlit.png)
+
+**Características:**
+- Visualización de logos institucionales
+- Nombre del sistema destacado
+- Diseño responsivo y profesional
+
+### 3. Guía de uso
 
 La aplicación está diseñada para ser intuitiva y fácil de usar.
 
-![Guía de uso](guia_de_uso_streamlit.png)
+![Guía de uso](Guia_de_uso_streamlit.png)
 
 **Características:**
 - Instrucciones paso a paso
@@ -55,11 +67,11 @@ La aplicación está diseñada para ser intuitiva y fácil de usar.
 - Referencias rápidas
 - Ayuda interactiva
 
-### 3. Guía de datos
+### 4. Guía de datos
 
 Incluye documentación integrada sobre los datos mostrados.
 
-![Guía de datos](guia_de_datos_streamlit.png)
+![Guía de datos](Guia_de_datos_Streamlit.png)
 
 **Características:**
 - Descripción de variables
@@ -67,7 +79,7 @@ Incluye documentación integrada sobre los datos mostrados.
 - Referencias técnicas
 - Ayuda contextual
 
-### 4. Monitoreo en tiempo real
+### 5. Monitoreo en tiempo real
 
 La aplicación muestra gráficos en tiempo real de las variables del recloser.
 
@@ -78,31 +90,32 @@ La aplicación muestra gráficos en tiempo real de las variables del recloser.
 - Gráficos interactivos usando Plotly
 - Visualización de múltiples variables en simultáneo
 - Zoom y herramientas de navegación
-
-### 5. Exportación de datos
-
-Permite exportar los datos mostrados en diferentes formatos.
-
-![Filtrado de datos](filtro_datos_streamlit.png)
-![Exportación de datos](exportacion_datos_streamlit2.png)
-
-**Características:**
-- Exportación a CSV y Excel
-- Selección de rango de fechas
-- Filtrado de variables a exportar
-- Descarga directa desde la interfaz
+_ Visualizacion de Valores Actual, Medios, Maximos y Minimos.
 
 ### 6. Tabla de eventos
 
 Muestra los eventos importantes registrados por el recloser.
 
-![Tabla de eventos](Tablas_de_eventos_streamlit.png)
+![Tabla de eventos](Tabla_de_eventos_con_filtrado_streamlit.png)
 
 **Características:**
 - Registro cronológico de eventos
 - Descripción detallada de cada evento
 - Actualización automática
 - Filtrado por fecha y hora
+
+### 7. Exportación de datos
+
+Permite exportar los datos mostrados en diferentes formatos.
+
+![Filtrado de datos](Filtro_para_exportacion_csv.png)
+![Exportación de datos](Tabla_de_visualizacion_de_datos_a_exportar.png)
+
+**Características:**
+- Exportación a CSV y Excel
+- Selección de rango de fechas
+- Filtrado de variables a exportar
+- Descarga directa desde la interfaz
 
 
 ## Guía de uso
