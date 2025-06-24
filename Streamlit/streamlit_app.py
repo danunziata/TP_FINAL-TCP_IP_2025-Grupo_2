@@ -36,7 +36,7 @@ st.set_page_config(
 # count = st_autorefresh(interval=15000, key="datarefresh")
 
 # 3. Resto de las importaciones y configuraciones
-INFLUXDB_URL = "http://influxdb:8086"
+INFLUXDB_URL = "http://localhost:8086"
 INFLUXDB_TOKEN = "9b87FS8_-PvJYOYfVlU5-7MF6Oes9jhgFWitRcZp7-efOsaI3tMLoshBGdAQM_m-akDeE7fd1IoRNl8-aOzQwg=="
 INFLUXDB_ORG = "Fila3"
 INFLUXDB_BUCKET = "Fila3"
@@ -142,7 +142,7 @@ st.markdown(f"""
             min-height: 100vh;
             background: linear-gradient(135deg, #6a89e6 0%, #8f6ed5 100%) !important;
             background-attachment: fixed !important;
-        }}
+        }}  
         .main .block-container {{
             background: none !important;
         }}
@@ -167,6 +167,7 @@ st.markdown(f"""
             display: flex;
             flex-direction: column;
             align-items: center;
+            border: 3px solid #fff !important;
         }}
         .header-text h1 {{
             color: #fff;
@@ -206,19 +207,29 @@ st.markdown(f"""
         }}
         /* Glassmorphism para expanders y tablas */
         .streamlit-expanderHeader {{
-            background: rgba(255,255,255,0.18) !important;
+            background: #d1d8e6 !important;
             border-radius: 14px !important;
             box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.10) !important;
-            backdrop-filter: blur(6px) !important;
-            -webkit-backdrop-filter: blur(6px) !important;
-            border: 1px solid rgba(255,255,255,0.18) !important;
+            color: #222 !important;
+        }}
+        .streamlit-expander, .stExpander {{
+            background: #d1d8e6 !important;
+            border-radius: 18px !important;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10) !important;
+            color: #222 !important;
+        }}
+        .streamlit-expander *, .stExpander * {{
+            color: #222 !important;
         }}
         /* Métricas y tarjetas */
-        div[data-testid="metric-container"] {{
-            background: rgba(255,255,255,0.22) !important;
+        div[data-testid="metric-container"], .stMetric {{
+            background: #d1d8e6 !important;
             border-radius: 16px !important;
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10) !important;
-            border: 1px solid rgba(255,255,255,0.18) !important;
+            border: 1px solid #b0b8c9 !important;
+        }}
+        .stMetric label, .stMetric div[data-testid="metric-value"] {{
+            color: #222 !important;
         }}
         /* Textos claros y con sombra */
         h1, h2, h3, h4, h5, h6, label, .stMarkdown, .stText, .stDataFrame, .stTable {{
@@ -227,9 +238,9 @@ st.markdown(f"""
         }}
         /* Inputs y selectores */
         .stSelectbox > div > div, .stDateInput > div > div, .stTimeInput > div > div {{
-            background: rgba(255,255,255,0.22) !important;
+            background: #d1d8e6 !important;
             border-radius: 12px !important;
-            border: 1.5px solid rgba(255,255,255,0.25) !important;
+            border: 1.5px solid #b0b8c9 !important;
             color: #222 !important;
         }}
         /* Botones */
@@ -287,12 +298,6 @@ st.markdown(f"""
             justify-content: center;
         }}
 
-        /* Forzar el color del texto a blanco para los labels y valores */
-        .stMetric label, .stMetric div[data-testid="metric-value"] {{
-            color: #fff !important;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.10);
-        }}
-
         /* Ajuste responsivo */
         @media (max-width: 768px) {{
             .stMetric {{
@@ -300,25 +305,6 @@ st.markdown(f"""
                 min-height: 60px;
                 padding: 0.7rem 0.2rem 0.7rem 0.2rem !important;
             }}
-        }}
-
-        .streamlit-expander, .stExpander {{
-            background: rgba(255,255,255,0.22) !important;
-            border-radius: 18px !important;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10) !important;
-            border: 1.5px solid rgba(255,255,255,0.18) !important;
-            margin-bottom: 0.5rem !important;
-            margin-top: 0.5rem !important;
-        }}
-
-        .glass-card {{
-            background: rgba(255,255,255,0.22) !important;
-            border-radius: 18px !important;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10) !important;
-            border: 1.5px solid rgba(255,255,255,0.18) !important;
-            padding: 1.5rem 1.5rem 1.5rem 1.5rem !important;
-            margin-bottom: 2rem !important;
-            margin-top: 0.5rem !important;
         }}
 
         body, html, [data-testid="stAppViewContainer"] {{
@@ -348,12 +334,8 @@ st.markdown(f"""
             margin-right: auto !important;
             margin-top: 6vh !important;
             margin-bottom: 6vh !important;
-            background: rgba(255,255,255,0.18) !important;
-            border-radius: 18px !important;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18) !important;
-            padding: 2.2rem 2.2rem 1.5rem 2.2rem !important;
-            backdrop-filter: blur(6px) !important;
-            -webkit-backdrop-filter: blur(6px) !important;
+            background: #d1d8e6 !important;
+            color: #222 !important;
         }}
 
         /* Ajustar títulos de formularios */
@@ -375,9 +357,9 @@ st.markdown(f"""
         /* --- Estilo definitivo para el formulario "Cambiar contraseña" en la sidebar --- */
         [data-testid="stSidebar"] [data-testid="stForm"] {{
             background: linear-gradient(135deg, #6a89e6 0%, #8f6ed5 100%) !important;
-            border-radius: 18px !important;
-            padding: 1.5rem !important;
-            border: 1px solid rgba(255,255,255,0.25) !important;
+        }}
+        [data-testid="stSidebar"] [data-testid="stForm"] * {{
+            color: #fff !important;
         }}
 
         /* Texto del encabezado (h3) y labels dentro del formulario */
@@ -397,6 +379,70 @@ st.markdown(f"""
             background-color: rgba(255, 255, 255, 0.3) !important;
         }}
 
+        /* Selectbox y menú desplegable personalizados */
+        .stSelectbox > div > div {{
+            background: #d1d8e6 !important;
+            color: #222 !important;
+            border-radius: 12px !important;
+            border: 1.5px solid #b0b8c9 !important;
+        }}
+        .stSelectbox label, .stDateInput label, .stTimeInput label {{
+            color: #fff !important;
+        }}
+        /* Forzar el fondo y color del menú desplegable */
+        div[data-baseweb="select"] > div {{
+            background-color: #d1d8e6 !important;
+            color: #222 !important;
+        }}
+        div[data-baseweb="select"] span, div[data-baseweb="select"] input {{
+            color: #222 !important;
+            background: #d1d8e6 !important;
+        }}
+        /* Opciones del menú */
+        div[data-baseweb="menu"] {{
+            background-color: #d1d8e6 !important;
+            color: #222 !important;
+        }}
+        div[data-baseweb="option"] {{
+            background-color: #d1d8e6 !important;
+            color: #222 !important;
+        }}
+        div[data-baseweb="option"]:hover {{
+            background-color: #b0b8c9 !important;
+            color: #222 !important;
+        }}
+
+        /* Personalización de los inputs de fecha */
+        .stDateInput > div > div {{
+            background: #d1d8e6 !important;
+            color: #222 !important;
+            border-radius: 12px !important;
+            border: 1.5px solid #b0b8c9 !important;
+        }}
+        .stDateInput input[type="text"], .stDateInput input[type="date"] {{
+            background: #d1d8e6 !important;
+            color: #222 !important;
+            border-radius: 12px !important;
+            border: none !important;
+        }}
+        /* Fondo sólido para métricas */
+        div[data-testid="metric-container"], .stMetric, div[data-testid="metric-container"] > div, .stMetric > div {{
+            background-color: #d1d8e6 !important;
+        }}
+        /* Fondo y texto para el resumen de datos filtrados */
+        .data-summary {{
+            background: #d1d8e6 !important;
+            color: #222 !important;
+            border-radius: 16px !important;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10) !important;
+            border: 1px solid #b0b8c9 !important;
+        }}
+        .data-summary * {{
+            color: #222 !important;
+        }}
+        .stAuthForm *, .stRegisterForm *, .stForm *, .stLoginForm * {{
+            color: #222 !important;
+        }}
     </style>
     <div class="background-image-blur"></div>
 """, unsafe_allow_html=True)
@@ -480,7 +526,7 @@ def run_auth():
                 padding: 1.5rem 1.6rem;
                 margin-bottom: 1.8rem;
                 display: inline-block;
-                color: #ffffff;
+                color: #0F2E1D;
                 font-weight: bold;
                 font-size: 1.35rem;
                 text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
