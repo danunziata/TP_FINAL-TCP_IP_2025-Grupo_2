@@ -1,0 +1,1736 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../../streamlit/">
+      
+      
+        <link rel="next" href="../../Especificaci%C3%B3n_de_Requerimientos/Especificaci%C3%B3n_de_Requerimientos/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+    
+    
+      
+        <title>Documentación de diseño, implementación y pruebas - Sistema de Monitoreo OSM27 - IPSEP UNRC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.342714a4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#documento-de-diseno-implementacion-y-pruebas" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Sistema de Monitoreo OSM27 - IPSEP UNRC" class="md-header__button md-logo" aria-label="Sistema de Monitoreo OSM27 - IPSEP UNRC" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Sistema de Monitoreo OSM27 - IPSEP UNRC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Documentación de diseño, implementación y pruebas
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Sistema de Monitoreo OSM27 - IPSEP UNRC" class="md-nav__button md-logo" aria-label="Sistema de Monitoreo OSM27 - IPSEP UNRC" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Sistema de Monitoreo OSM27 - IPSEP UNRC
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Inicio
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Parcial_Integrador_Tema_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parcial Integrador
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Preguntas_Cliente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Preguntas para el Cliente
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Requerimientos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Requerimientos
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Diagrama/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Diagrama del Sistema
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Implementación del Sistema
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Implementación del Sistema
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../server_modbusTCP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Servidor Modbus TCP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../client_modbusTCP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cliente Modbus TCP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database_influxDB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Base de Datos InfluxDB
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Visualización
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Visualización
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../streamlit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Página Web con Streamlit
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Documentacion
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Documentacion
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Documentación de diseño, implementación y pruebas
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documentación de diseño, implementación y pruebas
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#visualizacion-de-datos-equipo-noja" class="md-nav__link">
+    <span class="md-ellipsis">
+      Visualización de Datos Equipo NOJA
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Visualización de Datos Equipo NOJA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nivel-de-difusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nivel de difusión
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sobre-este-documento" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sobre este documento
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lista-de-modificaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lista de Modificaciones
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lista-de-distribucion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lista de Distribución
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      Índice
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introducción
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alcance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alcance
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#terminos-definiciones-y-terminos-abreviados" class="md-nav__link">
+    <span class="md-ellipsis">
+      Términos, definiciones y términos abreviados
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Términos, definiciones y términos abreviados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#terminos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Términos
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terminos-abreviados" class="md-nav__link">
+    <span class="md-ellipsis">
+      Términos abreviados
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arquitectura-del-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Arquitectura del sistema
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Arquitectura del sistema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vision-general" class="md-nav__link">
+    <span class="md-ellipsis">
+      Visión general
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diagrama-de-componentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Diagrama de componentes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subsistemas-y-modulos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Subsistemas y módulos
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comunicaciones-e-integraciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comunicaciones e integraciones
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Especificaci%C3%B3n_de_Requerimientos/Especificaci%C3%B3n_de_Requerimientos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Especificación de Requerimientos
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Manual_usuario/Manual_usuario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Manual de Usuario
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../conclusion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Conclusión
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#visualizacion-de-datos-equipo-noja" class="md-nav__link">
+    <span class="md-ellipsis">
+      Visualización de Datos Equipo NOJA
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Visualización de Datos Equipo NOJA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nivel-de-difusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Nivel de difusión
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sobre-este-documento" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sobre este documento
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lista-de-modificaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lista de Modificaciones
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lista-de-distribucion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Lista de Distribución
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      Índice
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      Introducción
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#alcance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Alcance
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#terminos-definiciones-y-terminos-abreviados" class="md-nav__link">
+    <span class="md-ellipsis">
+      Términos, definiciones y términos abreviados
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Términos, definiciones y términos abreviados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#terminos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Términos
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terminos-abreviados" class="md-nav__link">
+    <span class="md-ellipsis">
+      Términos abreviados
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#arquitectura-del-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Arquitectura del sistema
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Arquitectura del sistema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vision-general" class="md-nav__link">
+    <span class="md-ellipsis">
+      Visión general
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diagrama-de-componentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Diagrama de componentes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subsistemas-y-modulos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Subsistemas y módulos
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comunicaciones-e-integraciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comunicaciones e integraciones
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="documento-de-diseno-implementacion-y-pruebas">Documento de Diseño, Implementación y Pruebas</h1>
+<p><strong>Revisión:</strong> 00<br />
+<strong>Fecha:</strong> 09/06/2025</p>
+<hr />
+<h2 id="visualizacion-de-datos-equipo-noja">Visualización de Datos Equipo NOJA</h2>
+<table>
+<thead>
+<tr>
+<th>Fecha de entrega</th>
+<th>23/06/2025</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fecha de inicio del Proyecto</td>
+<td>19/05/2025</td>
+</tr>
+<tr>
+<td>Duración</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Asunto</td>
+<td>Obtención y visualización de datos del equipo reconectador NOJA Power.</td>
+</tr>
+<tr>
+<td>Socios para este entregable</td>
+<td>Juan Carlos Amati, Pablo Solivellas, Daniel Anunziata</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nivel-de-difusion">Nivel de difusión</h3>
+<table>
+<thead>
+<tr>
+<th>Nivel</th>
+<th>Descripción</th>
+<th>Observaciones</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PU</td>
+<td>Público.</td>
+<td></td>
+</tr>
+<tr>
+<td>UI</td>
+<td>Uso interno, para uso interno de IPSEP. No está permitida la distribución libre de la información fuera de la organización.</td>
+<td></td>
+</tr>
+<tr>
+<td>RS</td>
+<td>Restringido bajo las condiciones establecidas en el Modelo de Acuerdo de Trabajo. La versión que proporcionará F3-Telecomunicaciones tendrá toda la información necesaria para realizar su evaluación.</td>
+<td><strong>X</strong></td>
+</tr>
+<tr>
+<td>CO</td>
+<td>Confidencial, IPSEP solo proveerá una versión del documento mediante un acuerdo de confidencialidad previo por escrito a tal fin.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>© F3-Telecomunicaciones 2025, todos los derechos reservados.</p>
+<hr />
+<p><strong>Código:</strong> 2606<br />
+<strong>Fecha:</strong> 09/06/2025<br />
+<strong>Revisión:</strong> 0</p>
+<hr />
+<h2 id="sobre-este-documento">Sobre este documento</h2>
+<p><strong>Preparado por:</strong><br />
+Equipo F3-Telecomunicaciones</p>
+<p><strong>Responsable:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Nombre</th>
+<th>Fecha</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Milanesio, Valentín</td>
+<td>09/06/2025</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Revisado por:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Nombre</th>
+<th>Fecha</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Solivellas, Pablo</td>
+<td>09/06/2025</td>
+</tr>
+<tr>
+<td>Anunziata, Daniel</td>
+<td>09/06/2025</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Aprobado por:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Nombre</th>
+<th>Fecha</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Solivellas, Pablo</td>
+<td>09/06/2025</td>
+</tr>
+<tr>
+<td>Anunziata, Daniel</td>
+<td>09/06/2025</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>NOTA IMPORTANTE:</strong>
+El contenido de este documento es propiedad intelectual de F3-Telecomunicaciones y no podrá ser copiado en su totalidad, en parte o reproducido (ya sea por medio de fotografía, reprografía o cualquier otro método) y su contenido no será divulgado a ninguna otra persona u organización sin el consentimiento previo por escrito de F3-Telecomunicaciones. Dicho consentimiento se otorga automáticamente a IPSEP para su uso y distribución.</p>
+</blockquote>
+<hr />
+<h2 id="lista-de-modificaciones">Lista de Modificaciones</h2>
+<table>
+<thead>
+<tr>
+<th>VERSIÓN</th>
+<th>FECHA</th>
+<th>PÁGINAS</th>
+<th>CAMBIOS</th>
+<th>OBSERVACIONES</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>00</td>
+<td>09/06/2025</td>
+<td>TODAS</td>
+<td>REVISIÓN INICIAL</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="lista-de-distribucion">Lista de Distribución</h2>
+<table>
+<thead>
+<tr>
+<th>FECHA</th>
+<th>NOMBRE</th>
+<th>FUNCIÓN</th>
+<th>ORGANIZACIÓN</th>
+<th>Nº COPIAS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>09/06/2025</td>
+<td>Juan Carlos Amati</td>
+<td>BENEFICIARIO</td>
+<td>IPSEP</td>
+<td>1</td>
+</tr>
+<tr>
+<td>09/06/2025</td>
+<td>Pablo Solivellas</td>
+<td>REVISIÓN</td>
+<td>LABREDES</td>
+<td>1</td>
+</tr>
+<tr>
+<td>09/06/2025</td>
+<td>Daniel Anunziata</td>
+<td>REVISIÓN</td>
+<td>LABREDES</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="indice">Índice</h2>
+<ol>
+<li><a href="#introducción">Introducción</a></li>
+<li><a href="#alcance">Alcance</a></li>
+<li><a href="#términos-definiciones-y-términos-abreviados">Términos, definiciones y términos abreviados</a></li>
+<li><a href="#arquitectura-del-sistema">Arquitectura del sistema</a></li>
+<li><a href="#diseño-de-componentes">Diseño de componentes</a></li>
+<li><a href="#diseño-de-datos">Diseño de datos</a></li>
+<li><a href="#implementación">Implementación</a></li>
+<li><a href="#pruebas-y-calidad">Pruebas y calidad</a></li>
+<li><a href="#despliegue-y-operación">Despliegue y operación</a></li>
+<li><a href="#bibliografía">Bibliografía</a></li>
+<li><a href="#anexos">Anexos</a></li>
+</ol>
+<hr />
+<h2 id="introduccion">Introducción</h2>
+<p>Este documento describe el diseño y la implementación del software para el proyecto <em>Visualización de datos equipo NOJA</em>, desarrollado en el marco de contrato y destinado a IPSEP. Su objetivo es presentar:</p>
+<ul>
+<li>La arquitectura global del sistema, detallando los distintos módulos y su interacción.</li>
+<li>Los patrones de diseño y las decisiones tecnológicas empleadas.</li>
+<li>El diseño de datos: modelos, esquemas y flujos de información.</li>
+<li>El plan de implementación: estructura del código, estándares de calidad y herramientas de compilación e integración continua.</li>
+<li>La estrategia de pruebas y el despliegue en los entornos previstos.</li>
+</ul>
+<p>El documento ha sido producido siguiendo las pautas de los estándares de documentación previstos en las normas vigentes y en la documentación de soporte del proyecto. El mismo está organizado en las siguientes secciones:</p>
+<ul>
+<li><strong>Sección 1:</strong> Introducción. Propósito, alcance y referencias bibliográficas.</li>
+<li><strong>Sección 2:</strong> Arquitectura del Sistema. Diagrama de componentes, descripción de subsistemas y comunicaciones.</li>
+<li><strong>Sección 3:</strong> Diseño de Componentes. Detalle de cada módulo, sus interfaces y responsabilidades.</li>
+<li><strong>Sección 4:</strong> Diseño de Datos. Detallado de las variables y de su base de datos correspondiente.</li>
+<li><strong>Sección 5:</strong> Implementación. Estructura del repositorio, convenciones de codificación, entorno de desarrollo y automatización de compilación.</li>
+<li><strong>Sección 6:</strong> Pruebas y Calidad. Estrategia de pruebas unitarias, de integración y de aceptación, así como métricas de cobertura.</li>
+<li><strong>Sección 7:</strong> Despliegue y Operación. Procedimiento de instalación, configuración de entornos y monitoreo en producción.</li>
+<li><strong>Bibliografía:</strong> Bibliografía asociada al documento.</li>
+<li><strong>Anexos:</strong> Documentación anexa.</li>
+</ul>
+<hr />
+<h2 id="alcance">Alcance</h2>
+<p>Este documento abarca las fases de diseño conceptual, diseño detallado e implementación del software, incluyendo la definición de la arquitectura, la construcción de los componentes, sus pruebas y su puesta en marcha. Aplica a todo el equipo de desarrollo y al personal de operaciones, de modo que cualquier cambio en la arquitectura o el código debe reflejarse aquí para garantizar:</p>
+<ul>
+<li>La <strong>trazabilidad</strong> de las decisiones de diseño y de los requerimientos hasta el código fuente.</li>
+<li>La <strong>coherencia</strong> entre la documentación, los artefactos de diseño y la implantación.</li>
+<li>La <strong>interfaz</strong> clara entre los stakeholders (usuarios finales y gestores de proyecto) y el equipo técnico.</li>
+</ul>
+<hr />
+<h2 id="terminos-definiciones-y-terminos-abreviados">Términos, definiciones y términos abreviados</h2>
+<h3 id="terminos">Términos</h3>
+<ul>
+<li><strong>Docker:</strong> Plataforma de virtualización ligera que permite empaquetar una aplicación y todas sus dependencias en contenedores.</li>
+<li><strong>Modbus TCP:</strong> Versión del protocolo Modbus que utiliza TCP/IP para la comunicación sobre redes Ethernet.</li>
+<li><strong>Streamlit:</strong> Framework de Python de código abierto que permite construir aplicaciones web interactivas orientadas a la visualización de datos.</li>
+<li><strong>CSV:</strong> Formato de archivo de texto plano que almacena datos en forma tabular, donde cada línea representa una fila y los valores están separados por comas (u otros delimitadores).</li>
+<li><strong>InfluxDB:</strong> Base de datos orientada a series temporales, optimizada para almacenar, consultar y analizar datos.</li>
+</ul>
+<h3 id="terminos-abreviados">Términos abreviados</h3>
+<ul>
+<li><strong>SDITD:</strong> Documento de Diseño, Implementación y Pruebas de Software (Software Design, Implementation and Testing Document).</li>
+<li><strong>HW:</strong> Hardware.</li>
+<li><strong>SW:</strong> Software.</li>
+<li><strong>IPSEP:</strong> Instituto de Protecciones de Sistemas Eléctricos de Potencia.</li>
+</ul>
+<hr />
+<h2 id="arquitectura-del-sistema">Arquitectura del sistema</h2>
+<p>Este apartado describe la visión global de la solución, mostrando cómo se organiza el sistema en componentes y subsistemas. Incluye diagramas de alto nivel, las tecnologías y protocolos empleados, y explica las comunicaciones e integraciones entre los distintos módulos y servicios.</p>
+<h3 id="vision-general">Visión general</h3>
+<p>El sistema está diseñado para realizar el monitoreo automatizado del reconectador NOJA Power OSM27 a través de una arquitectura modular dockerizada. Utiliza el protocolo <strong>ModbusTCP</strong> para comunicarse con el equipo, adquiere métricas eléctricas de interés y las almacena en una base de datos <strong>InfluxDB</strong>.</p>
+<p>El sistema está compuesto por distintos servicios que se orquestan mediante <strong>Docker Compose</strong>, permitiendo portabilidad, despliegue sencillo y escalabilidad. La visualización de datos se realiza mediante una página web con <strong>Streamlit</strong>, y también se ofrece la posibilidad de exportar los datos en formato <strong>CSV</strong> para análisis externo. Toda la información es accesible desde la red del IPSEP y el sistema opera en ciclos de adquisición cada 15 minutos.</p>
+<h3 id="diagrama-de-componentes">Diagrama de componentes</h3>
+<p><img alt="Diagrama de componentes" src="../Aspose.Words.d5034ea1-3f52-4849-836c-c78b197c3d56.006.jpeg" /></p>
+<h3 id="subsistemas-y-modulos">Subsistemas y módulos</h3>
+<p>El sistema está compuesto por los siguientes módulos principales:</p>
+<ul>
+<li><strong>Cliente Modbus:</strong> Servicio en Python que actúa como cliente ModbusTCP. Se conecta periódicamente al OSM27 para adquirir variables eléctricas como tensiones, corrientes, potencias y eventos. Emplea la librería <em>pymodbus</em>.</li>
+<li><strong>InfluxDB:</strong> Base de datos de series temporales. Recibe e indexa los datos eléctricos adquiridos, facilitando consultas eficientes y almacenamiento optimizado por tiempo. Se utiliza la estructura de mediciones con etiquetas y campos personalizables.</li>
+<li><strong>Exportador CSV:</strong> Módulo que permite la exportación de datos históricos desde InfluxDB a archivos <em>.csv</em>, bajo demanda o como tarea periódica. Es útil para respaldos o análisis externos.</li>
+<li><strong>Streamlit Interfaz Web:</strong> Aplicación web creada en <strong>Streamlit</strong>, encargada de presentar las métricas de forma gráfica e intuitiva. Permite acceder a los datos en tiempo real desde cualquier navegador conectado a la red, y soporta visualización por fecha, variable y estado.</li>
+</ul>
+<p>Todos los servicios -salvo el Cliente Modbus- están containerizados y definidos en <em>docker-compose.yml</em>, comunicándose entre sí mediante red Docker interna.</p>
+<hr />
+<h2 id="comunicaciones-e-integraciones">Comunicaciones e integraciones</h2>
+<p>El sistema se basa en una arquitectura distribuida con los siguientes protocolos y tecnologías de integración:</p>
+<ul>
+<li><strong>ModbusTCP:</strong> utilizado por el módulo <em>cliente_modbus</em> para comunicarse con el reconectador NOJA OSM27. El equipo actúa como servidor Modbus, mientras que el módulo Python realiza lecturas sobre registros configurados.</li>
+<li><strong>InfluxDB:</strong> almacena los datos adquiridos en forma de series temporales. El cliente Modbus formatea los datos y los inserta utilizando la API de escritura de InfluxDB (vía HTTP o cliente Python).</li>
+<li><strong>Streamlit:</strong> se encarga de la interfaz gráfica. Se conecta a InfluxDB usando la API de consulta o librerías cliente para recuperar y visualizar los datos dinámicamente en tiempo real.</li>
+<li><strong>Exportación CSV:</strong> los datos pueden ser exportados en archivos CSV para procesamiento adicional o respaldo externo.</li>
+<li><strong>Docker Compose:</strong> todos los servicios están containerizados para facilitar su integración y despliegue. La red Docker interna garantiza la comunicación entre contenedores sin necesidad de configuración adicional.</li>
+</ul>
+<hr />
+<h1 id="diseno-de-componentes">DISEÑO DE COMPONENTES</h1>
+<p>Esta sección profundiza en el diseño interno de cada módulo, describiendo su lógica de funcionamiento, las interfaces que expone y los patrones de diseño aplicados.</p>
+<h2 id="modulo-1-cliente-modbus">Módulo 1: Cliente Modbus</h2>
+<p><strong>Función:</strong></p>
+<p>Este módulo es el encargado de adquirir las métricas eléctricas del reconectador NOJA Power OSM27 utilizando el protocolo <strong>ModbusTCP</strong>. Realiza la conexión como cliente, consulta registros específicos y procesa los datos para su posterior almacenamiento.</p>
+<p><strong>Contexto de uso:</strong></p>
+<p>Cada 15 minutos, ejecuta un ciclo de lectura, adquiere los datos y los publica en la base de datos InfluxDB.</p>
+<p><strong>Tecnologías y librerías utilizadas:</strong></p>
+<ul>
+<li>Python 3.12</li>
+<li><em>pymodbus</em> para comunicación Modbus.</li>
+<li><em>influxdb-client</em> para insertar datos.</li>
+</ul>
+<p><strong>Flujo interno:</strong></p>
+<ol>
+<li>Cargar configuración (IP, puerto, registros, etc.)</li>
+<li>Conectar al servidor Modbus (OSM27)</li>
+<li>Leer los registros configurados (tensiones, corrientes, potencias, etc.)</li>
+<li>Formatear los datos como puntos de serie temporal</li>
+<li>Escribir en InfluxDB</li>
+</ol>
+<p><strong>Interfaces expuestas:</strong></p>
+<p>Este módulo no expone una API pública, ya que actúa como proceso autónomo. Su salida son los puntos insertados en la base de datos.</p>
+<h2 id="modulo-2-influxdb-motor-de-almacenamiento">Módulo 2: InfluxDB (motor de almacenamiento)</h2>
+<p><strong>Función:</strong></p>
+<p>Almacenar series temporales de datos eléctricos provenientes del módulo de adquisición.</p>
+<p><strong>Contexto de uso:</strong></p>
+<p>Ejecutado como contenedor independiente gestionado por Docker Compose. Permite almacenamiento, indexación y consultas eficientes sobre datos con marcas de tiempo.</p>
+<p><strong>Características clave:</strong></p>
+<ul>
+<li>Organización por <em>measurement</em>, <em>fields</em> y <em>tags</em></li>
+<li>Compresión de datos y manejo eficiente de grandes volúmenes</li>
+<li>Consultas por rango de tiempo.</li>
+</ul>
+<p><strong>Interfaces expuestas:</strong></p>
+<ul>
+<li>API HTTP REST para escritura y lectura (8086)</li>
+<li>Cliente Python (<em>influxdb-client</em>) utilizado por los otros módulos</li>
+</ul>
+<h2 id="modulo-3-streamlit-interfaz-web">Módulo 3: Streamlit Interfaz Web</h2>
+<p><strong>Función:</strong></p>
+<p>Interfaz gráfica para visualización de métricas históricas y en tiempo real. Permite al usuario explorar los datos de forma intuitiva mediante gráficos, filtros y selección de variables.</p>
+<p><strong>Contexto de uso:</strong></p>
+<p>Módulo implementado como contenedor Docker independiente, y ejecutado mediante Docker Compose como aplicación web accesible por navegador desde la red del IPSEP.</p>
+<p><strong>Tecnologías:</strong></p>
+<ul>
+<li>Python 3.12-slim</li>
+<li>Streamlit</li>
+<li>influxdb-client (para consultas)</li>
+</ul>
+<p><strong>Flujo de funcionamiento:</strong></p>
+<ol>
+<li>El usuario accede a la interfaz en el navegador.</li>
+<li>La aplicación solicita datos a InfluxDB según los filtros seleccionados.</li>
+<li>Los datos se muestran en gráficos interactivos (líneas, áreas, etc.)</li>
+<li>Permite exportar datos visualizados a CSV desde la interfaz.</li>
+</ol>
+<p><strong>Interfaces expuestas:</strong></p>
+<ul>
+<li>Página web accesible vía <em>http://localhost:8501</em> (o IP del servidor)</li>
+</ul>
+<hr />
+<h1 id="diseno-de-datos">DISEÑO DE DATOS</h1>
+<p>En este apartado se define el modelo de datos que sustenta la aplicación, detallando entidades, relaciones y estructura de almacenamiento.</p>
+<h2 id="esquemas-de-base-de-datos">Esquemas de Base de Datos</h2>
+<p>El sistema utiliza <strong>InfluxDB</strong> como base de datos especializada para el almacenamiento de series temporales. A diferencia de las bases de datos relacionales, InfluxDB no emplea tablas ni claves primarias/foráneas tradicionales. En su lugar, los datos se estructuran en <strong>measurements</strong>, que contienen puntos con:</p>
+<ul>
+<li><strong>timestamp</strong> (marca temporal obligatoria),</li>
+<li><strong>fields</strong> (valores numéricos medidos), y</li>
+<li><strong>tags</strong> (atributos categóricos que permiten segmentación y filtrado).</li>
+</ul>
+<h2 id="diccionario-de-datos">Diccionario de Datos</h2>
+<p>Se detalla a continuación la estructura lógica de la entidad principal del sistema, mediciones, incluyendo campos y etiquetas relevantes, sus tipos de datos, restricciones y descripciones:</p>
+<table>
+<thead>
+<tr>
+<th><strong>Tabla</strong></th>
+<th><strong>Columna</strong></th>
+<th><strong>Tipo de dato</strong></th>
+<th><strong>Descripciones</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mediciones</td>
+<td>Ia</td>
+<td>integer</td>
+<td>Corriente en fase A (Amperes)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>Ib</td>
+<td>integer</td>
+<td>Corriente en fase B (Amperes)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>Ic</td>
+<td>integer</td>
+<td>Corriente en fase C (Amperes)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>Ua</td>
+<td>integer</td>
+<td>Tensión en fase A (Voltios)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>Ub</td>
+<td>integer</td>
+<td>Tensión en fase B (Voltios)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>Uc</td>
+<td>integer</td>
+<td>Tensión en fase C (Voltios)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>Ur</td>
+<td>integer</td>
+<td>Tensión en secuencia R (Voltios)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>Us</td>
+<td>integer</td>
+<td>Tensión en secuencia S (Voltios)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>Ut</td>
+<td>integer</td>
+<td>Tensión en secuencia T (Voltios)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>Uab</td>
+<td>integer</td>
+<td>Tensión entre fases A-B (Voltios)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>Ubc</td>
+<td>integer</td>
+<td>Tensión entre fases B-C (Voltios)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>Uca</td>
+<td>integer</td>
+<td>Tensión entre fases C-A (Voltios)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>Urs</td>
+<td>integer</td>
+<td>Tensión entre secuencias R-S (Voltios)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>Ust</td>
+<td>integer</td>
+<td>Tensión entre secuencias S-T (Voltios)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>Utr</td>
+<td>integer</td>
+<td>Tensión entre secuencias T-R (Voltios)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>kVA A</td>
+<td>integer</td>
+<td>Potencia aparente fase A (VA)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>kVA B</td>
+<td>integer</td>
+<td>Potencia aparente fase B (VA)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>kVA C</td>
+<td>integer</td>
+<td>Potencia aparente fase C (VA)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>kW A</td>
+<td>integer</td>
+<td>Potencia activa fase A (Watt)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>kW B</td>
+<td>integer</td>
+<td>Potencia activa fase B (Watt)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>kW C</td>
+<td>integer</td>
+<td>Potencia activa fase C (Watt)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>kVAr A</td>
+<td>integer</td>
+<td>Potencia reactiva fase A (VAR)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>kVAr B</td>
+<td>integer</td>
+<td>Potencia reactiva fase B (VAR)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>kVAr C</td>
+<td>integer</td>
+<td>Potencia reactiva fase C (VAR)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>kVA total</td>
+<td>integer</td>
+<td>Potencia aparente total (VA)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>kW total</td>
+<td>integer</td>
+<td>Potencia activa total (Watt)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>kVAr total</td>
+<td>integer</td>
+<td>Potencia reactiva total (VAR)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>Freq abc</td>
+<td>float</td>
+<td>Frecuencia (Hz)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>equipo</td>
+<td>string (TAG)</td>
+<td>Identificador del equipo (ej. “OSM27”)</td>
+</tr>
+<tr>
+<td>mediciones</td>
+<td>ubicación</td>
+<td>string (TAG)</td>
+<td>Ubicación geográfica o lógica del dispositivo</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="implementacion">IMPLEMENTACIÓN</h1>
+<p>La totalidad de los archivos nombrados se encuentran en un repositorio de la plataforma <em>Github</em> bajo el nombre <em>danunziata/TP_FINAL-TCP_IP_2025-Grupo_2</em>.</p>
+<h2 id="estructura-del-repositorio">Estructura del Repositorio</h2>
+<p><em>TP_FINAL-TCP_IP_2025-Grupo_2/</em></p>
+<p><em>├── Documentacion/         # Sitio MKDocs con manuales, diagramas e imágenes ├── Streamlit/                 # Aplicación web para visualizar datos</em></p>
+<p><em>├── client_modbusTCP/        # Cliente Modbus que guarda mediciones en InfluxDB ├── database_InfluxDB/        # Configuración de InfluxDB (Docker Compose, datos) ├── server_modbusTCP/      # Servidor Modbus TCP simulado (Dockerfile y scripts) ├── iniciar_entorno.sh           # Script para levantar cliente, servidor y base de datos ├── detener_entorno.sh        # Script para detener servicios en ejecución</em></p>
+<p><em>└── .github/workflows/           # Workflow de GitHub Actions para notificaciones </em><em>Carpetas principales</em>**</p>
+<p><strong>client_modbusTCP</strong></p>
+<p>Cliente Modbus escrito en Python que se conecta al servidor y guarda registros en <em>InfluxDB</em>. Incluye los scripts <em>client.py</em>, <em>client_once.py</em> y su <em>requirements.txt</em>.</p>
+<p><strong>database_InfluxDB</strong></p>
+<p>Configuración de la base de datos <em>InfluxDB</em>. Contiene el <em>docker-compose.yaml</em> para levantar la base y una carpeta <em>data/</em> con archivos persistentes. Su <em>README</em> explica cómo instalar y operar InfluxDB.</p>
+<p><strong>Streamlit</strong></p>
+<p>Aplicación de visualización en Streamlit. Incluye <em>streamlit_app.py</em>, el archivo <em>config.yaml</em> con usuarios y un <em>requirements.txt</em> con dependencias. También alberga imágenes y recursos para la interfaz.</p>
+<p><strong>Documentación</strong></p>
+<p>Documentos del proyecto en formato <em>Markdown</em> y recursos para <em>MkDoc</em>s. El archivo <em>mkdocs.yml</em> define la navegación del sitio con secciones para diagramas, requerimientos e implementación del sistema.</p>
+<p>La carpeta <em>server_modbusTCP</em> no es analizada ni tenida en cuenta ya que el servidor será el propio equipo para el cual fue desarrollada la aplicación. Esta carpeta presenta un contenedor docker que simula la generación de datos del equipo para que el cliente pueda consultar y enviarlos hacia la base de datos, siguiendo con el flujo presentado.</p>
+<p><strong>Scripts y automatización</strong></p>
+<p><em>iniciar_entorno.sh</em></p>
+<p>Automatiza la puesta en marcha de todo el entorno: verifica e instala dependencias, inicia el cliente a partir de su script de python, levanta InfluxDB y lanza la app de Streamlit.</p>
+<p><em>detener_entorno.sh</em></p>
+<p>Detiene y elimina los contenedores de Docker y finaliza el cliente Modbus en ejecución.</p>
+<p><strong>Integración continua</strong></p>
+<p>En  <em>.github/workflows/deploy.yml</em>  se  define  un  workflow  de  GitHub  Actions  que  envía notificaciones a un webhook de Discord cada vez que se realiza un push o una pull request. El flujo no compila ni ejecuta pruebas; únicamente envía mensajes.</p>
+<h2 id="entorno-de-desarrollo">Entorno de Desarrollo</h2>
+<p><em>El  entorno  de  desarrollo  del  proyecto  se  configura  automáticamente  mediante  el  script</em> iniciar_entorno.sh<em>,  incluido  en  el  repositorio.  Este  script  instala  todas  las  dependencias  necesarias  y levanta los servicios esenciales para la operación del sistema, permitiendo una inicialización reproducible del entorno completo.</em></p>
+<h3 id="lenguaje-base-y-contenedor-principal">Lenguaje base y contenedor principal</h3>
+<ul>
+<li><strong><em>Python 3.11 (imagen base: python:3.11-slim)</em></strong></li>
+</ul>
+<p><code></code><em>Utilizado como entorno de ejecución principal para el servidor Modbus TCP simulado. Esta imagen ligera de Python garantiza compatibilidad con librerías de networking industrial y bajo consumo de recursos.</em></p>
+<h3 id="paquetes-python-requeridos">Paquetes Python requeridos</h3>
+<p><em>Para el funcionamiento completo del sistema, tanto en su backend como en la interfaz web, se utilizan las siguientes librerías:</em></p>
+<ul>
+<li><a href="https://pypi.org/project/influxdb-client/1.38.0/"><strong>*influxdb-client==1.38.0</strong></a><em>: Cliente oficial para InfluxDB v2, utilizado para la escritura y consulta de series temporales desde el servidor Modbus simulado.</em></li>
+<li><a href="https://pypi.org/project/streamlit/"><strong>*streamlit</strong></a> <em>(última versión estable: </em><em>1.35.0</em><em>)  Framework para construir la interfaz web interactiva de visualización.</em></li>
+<li><a href="https://pypi.org/project/pandas/"><strong>*pandas</strong></a> <em>(</em><em>v2.2.2</em><em>)  Para manipulación y procesamiento de datos tabulares.</em></li>
+<li><a href="https://pypi.org/project/plotly/"><strong>*plotly</strong></a> <em>(</em><em>v5.21.0</em><em>)  Generación de gráficos dinámicos y visualizaciones interactivas.</em></li>
+<li><a href="https://pypi.org/project/openpyxl/"><strong>*openpyxl</strong></a> <em>(</em><em>v3.1.2</em><em>)  Soporte para exportación e importación de archivos Excel desde la interfaz.</em></li>
+<li><a href="https://pypi.org/project/mitosheet/"><strong>*mitosheet</strong></a> <em>(</em><em>v0.1.502</em><em>)  Visualización tipo hoja de cálculo para edición rápida de datasets en Streamlit.</em></li>
+<li><a href="https://pypi.org/project/streamlit-autorefresh/"><strong>*streamlit-autorefresh</strong></a> <em>(</em><em>v0.0.4</em><em>)  Permite actualizar automáticamente la interfaz en intervalos definidos.</em></li>
+<li><a href="https://pypi.org/project/streamlit-authenticator/"><strong>*streamlit-authenticator</strong></a> <em>(</em><em>v0.2.2</em><em>)  Módulo de autenticación para proteger el acceso a la interfaz Streamlit.</em></li>
+<li><a href="https://pypi.org/project/pymodbus/"><strong>*pymodbus</strong></a> <em>(</em><em>v3.6.6</em><em>)</em></li>
+</ul>
+<p><code></code><em>Librería utilizada para simular el servidor Modbus TCP y manejar los registros expuestos por el mismo.</em></p>
+<h3 id="contenedores-y-orquestacion">Contenedores y orquestación</h3>
+<ul>
+<li><strong><em>Docker</em>* (</strong>v25.0.3*<em>)  Plataforma para contenerización de la aplicación Python, la base de datos InfluxDB y servicios auxiliares.</em></li>
+<li><strong><em>Docker Compose</em>* (</strong>v2.27.0*<em>)</em></li>
+</ul>
+<p><code></code><em>Herramienta de orquestación para levantar y gestionar los servicios de forma declarativa (archivo ![ref3]</em></p>
+<p><em>docker-compose.yml). Se encarga de iniciar tanto el servidor Modbus como la base de datos InfluxDB.</em></p>
+<hr />
+<h1 id="pruebas-y-calidad">PRUEBAS Y CALIDAD</h1>
+<p>En esta sección se define la estrategia completa de verificación y validación del software.</p>
+<h2 id="checklist-para-verificacion-de-obtencion-de-datos">Checklist para verificación de obtención de datos</h2>
+<ul>
+<li>Correcta conexión con el equipo NOJA Power</li>
+<li>Obtención de datos a partir del protocolo Modbus TCP.</li>
+<li>Guardado de datos en base de datos InfluxDB.</li>
+<li>Visualización de datos en interfaz web a través de Streamlit.</li>
+<li>Posibilidad de exportar datos a partir del formato “.csv”.</li>
+<li>Acceso desde la red interna de la facultad.</li>
+</ul>
+<hr />
+<h1 id="despliegue-y-operacion">DESPLIEGUE Y OPERACIÓN</h1>
+<p>Esta sección establece los procedimientos para la instalación, configuración y mantenimiento del sistema en los entornos de pruebas y producción.</p>
+<h2 id="pre-requisitos">Pre-requisitos</h2>
+<p>Para  instalar  y  operar  la  solución de monitoreo es necesario contar con un entorno que satisfaga ciertos requisitos de hardware, software, red y permisos. A continuación se describen los elementos esenciales basados en la documentación y scripts del repositorio.</p>
+<h3 id="software-basico">Software básico</h3>
+<p>El software básico necesario para la implementación del sistema es el detallado en la sección anterior. El mismo se instala automáticamente al ejecutar el script <em>iniciar_entorno.sh.</em></p>
+<h3 id="configuracion-de-red-y-puertos">Configuración de red y puertos</h3>
+<p>Los  distintos  componentes  utilizan  los  siguientes  puertos  locales,  por  lo  que  deben  estar disponibles y habilitados en la máquina de despliegue:</p>
+<ul>
+<li><strong>5020</strong> – Puerto del servidor Modbus TCP según docker-compose.yaml del servidor:</li>
+<li><strong>8086</strong> – Puerto para la interfaz web y API de InfluxDB</li>
+<li><strong>8501</strong> – Puerto por defecto de la aplicación Streamlit, indicado en la guía de uso.</li>
+</ul>
+<h3 id="requisitos-de-hardware-y-permisos">Requisitos de hardware y permisos</h3>
+<p>Se recomienda contar con un equipo capaz de ejecutar Docker y Docker Compose con al menos algunos gigabytes de memoria disponible para los contenedores de InfluxDB y del simulador Modbus. Además, será necesario:</p>
+<ul>
+<li><strong>Permisos de administrador o pertenencia al grupo docker</strong> para ejecutar los contenedores.</li>
+<li><strong>Conexión de red local</strong> que permita acceder a los puertos indicados (5020, 8086 y 8501).</li>
+<li><strong>Python 3.x</strong> (se usa la imagen python:3.11-slim en el Dockerfile del servidor) para ejecutar los scripts fuera de contenedores si se desea.</li>
+</ul>
+<p>Con  estos  pre<em>‑</em>requisitos  cubiertos,  es  posible  iniciar  el  entorno  mediante  el  script iniciar_entorno.sh, que automatiza la instalación de dependencias y el arranque de los componentes del sistema</p>
+<h2 id="procedimiento-de-despliegue">Procedimiento de Despliegue</h2>
+<p>Se describen de forma detallada los pasos, scripts y comandos necesarios para instalar y actualizar el sistema (realizado para un sistema operativo <em>Linux Xubuntu 22.04</em> y similares):</p>
+<ul>
+<li>Poseer el conjunto completo de scripts detallados en la sección 5, los cuales se encuentran en el repositorio de <em>GitHub</em> nombrado.</li>
+<li>Instalar los requerimientos tanto del cliente modbus como de la interfaz web Streamlit, a partir de los comandos <em>pip install -r client_modbusTCP/requirements.txt</em> para el cliente, y <em>pip install -r Streamlit/requirements.txt</em></li>
+<li>Levantar la base de datos mediante docker compose, a través del comando <em>docker compose up</em> dentro de la carpeta “<em>database_InfluxDB</em>”.</li>
+<li>Iniciar el cliente modbus, el cual debe apuntar a la dirección IP y puerto correspondientes al equipo, mediante el comando <em>python3 client.py</em> dentro de la carpeta <em>“client_modbusTCP”</em>.</li>
+<li>Iniciar  finalmente  la  aplicación  web  para  poder  visualizar  los  datos  correspondientes, mediante el comando <em>streamlit run streamlit_app.py</em> dentro de la carpeta <em>“Streamlit”</em>.</li>
+</ul>
+<p>Para detener el entorno, se deben ejecutar los comandos <em>docker compose down</em> (para dar de baja un contenedor docker) y <em>pkill -f</em> (para matar un proceso python) según corresponda.</p>
+<p>Todo  esto  ha  sido  automatizado  a  partir  de  dos  scripts  de  ejecución  y  detención: <em>iniciar_entorno.sh</em>  y  <em>detener_entorno.sh</em>  respectivamente.  Mediante  la  ejecución  de  estos  dos códigos  <em>bash</em>  se  puede  realizar  la  inicialización  y  detención  automática  de  todo  el  entorno, ejecutandolos desde la carpeta raíz del repositorio <em>GitHub</em>.</p>
+<hr />
+<h1 id="bibliografia">BIBLIOGRAFÍA</h1>
+<p>IEEE Standard 1016-2009: “Software Design Descriptions (SDD)”</p>
+<p>Pressman, Roger S. <em>Ingeniería del Software - Un Enfoque Práctico</em>. Cuarta Edición ed., McGraw-Hill  Companies, 1998.</p>
+<p>Sommerville, Ian. <em>Ingeniería de software</em>. Novena Edición ed., Pearson Education Inc., 2012.</p>
+<p>Thyler, Richard H., et al. <em>Software Requirements Engineering</em>. Second Edition ed., Wiley-IEEE Computer Society Pr., 1997.</p>
+<p>Roos, Patrick (2023). “The Ultimate Guide To Software Architecture Documentation.”</p>
+<p>Mezzalira, Luca (2024). “How to Document Software Architecture: Techniques and Best Practices.” NOJA Power (2024). <em>Guía de comunicación Ethernet con el reconectador NOJA OSM15-16-800</em>.</p>
+<p>NOJA Power (2021). <em>Modbus in Reclosers</em>.<a href="https://www.nojapower.com/expertise/2021/modbus-in-reclosers"> https://www.nojapower.com/expertise/2021/modbus-in-reclosers</a></p>
+<p>InfluxData (2025). <em>InfluxDB Client Library for Python – Documentation</em>.<a href="https://github.com/influxdata/influxdb-client-python"> https://github.com/influxdata/influxdb-client-python</a></p>
+<p>Streamlit Inc. (2025). <em>Streamlit Documentation</em>. https://docs.streamlit.io</p>
+<p>Modbus.org. (2024). <em>Modbus Application Protocol Specification V1.1b3</em>.<a href="https://modbus.org"> https://modbus.org</a></p>
+<hr />
+<p>UNRC  © <em>F3-Telecomunicaciones</em> 2025, todos los derechos reservados.  SDITD</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>

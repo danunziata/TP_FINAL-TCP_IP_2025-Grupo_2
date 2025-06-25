@@ -1,0 +1,1090 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../Diagrama/">
+      
+      
+        <link rel="next" href="../client_modbusTCP/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+    
+    
+      
+        <title>Servidor Modbus TCP - Sistema de Monitoreo OSM27 - IPSEP UNRC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#documentacion-de-la-carpeta-server_modbustcp" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Sistema de Monitoreo OSM27 - IPSEP UNRC" class="md-header__button md-logo" aria-label="Sistema de Monitoreo OSM27 - IPSEP UNRC" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Sistema de Monitoreo OSM27 - IPSEP UNRC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Servidor Modbus TCP
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Sistema de Monitoreo OSM27 - IPSEP UNRC" class="md-nav__button md-logo" aria-label="Sistema de Monitoreo OSM27 - IPSEP UNRC" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Sistema de Monitoreo OSM27 - IPSEP UNRC
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Inicio
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Parcial_Integrador_Tema_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parcial Integrador
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Preguntas_Cliente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Preguntas para el Cliente
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Requerimientos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Requerimientos
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Diagrama/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Diagrama del Sistema
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Implementación del Sistema
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Implementación del Sistema
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Servidor Modbus TCP
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Servidor Modbus TCP
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#estructura-de-archivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Estructura de archivos
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Requisitos
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Requisitos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-dockerfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Dockerfile
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-docker-composeyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. docker-compose.yaml
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-requirementstxt" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. requirements.txt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-serverpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. server.py
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-iniciar-el-servidor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cómo iniciar el servidor
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../client_modbusTCP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cliente Modbus TCP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database_influxDB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Base de Datos InfluxDB
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Visualización
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Visualización
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../streamlit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Página Web con Streamlit
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Documentacion
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Documentacion
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Documentacion_de_dise%C3%B1o_implementacion_y_pruebas/Documentacion_de_dise%C3%B1o_implementacion_y_pruebas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documentación de diseño, implementación y pruebas
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Especificaci%C3%B3n_de_Requerimientos/Especificaci%C3%B3n_de_Requerimientos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Especificación de Requerimientos
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Manual_usuario/Manual_usuario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Manual de Usuario
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../conclusion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Conclusión
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#estructura-de-archivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Estructura de archivos
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#requisitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      Requisitos
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Requisitos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-dockerfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Dockerfile
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-docker-composeyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. docker-compose.yaml
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-requirementstxt" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. requirements.txt
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-serverpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. server.py
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-iniciar-el-servidor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cómo iniciar el servidor
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<!-- filepath: /home/sebalaborda/TP_FINAL-TCP_IP_2025-Grupo_2/Documentacion_TP_TCP_IP/docs/server_modbusTCP.md -->
+
+<h1 id="documentacion-de-la-carpeta-server_modbustcp">Documentación de la carpeta <code>server_modbusTCP</code></h1>
+<p>Esta carpeta contiene un simulador de servidor Modbus TCP, utilizado para pruebas y desarrollo de sistemas de monitoreo eléctrico. El servidor simula variables analógicas y eventos, y expone los datos a través del protocolo Modbus TCP.</p>
+<h2 id="estructura-de-archivos">Estructura de archivos</h2>
+<pre><code>server_modbusTCP/
+├── Dockerfile
+├── README.md
+├── docker-compose.yaml
+├── requirements.txt
+└── server.py
+</code></pre>
+<h2 id="requisitos">Requisitos</h2>
+<ul>
+<li>Docker</li>
+<li>Docker Compose</li>
+</ul>
+<h3 id="1-dockerfile">1. <code>Dockerfile</code></h3>
+<p>El archivo <code>Dockerfile</code> define cómo construir la imagen Docker para el servidor Modbus TCP. Utiliza una imagen base de Python, instala las dependencias necesarias, copia los archivos del proyecto y expone el puerto 5020. Al iniciar el contenedor, ejecuta automáticamente el servidor Modbus TCP.</p>
+<p><strong>¿Qué hace cada sección?</strong>
+- Usa la imagen oficial <code>python:3.11-slim</code> para asegurar un entorno ligero y compatible.
+- Define <code>/app</code> como directorio de trabajo dentro del contenedor.
+- Copia el archivo <code>requirements.txt</code> e instala las dependencias (en este caso, <code>pymodbus</code>).
+- Copia el resto de los archivos del proyecto al contenedor.
+- Expone el puerto 5020 para conexiones Modbus TCP.
+- Define el comando por defecto para ejecutar el servidor (<code>python server.py</code>).</p>
+<p><strong>Contenido del archivo:</strong></p>
+<pre><code class="language-dockerfile"># Usamos una imagen base oficial de Python
+FROM python:3.11-slim
+
+# Definimos directorio de trabajo dentro del contenedor
+WORKDIR /app
+
+# Copiamos el archivo de requerimientos
+COPY requirements.txt .
+
+# Instalamos las dependencias
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiamos todos los scripts al contenedor
+COPY . .
+
+EXPOSE 5020
+
+# Definimos el comando por defecto (puedes cambiarlo luego)
+CMD [&quot;python&quot;, &quot;server.py&quot;]
+</code></pre>
+<hr />
+<h3 id="2-docker-composeyaml">2. <code>docker-compose.yaml</code></h3>
+<p>El archivo <code>docker-compose.yaml</code> permite levantar el servidor Modbus TCP fácilmente usando Docker Compose. Define el servicio, el puerto expuesto y el nombre del contenedor.</p>
+<p><strong>¿Qué hace cada sección?</strong>
+- Define el servicio <code>modbus-server</code> que se construye a partir del <code>Dockerfile</code>.
+- Asigna un nombre fijo al contenedor.
+- Expone el puerto 5020 del contenedor al host.
+- Configura el reinicio automático del contenedor en caso de fallo.</p>
+<p><strong>Contenido del archivo:</strong></p>
+<pre><code class="language-yaml">services:
+  modbus-server:
+    build: .
+    container_name: modbus_server
+    ports:
+      - &quot;5020:5020&quot;
+    restart: unless-stopped
+</code></pre>
+<hr />
+<h3 id="3-requirementstxt">3. <code>requirements.txt</code></h3>
+<p>Este archivo lista las dependencias de Python necesarias para ejecutar el servidor. En este caso, solo se requiere la librería <code>pymodbus</code>.</p>
+<p><strong>Contenido del archivo:</strong></p>
+<pre><code class="language-text">pymodbus
+</code></pre>
+<hr />
+<h3 id="4-serverpy">4. <code>server.py</code></h3>
+<p>El script principal que implementa el servidor Modbus TCP simulado. Utiliza la librería <code>pymodbus</code> para crear el servidor, simula variables analógicas y eventos, y actualiza los valores periódicamente para pruebas y monitoreo.</p>
+<p><strong>¿Qué hace cada sección?</strong>
+- Configura el servidor Modbus TCP y su identidad.
+- Simula registros de entrada (input registers) y entradas discretas (discrete inputs).
+- Actualiza periódicamente los valores de los registros con datos aleatorios para simular variables analógicas y eventos.
+- Permite la conexión de clientes Modbus TCP para pruebas y monitoreo.</p>
+<p><strong>Contenido del archivo:</strong></p>
+<pre><code class="language-python">from pymodbus.server import StartTcpServer
+from pymodbus.device import ModbusDeviceIdentification
+from pymodbus.datastore import ModbusServerContext, ModbusSlaveContext, ModbusSequentialDataBlock
+import logging
+import random
+import time
+from threading import Thread
+
+logging.basicConfig()
+log = logging.getLogger()
+log.setLevel(logging.INFO)
+
+# Simular hasta el registro 30071 → offset 71
+input_registers = [0] * 100
+
+# Simular hasta el discrete input 10107 → offset 106
+discrete_inputs = [False] * 110
+
+store = ModbusSlaveContext(
+    di=ModbusSequentialDataBlock(0, discrete_inputs),
+    co=None,
+    hr=None,
+    ir=ModbusSequentialDataBlock(0, input_registers)
+)
+context = ModbusServerContext(slaves=store, single=True)
+
+# Inicializar estados booleanos persistentes
+boolean_states = {
+    3: False, 43: False, 50: False, 55: False, 59: False,
+    63: False, 75: False, 100: False, 105: False, 106: False
+}
+
+def update_registers(context):
+    change_prob = 0.025  # 10% de probabilidad de cambio
+
+    while True:
+        # Valores analógicos
+        values = {
+            0: random.randint(0, 100),
+            1: random.randint(0, 100),
+            2: random.randint(0, 100),
+            4: random.randint(210, 240),
+            5: random.randint(210, 240),
+            6: random.randint(210, 240),
+            7: random.randint(360, 420),
+            8: random.randint(360, 420),
+            9: random.randint(360, 420),
+            10: random.randint(360, 420),
+            11: random.randint(360, 420),
+            12: random.randint(360, 420),
+            13: random.randint(360, 420),
+            14: random.randint(360, 420),
+            15: random.randint(360, 420),
+            16: random.randint(0, 300),
+            17: random.randint(0, 300),
+            18: random.randint(0, 300),
+            19: random.randint(0, 200),
+            20: random.randint(0, 200),
+            21: random.randint(0, 200),
+            22: random.randint(0, 200),
+            23: random.randint(0, 200),
+            24: random.randint(0, 200),
+            25: random.randint(0, 500),
+            26: random.randint(0, 300),
+            27: random.randint(0, 400),
+            60: random.randint(4900, 5100),
+            61: random.randint(4900, 5100),
+            67: random.randint(900, 1000),
+            68: random.randint(800, 1000),
+            69: random.randint(800, 1000),
+            70: random.randint(800, 1000),
+        }
+
+        # Actualizar input registers
+        for reg, val in values.items():
+            context[0].setValues(4, reg, [val])
+
+        # Determinar si se produce un cambio esporádico en cada booleano
+        updated_booleans = {}
+        for reg in boolean_states:
+            if random.random() &lt; change_prob:
+                boolean_states[reg] = not boolean_states[reg]
+            updated_booleans[reg] = boolean_states[reg]
+            context[0].setValues(2, reg, [int(boolean_states[reg])])
+
+        log.info(f&quot;Actualización de registros: {values} | Eventos: {updated_booleans}&quot;)
+        time.sleep(15)
+
+def run_server():
+    identity = ModbusDeviceIdentification()
+    identity.VendorName = 'SimuladorRecloser'
+    identity.ProductCode = 'RC'
+    identity.VendorUrl = 'http://example.com'
+    identity.ProductName = 'Recloser Simulator'
+    identity.ModelName = 'ModbusTCP'
+    identity.MajorMinorRevision = '1.0'
+
+    thread = Thread(target=update_registers, args=(context,))
+    thread.daemon = True
+    thread.start()
+    StartTcpServer(context, identity=identity, address=(&quot;0.0.0.0&quot;, 5020))
+
+if __name__ == &quot;__main__&quot;:
+    run_server()
+</code></pre>
+<hr />
+<h2 id="como-iniciar-el-servidor">Cómo iniciar el servidor</h2>
+<p><strong>Primera vez (construcción de imagen incluida):</strong></p>
+<pre><code class="language-bash">docker compose up --build
+</code></pre>
+<p><strong>Próximas veces:</strong></p>
+<pre><code class="language-bash">docker compose up
+</code></pre>
+<p>El servidor quedará disponible en <code>localhost:5020</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>

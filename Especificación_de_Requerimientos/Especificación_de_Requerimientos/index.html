@@ -1,0 +1,1237 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../../Documentacion_de_dise%C3%B1o_implementacion_y_pruebas/Documentacion_de_dise%C3%B1o_implementacion_y_pruebas/">
+      
+      
+        <link rel="next" href="../../Manual_usuario/Manual_usuario/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+    
+    
+      
+        <title>Especificación de Requerimientos - Sistema de Monitoreo OSM27 - IPSEP UNRC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.342714a4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#especificacion-de-requerimientos" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Sistema de Monitoreo OSM27 - IPSEP UNRC" class="md-header__button md-logo" aria-label="Sistema de Monitoreo OSM27 - IPSEP UNRC" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Sistema de Monitoreo OSM27 - IPSEP UNRC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Especificación de Requerimientos
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Sistema de Monitoreo OSM27 - IPSEP UNRC" class="md-nav__button md-logo" aria-label="Sistema de Monitoreo OSM27 - IPSEP UNRC" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Sistema de Monitoreo OSM27 - IPSEP UNRC
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Inicio
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Parcial_Integrador_Tema_2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parcial Integrador
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Preguntas_Cliente/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Preguntas para el Cliente
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Requerimientos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Requerimientos
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Diagrama/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Diagrama del Sistema
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Implementación del Sistema
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Implementación del Sistema
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../server_modbusTCP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Servidor Modbus TCP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../client_modbusTCP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Cliente Modbus TCP
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../database_influxDB/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Base de Datos InfluxDB
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Visualización
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Visualización
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../streamlit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Página Web con Streamlit
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Documentacion
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Documentacion
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Documentacion_de_dise%C3%B1o_implementacion_y_pruebas/Documentacion_de_dise%C3%B1o_implementacion_y_pruebas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Documentación de diseño, implementación y pruebas
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Especificación de Requerimientos
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Especificación de Requerimientos
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proyecto
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Introducción
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-descripcion-general" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Descripción general
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-requerimientos-funcionales" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Requerimientos funcionales
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-requerimientos-no-funcionales" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Requerimientos no funcionales
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-requerimientos-deseables" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Requerimientos deseables
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-definicion-de-datos" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Definición de datos
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Conclusión
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Manual_usuario/Manual_usuario/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Manual de Usuario
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../conclusion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Conclusión
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#proyecto" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proyecto
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-introduccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Introducción
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-descripcion-general" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Descripción general
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-requerimientos-funcionales" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Requerimientos funcionales
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-requerimientos-no-funcionales" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Requerimientos no funcionales
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-requerimientos-deseables" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Requerimientos deseables
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-definicion-de-datos" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Definición de datos
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Conclusión
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="especificacion-de-requerimientos">Especificación de Requerimientos</h1>
+<p>Universidad Nacional de Río Cuarto<br />
+Ingeniería en Telecomunicaciones</p>
+<p><strong>Asignatura:</strong> Aplicaciones TCP-IP<br />
+<strong>Fecha:</strong> 25 de junio de 2025</p>
+<p><img alt="Imagen proyecto" src="../Aspose.Words.e64cc4d2-ae6f-440a-a060-be1cda717d41.002.jpeg" /></p>
+<hr />
+<h2 id="proyecto">Proyecto</h2>
+<p><strong>Sistema de Monitoreo para Reconectador Automático NOJA Power</strong><br />
+<strong>Cliente:</strong> IPSEP (Juan Carlos Amati)</p>
+<p><strong>Fecha de inicio de proyecto:</strong> 19/05/2025<br />
+<strong>Fecha de entrega:</strong> 25/06/2025<br />
+<strong>Equipo:</strong> F3 - Grupo 2</p>
+<hr />
+<h2 id="1-introduccion">1. Introducción</h2>
+<p>Este informe documenta los requerimientos del sistema a desarrollar para el monitoreo de un reconectador automático <strong>OSM27</strong> de la marca <strong>NOJA Power</strong>, según lo relevado con el cliente. El objetivo es establecer los lineamientos funcionales y no funcionales para asegurar que el sistema cumpla con las necesidades operativas de monitoreo y análisis de datos eléctricos en tiempo real y de forma remota.</p>
+<hr />
+<h2 id="2-descripcion-general">2. Descripción general</h2>
+<p>El cliente requiere un sistema que permita <strong>obtener, almacenar y visualizar</strong> información crítica del reconectador automático, con el fin de realizar un monitoreo continuo del estado de la red eléctrica. La información debe ser accesible de forma remota a través de un sitio web.</p>
+<hr />
+<h2 id="3-requerimientos-funcionales">3. Requerimientos funcionales</h2>
+<p>A continuación, se enumeran los requerimientos funcionales expresados por el cliente:</p>
+<ol>
+<li>Obtención de las siguientes variables eléctricas del reconectador en función del tiempo:</li>
+<li>Tensiones entre fase.</li>
+<li>Tensiones entre fase y tierra.</li>
+<li>Corrientes de fase a, b y c.</li>
+<li>Potencia activa, reactiva y aparente de cada fase y total.</li>
+<li>Factor de potencia de cada fase y total.</li>
+<li>Frecuencia.</li>
+<li>Registro de las variables con una periodicidad de 15 minutos.</li>
+<li>Registro de cada evento ocurrido según el manual de usuario.</li>
+<li>Provisión de una interfaz web accesible desde dentro de la red de la Universidad, a través de la cual los usuarios podrán consultar los requerimientos 1) y 3).</li>
+<li>Exportación de los datos registrados en formato CSV, con el fin de que el cliente pueda analizarlos de forma independiente.</li>
+<li>La interfaz deberá incluir un filtro para seleccionar un rango de fechas, de modo que se puedan exportar únicamente los datos correspondientes al período deseado.</li>
+</ol>
+<hr />
+<h2 id="4-requerimientos-no-funcionales">4. Requerimientos no funcionales</h2>
+<ol>
+<li>Disponibilidad del sistema en todo momento, mediante su despliegue en un servidor de disponibilidad permanente, accesible a través de un dominio web registrado y operativo.</li>
+<li>Implementación de un sistema de registro de usuarios y autenticación, permitiendo el acceso únicamente a personas autorizadas.</li>
+</ol>
+<hr />
+<h2 id="5-requerimientos-deseables">5. Requerimientos deseables</h2>
+<p>Además de los requerimientos fundamentales, el cliente manifestó interés en que el sistema cuente con las siguientes características deseables:</p>
+<ol>
+<li>Envío de alertas por correo electrónico ante eventos importantes.</li>
+<li>Autenticación por doble factor: registro de nuevos usuarios solicitando la confirmación de la dirección de correo electrónico.</li>
+<li>Conservación de los datos registrados durante un período mínimo de un (1) año, permitiendo su consulta y exportación dentro de ese intervalo temporal.</li>
+</ol>
+<hr />
+<h2 id="6-definicion-de-datos">6. Definición de datos</h2>
+<table>
+<thead>
+<tr>
+<th>Dato</th>
+<th>Abreviatura</th>
+<th>Tipo</th>
+<th>Unidad</th>
+<th>Resolución</th>
+<th>Código</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Corriente fase A</td>
+<td>Ia</td>
+<td>Entero</td>
+<td>Ampere</td>
+<td>1 A</td>
+<td>30001</td>
+</tr>
+<tr>
+<td>Corriente fase B</td>
+<td>Ib</td>
+<td>Entero</td>
+<td>Ampere</td>
+<td>1 A</td>
+<td>30002</td>
+</tr>
+<tr>
+<td>Corriente fase C</td>
+<td>Ic</td>
+<td>Entero</td>
+<td>Ampere</td>
+<td>1 A</td>
+<td>30003</td>
+</tr>
+<tr>
+<td>Tensión fase A - neutro</td>
+<td>Ua</td>
+<td>Entero</td>
+<td>Volt</td>
+<td>1 V</td>
+<td>30005</td>
+</tr>
+<tr>
+<td>Tensión fase B - neutro</td>
+<td>Ub</td>
+<td>Entero</td>
+<td>Volt</td>
+<td>1 V</td>
+<td>30006</td>
+</tr>
+<tr>
+<td>Tensión fase C - neutro</td>
+<td>Uc</td>
+<td>Entero</td>
+<td>Volt</td>
+<td>1 V</td>
+<td>30007</td>
+</tr>
+<tr>
+<td>Tensión entre R - neutro</td>
+<td>Ur</td>
+<td>Entero</td>
+<td>Volt</td>
+<td>1 V</td>
+<td>30008</td>
+</tr>
+<tr>
+<td>Tensión entre S - neutro</td>
+<td>Us</td>
+<td>Entero</td>
+<td>Volt</td>
+<td>1 V</td>
+<td>30009</td>
+</tr>
+<tr>
+<td>Tensión entre T - neutro</td>
+<td>Ut</td>
+<td>Entero</td>
+<td>Volt</td>
+<td>1 V</td>
+<td>30010</td>
+</tr>
+<tr>
+<td>Tensión entre líneas A y B</td>
+<td>Uab</td>
+<td>Entero</td>
+<td>Volt</td>
+<td>1 V</td>
+<td>30011</td>
+</tr>
+<tr>
+<td>Tensión entre líneas B y C</td>
+<td>Ubc</td>
+<td>Entero</td>
+<td>Volt</td>
+<td>1 V</td>
+<td>30012</td>
+</tr>
+<tr>
+<td>Tensión entre líneas C y A</td>
+<td>Uca</td>
+<td>Entero</td>
+<td>Volt</td>
+<td>1 V</td>
+<td>30013</td>
+</tr>
+<tr>
+<td>Tensión L-L entre secuencias RS</td>
+<td>Urs</td>
+<td>Entero</td>
+<td>Volt</td>
+<td>1 V</td>
+<td>30014</td>
+</tr>
+<tr>
+<td>Tensión L-L entre secuencias ST</td>
+<td>Ust</td>
+<td>Entero</td>
+<td>Volt</td>
+<td>1 V</td>
+<td>30015</td>
+</tr>
+<tr>
+<td>Tensión L-L entre secuencias TR</td>
+<td>Utr</td>
+<td>Entero</td>
+<td>Volt</td>
+<td>1 V</td>
+<td>30016</td>
+</tr>
+<tr>
+<td>Potencia aparente fase A</td>
+<td>kVA A</td>
+<td>Entero</td>
+<td>kVA</td>
+<td>1 kVA</td>
+<td>30017</td>
+</tr>
+<tr>
+<td>Potencia aparente fase B</td>
+<td>kVA B</td>
+<td>Entero</td>
+<td>kVA</td>
+<td>1 kVA</td>
+<td>30018</td>
+</tr>
+<tr>
+<td>Potencia aparente fase C</td>
+<td>kVA C</td>
+<td>Entero</td>
+<td>kVA</td>
+<td>1 kVA</td>
+<td>30019</td>
+</tr>
+<tr>
+<td>Potencia activa fase A</td>
+<td>kW A</td>
+<td>Entero</td>
+<td>kW</td>
+<td>1 kW</td>
+<td>30020</td>
+</tr>
+<tr>
+<td>Potencia activa fase B</td>
+<td>kW B</td>
+<td>Entero</td>
+<td>kW</td>
+<td>1 kW</td>
+<td>30021</td>
+</tr>
+<tr>
+<td>Potencia activa fase C</td>
+<td>kW C</td>
+<td>Entero</td>
+<td>kW</td>
+<td>1 kW</td>
+<td>30022</td>
+</tr>
+<tr>
+<td>Potencia reactiva fase A</td>
+<td>kVAr A</td>
+<td>Entero</td>
+<td>kVAr</td>
+<td>1 kVAr</td>
+<td>30023</td>
+</tr>
+<tr>
+<td>Potencia reactiva fase B</td>
+<td>kVAr B</td>
+<td>Entero</td>
+<td>kVAr</td>
+<td>1 kVAr</td>
+<td>30024</td>
+</tr>
+<tr>
+<td>Potencia reactiva fase C</td>
+<td>kVAr C</td>
+<td>Entero</td>
+<td>kVAr</td>
+<td>1 kVAr</td>
+<td>30025</td>
+</tr>
+<tr>
+<td>Potencia aparente total</td>
+<td>kVA total</td>
+<td>Entero</td>
+<td>kVA</td>
+<td>1 kVA</td>
+<td>30026</td>
+</tr>
+<tr>
+<td>Potencia activa total</td>
+<td>kW total</td>
+<td>Entero</td>
+<td>kW</td>
+<td>1 kW</td>
+<td>30027</td>
+</tr>
+<tr>
+<td>Potencia reactiva total</td>
+<td>kVAr total</td>
+<td>Entero</td>
+<td>kVAr</td>
+<td>1 kVAr</td>
+<td>30028</td>
+</tr>
+<tr>
+<td>Frecuencia</td>
+<td>Freq abc</td>
+<td>Decimal</td>
+<td>Hz</td>
+<td>Hz * 0.01</td>
+<td>30061</td>
+</tr>
+<tr>
+<td>Frecuencia lado RST</td>
+<td>Freq rst</td>
+<td>Decimal</td>
+<td>Hz</td>
+<td>Hz * 0.01</td>
+<td>30062</td>
+</tr>
+<tr>
+<td>Factor de potencia total</td>
+<td>Fp total</td>
+<td>Decimal</td>
+<td>-</td>
+<td>*0.001</td>
+<td>30068</td>
+</tr>
+<tr>
+<td>Factor de potencia fase A</td>
+<td>FP A</td>
+<td>Decimal</td>
+<td>-</td>
+<td>*0.001</td>
+<td>30069</td>
+</tr>
+<tr>
+<td>Factor de potencia fase B</td>
+<td>FP B</td>
+<td>Decimal</td>
+<td>-</td>
+<td>*0.001</td>
+<td>30070</td>
+</tr>
+<tr>
+<td>Factor de potencia fase C</td>
+<td>FP C</td>
+<td>Decimal</td>
+<td>-</td>
+<td>*0.001</td>
+<td>30071</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-conclusion">7. Conclusión</h2>
+<p>Este documento resume los requerimientos funcionales y no funcionales identificados durante el relevamiento con el cliente. Servirá como guía para la etapa de diseño e implementación del sistema. Una vez validado por el cliente, se considerará como base contractual del proyecto.</p>
+<p>© F3 2025, todos los derechos reservados.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>
