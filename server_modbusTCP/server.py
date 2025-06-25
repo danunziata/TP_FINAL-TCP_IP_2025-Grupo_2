@@ -10,10 +10,7 @@ logging.basicConfig()
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 
-# Simular hasta el registro 30071 → offset 71
 input_registers = [0] * 100
-
-# Simular hasta el discrete input 10107 → offset 106
 discrete_inputs = [False] * 110
 
 store = ModbusSlaveContext(
@@ -24,17 +21,16 @@ store = ModbusSlaveContext(
 )
 context = ModbusServerContext(slaves=store, single=True)
 
-# Inicializar estados booleanos persistentes
 boolean_states = {
     3: False, 43: False, 50: False, 55: False, 59: False,
     63: False, 75: False, 100: False, 105: False, 106: False
 }
 
 def update_registers(context):
-    change_prob = 0.025  # 10% de probabilidad de cambio
+    change_prob = 0.025  # 2.5% de probabilidad de cambio
 
     while True:
-        # Valores analógicos
+        # Generar valores para registros con enteros "normales"
         values = {
             0: random.randint(0, 100),
             1: random.randint(0, 100),
@@ -63,19 +59,21 @@ def update_registers(context):
             25: random.randint(0, 500),
             26: random.randint(0, 300),
             27: random.randint(0, 400),
-            60: random.randint(4900, 5100),
-            61: random.randint(4900, 5100),
-            67: random.randint(900, 1000),
-            68: random.randint(800, 1000),
-            69: random.randint(800, 1000),
-            70: random.randint(800, 1000),
         }
+
+        # Registros 60 y 61 entre 49 y 51 con resolución 0.01 -> multiplicar por 100
+        values[60] = int(random.uniform(49, 51) * 100)
+        values[61] = int(random.uniform(49, 51) * 100)
+
+        # Registros 67 a 70 entre 0 y 1 con resolución 0.001 -> multiplicar por 1000
+        for reg in range(67, 71):
+            values[reg] = int(random.uniform(0, 1) * 1000)
 
         # Actualizar input registers
         for reg, val in values.items():
             context[0].setValues(4, reg, [val])
 
-        # Determinar si se produce un cambio esporádico en cada booleano
+        # Actualizar estados booleanos
         updated_booleans = {}
         for reg in boolean_states:
             if random.random() < change_prob:
