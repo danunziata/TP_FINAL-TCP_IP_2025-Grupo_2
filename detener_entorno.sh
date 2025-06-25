@@ -17,6 +17,14 @@ docker compose down
 echo "✅ Base de datos y web detenida."
 echo "----------------------------------------------------"
 
+# Paso 4: Monitoreo
+echo "4. Deteniendo servicios de monitoreo de contenedores..."
+cd monitoreo
+docker compose down
+cd ..
+echo "✅ Servicios de monitoreo detenidos."
+echo "----------------------------------------------------"
+
 # Detener el proceso del cliente Python
 echo "3. Deteniendo el cliente Python..."
 # Mata cualquier proceso llamado 'client.py'

@@ -20,6 +20,7 @@ import yaml
 from yaml.loader import SafeLoader
 import warnings
 from influxdb_client.client.warnings import MissingPivotFunction
+import pytz
 
 # Deshabilitar el warning de MissingPivotFunction
 warnings.simplefilter("ignore", MissingPivotFunction)
@@ -36,7 +37,7 @@ st.set_page_config(
 # count = st_autorefresh(interval=15000, key="datarefresh")
 
 # 3. Resto de las importaciones y configuraciones
-INFLUXDB_URL = "http://localhost:8086"
+INFLUXDB_URL = "http://influxdb:8086"
 INFLUXDB_TOKEN = "9b87FS8_-PvJYOYfVlU5-7MF6Oes9jhgFWitRcZp7-efOsaI3tMLoshBGdAQM_m-akDeE7fd1IoRNl8-aOzQwg=="
 INFLUXDB_ORG = "Fila3"
 INFLUXDB_BUCKET = "Fila3"
@@ -50,13 +51,11 @@ with open("images/ipsep_photo.jpeg", "rb") as image_file:
 def filter_dataframe(df, fecha_inicio, hora_inicio, fecha_fin, hora_fin):
     """
     Filtra el DataFrame por fecha y hora.
-    Maneja las zonas horarias correctamente usando UTC.
+    Maneja las zonas horarias correctamente usando America/Argentina/Cordoba.
     """
-    # Crear timestamps UTC para comparación
-    datetime_inicio = pd.Timestamp(datetime.combine(fecha_inicio, hora_inicio)).tz_localize('UTC')
-    datetime_fin = pd.Timestamp(datetime.combine(fecha_fin, hora_fin)).tz_localize('UTC')
-    
-    # Filtrar el DataFrame
+    tz = 'America/Argentina/Cordoba'
+    datetime_inicio = pd.Timestamp(datetime.combine(fecha_inicio, hora_inicio)).tz_localize(tz)
+    datetime_fin = pd.Timestamp(datetime.combine(fecha_fin, hora_fin)).tz_localize(tz)
     mask = (df['fecha_hora'] >= datetime_inicio) & (df['fecha_hora'] <= datetime_fin)
     return df.loc[mask].copy()
 
@@ -112,9 +111,9 @@ def load_eventos(fecha_inicio=None, fecha_fin=None):
         if fecha_inicio is None or fecha_fin is None:
             rango = '|> range(start: 0)'
         else:
-            # Convertir fechas a string en formato RFC3339
-            start = fecha_inicio.strftime('%Y-%m-%dT%H:%M:%SZ')
-            end = fecha_fin.strftime('%Y-%m-%dT%H:%M:%SZ')
+            # Convertir fechas a UTC antes de pasarlas a InfluxDB
+            start = fecha_inicio.astimezone(pytz.UTC).strftime('%Y-%m-%dT%H:%M:%SZ')
+            end = fecha_fin.astimezone(pytz.UTC).strftime('%Y-%m-%dT%H:%M:%SZ')
             rango = f'|> range(start: {start}, stop: {end})'
         query = f'''
         from(bucket: "Fila3")
@@ -129,6 +128,7 @@ def load_eventos(fecha_inicio=None, fecha_fin=None):
             return
         df = df.rename(columns={"_time": "fecha_hora", "_value": "evento"})
         df['fecha_hora'] = pd.to_datetime(df['fecha_hora']).dt.tz_convert('America/Argentina/Cordoba')
+        df = df.sort_values('fecha_hora', ascending=False)
         st.subheader("Tabla de eventos registrados")
         st.dataframe(df[['fecha_hora', 'evento']], use_container_width=True, hide_index=True)
     except Exception as e:
@@ -245,12 +245,12 @@ st.markdown(f"""
         }}
         /* Botones */
         .stButton > button {{
-            background: linear-gradient(135deg, #6a89e6 0%, #8f6ed5 100%) !important;
-            border: 2px solid #fff !important;
+            background: rgba(60, 220, 120, 0.92) !important;
+            border: 2px solid #000000 !important;
             border-radius: 12px !important;
             padding: 0.75rem 1.5rem !important;
             font-weight: 600 !important;
-            color: #fff !important;
+            color: #000000 !important;
             box-shadow: 0 4px 16px rgba(106,137,230,0.18);
             transition: all 0.3s;
         }}
@@ -334,8 +334,12 @@ st.markdown(f"""
             margin-right: auto !important;
             margin-top: 6vh !important;
             margin-bottom: 6vh !important;
-            background: #d1d8e6 !important;
-            color: #222 !important;
+            background: rgba(255,255,255,0.18) !important;
+            border-radius: 18px !important;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18) !important;
+            padding: 2.2rem 2.2rem 1.5rem 2.2rem !important;
+            backdrop-filter: blur(6px) !important;
+            -webkit-backdrop-filter: blur(6px) !important;
         }}
 
         /* Ajustar títulos de formularios */
@@ -359,14 +363,16 @@ st.markdown(f"""
             background: linear-gradient(135deg, #6a89e6 0%, #8f6ed5 100%) !important;
         }}
         [data-testid="stSidebar"] [data-testid="stForm"] * {{
-            color: #fff !important;
+            /* color: #222 !important; */
         }}
-
-        /* Texto del encabezado (h3) y labels dentro del formulario */
-        [data-testid="stSidebar"] [data-testid="stForm"] h3,
-        [data-testid="stSidebar"] [data-testid="stForm"] label {{
-            color: white !important;
+        [data-testid="stSidebar"] [data-testid="stForm"] label,
+        [data-testid="stSidebar"] [data-testid="stForm"] h3 {{
+            color: #fff !important;
             text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+        }}
+        [data-testid="stSidebar"] [data-testid="stForm"] input,
+        [data-testid="stSidebar"] [data-testid="stForm"] textarea {{
+            color: #222 !important;
         }}
 
         /* Botón de submit dentro del formulario de la sidebar */
@@ -441,7 +447,12 @@ st.markdown(f"""
             color: #222 !important;
         }}
         .stAuthForm *, .stRegisterForm *, .stForm *, .stLoginForm * {{
-            color: #222 !important;
+            color: #fffffff !important;
+        }}
+
+        /* Sidebar más ancha */
+        section[data-testid="stSidebar"] {{
+            width: 300px !important;
         }}
     </style>
     <div class="background-image-blur"></div>
@@ -529,7 +540,6 @@ def run_auth():
                 color: #0F2E1D;
                 font-weight: bold;
                 font-size: 1.35rem;
-                text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
                 text-align: center;
             ">
                 ✅ Bienvenido/a {st.session_state["name"]}
@@ -553,7 +563,24 @@ def run_auth():
                 ):
                     with open('config.yaml', 'w') as file:
                         yaml.dump(config, file, default_flow_style=False, allow_unicode=True)
-                    st.success("Contraseña modificada correctamente")
+                    st.markdown(
+                        '''
+                        <div style="
+                            background-color: #27ae60;
+                            color: #fff;
+                            padding: 1.1rem 1.3rem;
+                            border-radius: 12px;
+                            font-weight: bold;
+                            font-size: 1.1rem;
+                            margin-bottom: 1.2rem;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                            text-align: center;
+                        ">
+                            ✅ Contraseña modificada correctamente
+                        </div>
+                        ''',
+                        unsafe_allow_html=True
+                    )
             except Exception as e:
                 st.error(e)    
         return
@@ -586,7 +613,7 @@ def run_auth():
                     elif username_of_forgotten_password == False:
                         st.error('Usuario no encontrado')
                 except Exception as e:
-                    st.error(f"Error recuperando contraseña: {e}")
+                    st.error(f"Usuario no válido")
 
             with col2:
                 st.subheader("Recuperar nombre de usuario")
@@ -730,7 +757,7 @@ st.header("📚 Documentación del Sistema")
 col1, col2 = st.columns(2)
 
 with col1:
-    with st.expander("ℹ️ Guía de uso", expanded=True):
+    with st.expander("ℹ️ Guía de uso"):
         st.markdown("""
         ### 🚀 Instrucciones de uso:
         
@@ -756,7 +783,7 @@ with col1:
         """)
 
 with col2:
-    with st.expander("📊 Guía de datos", expanded=True):
+    with st.expander("📊 Guía de datos"):
         st.markdown("""
         ### ⚡ Variables disponibles:
         

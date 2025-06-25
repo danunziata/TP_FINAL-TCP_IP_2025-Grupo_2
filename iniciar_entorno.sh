@@ -27,6 +27,14 @@ cd ..
 echo "✅ Servidor Modbus iniciado en segundo plano."
 echo "----------------------------------------------------"
 
+# Paso 4: Monitoreo
+echo "3. Levantando servicios de monitoreo de contenedores..."
+cd monitoreo
+docker compose up -d
+cd ..
+echo "✅ Servicios de monitoreo iniciados."
+echo "----------------------------------------------------"
+
 # Pausa para dar tiempo a que los contenedores se inicien correctamente
 echo "⏳ Esperando 10 segundos para que los servicios de Docker se estabilicen..."
 sleep 10
